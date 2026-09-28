@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import {
   getCurrentSession,
   getStaffInviteByToken,
-  isStaffMember,
+  getStaffRole,
   loadStaffData,
   signInStaff,
   signOutStaff,
@@ -21,10 +21,12 @@ root.innerHTML = `
       <span class="staff-kicker">Noces de saphir · 45 ans</span>
       <h1>Accueil des invités</h1>
     </div>
-    <div class="arrival-counter" id="arrival-counter" hidden aria-live="polite">
+    <button class="arrival-counter" id="arrival-counter" type="button" hidden aria-label="Ouvrir les listes d’accueil">
       <strong id="arrival-count">0 / 0</strong>
       <span>personnes arrivées</span>
-    </div>
+      <span class="counter-hint">Voir les listes</span>
+    </button>
+    <a class="text-button admin-link" id="admin-link" href="/gestion.html" hidden>Gestion des invitations</a>
     <button class="text-button" type="button" id="sign-out" hidden>Déconnexion</button>
   </header>
   <main>
@@ -75,6 +77,33 @@ root.innerHTML = `
       </section>
     </section>
   </main>
+  <section class="roster-overlay" id="roster-overlay" role="dialog" aria-modal="true" aria-labelledby="roster-title" hidden>
+    <div class="roster-shell">
+      <header class="roster-header">
+        <div>
+          <p class="section-kicker">Suivi de l’accueil</p>
+          <h2 id="roster-title">Listes des invités</h2>
+        </div>
+        <button class="roster-close" type="button" id="roster-close" aria-label="Fermer et revenir au scanner">Fermer <span aria-hidden="true">×</span></button>
+      </header>
+      <div class="roster-tabs" role="tablist" aria-label="État des invités">
+        <button class="roster-tab" id="tab-arrived" type="button" role="tab" aria-selected="true" aria-controls="roster-list" data-roster-tab="arrived">Arrivés <span data-roster-count="arrived">0</span></button>
+        <button class="roster-tab" id="tab-pending" type="button" role="tab" aria-selected="false" aria-controls="roster-list" data-roster-tab="pending" tabindex="-1">En attente <span data-roster-count="pending">0</span></button>
+        <button class="roster-tab" id="tab-unanswered" type="button" role="tab" aria-selected="false" aria-controls="roster-list" data-roster-tab="unanswered" tabindex="-1">Sans réponse <span data-roster-count="unanswered">0</span></button>
+      </div>
+      <div class="roster-filters">
+        <label for="roster-search">Rechercher un foyer</label>
+        <input id="roster-search" type="search" autocomplete="off" placeholder="Nom du foyer…">
+        <label for="roster-table-filter">Filtrer par table</label>
+        <select id="roster-table-filter">
+          <option value="all">Toutes les tables</option>
+        </select>
+      </div>
+      <div class="roster-list-wrap">
+        <ul class="roster-list" id="roster-list" role="tabpanel" aria-labelledby="tab-arrived" tabindex="0"></ul>
+      </div>
+    </div>
+  </section>
   <footer>Une soirée de famille, accueillie avec amour</footer>
 `;
 
@@ -84,8 +113,15 @@ const loginMessage = document.querySelector('#login-message');
 const loginSubmit = document.querySelector('#login-submit');
 const staffPanel = document.querySelector('#staff-panel');
 const signOutButton = document.querySelector('#sign-out');
+const adminLink = document.querySelector('#admin-link');
 const arrivalCounter = document.querySelector('#arrival-counter');
 const arrivalCount = document.querySelector('#arrival-count');
+const rosterOverlay = document.querySelector('#roster-overlay');
+const rosterCloseButton = document.querySelector('#roster-close');
+const rosterSearch = document.querySelector('#roster-search');
+const rosterTableFilter = document.querySelector('#roster-table-filter');
+const rosterList = document.querySelector('#roster-list');
+const rosterTabs = Array.from(document.querySelectorAll('[data-roster-tab]'));
 const cameraToggle = document.querySelector('#camera-toggle');
 const cameraState = document.querySelector('#camera-state');
 const scanMessage = document.querySelector('#scan-message');
@@ -99,6 +135,8 @@ const manualToken = document.querySelector('#manual-token');
 
 let scanner = null;
 let scannerRunning = false;
+let scannerStartPromise = null;
+let scannerShouldRun = false;
 let scanInProgress = false;
 let isAuthorized = false;
 let inviteCache = [];
@@ -106,6 +144,8 @@ let displayedInvite = null;
 let autoReturnTimer = 0;
 let refreshTimer = 0;
 let authSubscription = null;
+let rosterTab = 'arrived';
+let rosterFocusTarget = null;
 
 function setMessage(element, message, kind = '') {
   element.textContent = message;
@@ -141,6 +181,7 @@ function updateCounter(data) {
     const refreshed = inviteCache.find((invite) => invite.id === displayedInvite.id);
     if (refreshed) displayedInvite = refreshed;
   }
+  renderRoster();
 }
 
 async function refreshDashboard() {
@@ -148,7 +189,159 @@ async function refreshDashboard() {
   updateCounter(data);
 }
 
+function normalizeSearch(value) {
+  return value
+    .trim()
+    .toLocaleLowerCase('fr-CA')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function getRosterGroups() {
+  const arrived = inviteCache
+    .filter(
+      (invite) =>
+        invite.response?.presence === 'oui' && invite.response.checked_in_at,
+    )
+    .sort(
+      (first, second) =>
+        new Date(second.response.checked_in_at).getTime() -
+        new Date(first.response.checked_in_at).getTime(),
+    );
+  const pending = inviteCache
+    .filter(
+      (invite) =>
+        invite.response?.presence === 'oui' && !invite.response.checked_in_at,
+    )
+    .sort((first, second) =>
+      first.nom_foyer.localeCompare(second.nom_foyer, 'fr-CA'),
+    );
+  const unanswered = inviteCache
+    .filter((invite) => !invite.response)
+    .sort((first, second) =>
+      first.nom_foyer.localeCompare(second.nom_foyer, 'fr-CA'),
+    );
+  return { arrived, pending, unanswered };
+}
+
+function updateRosterTabs(groups) {
+  rosterTabs.forEach((tab) => {
+    const name = tab.dataset.rosterTab;
+    tab.querySelector('[data-roster-count]')?.remove();
+    const count = document.createElement('span');
+    count.dataset.rosterCount = name;
+    count.textContent = String(groups[name].length);
+    count.setAttribute('aria-label', `${groups[name].length} foyers`);
+    tab.append(count);
+  });
+}
+
+function updateRosterTableOptions() {
+  const selectedTable = rosterTableFilter.value;
+  const tableNumbers = [
+    ...new Set(
+      inviteCache
+        .map((invite) => invite.table_num)
+        .filter((table) => table !== null && table !== undefined),
+    ),
+  ].sort((first, second) => Number(first) - Number(second));
+  rosterTableFilter.replaceChildren(
+    new Option('Toutes les tables', 'all'),
+    ...tableNumbers.map((table) => new Option(`Table ${table}`, String(table))),
+    new Option('Sans table attribuée', 'none'),
+  );
+
+  if ([...rosterTableFilter.options].some((option) => option.value === selectedTable)) {
+    rosterTableFilter.value = selectedTable;
+  }
+}
+
+function renderRoster() {
+  if (rosterOverlay.hidden) return;
+
+  const groups = getRosterGroups();
+  updateRosterTabs(groups);
+  updateRosterTableOptions();
+  rosterList.setAttribute('aria-labelledby', `tab-${rosterTab}`);
+
+  const query = normalizeSearch(rosterSearch.value);
+  const tableFilter = rosterTableFilter.value;
+  const filtered = groups[rosterTab].filter((invite) => {
+    const matchesName = normalizeSearch(invite.nom_foyer).includes(query);
+    const matchesTable =
+      tableFilter === 'all' ||
+      (tableFilter === 'none'
+        ? invite.table_num === null || invite.table_num === undefined
+        : String(invite.table_num) === tableFilter);
+    return matchesName && matchesTable;
+  });
+
+  rosterList.replaceChildren();
+  if (!filtered.length) {
+    const empty = document.createElement('li');
+    empty.className = 'roster-empty';
+    empty.textContent = query || tableFilter !== 'all'
+      ? 'Aucun foyer ne correspond à ces filtres.'
+      : 'Aucun foyer dans cette liste pour le moment.';
+    rosterList.append(empty);
+    return;
+  }
+
+  filtered.forEach((invite) => {
+    const response = invite.response;
+    const peopleCount =
+      response?.presence === 'oui' ? response.invites_detail.length : 0;
+    const table = invite.table_num ? `Table ${invite.table_num}` : 'Table à attribuer';
+    const secondary =
+      rosterTab === 'arrived'
+        ? `${table} · ${peopleCount} personne${peopleCount === 1 ? '' : 's'} · Arrivée à ${formatArrival(response.checked_in_at)}`
+        : rosterTab === 'pending'
+          ? `${table} · ${peopleCount} personne${peopleCount === 1 ? '' : 's'}`
+          : `${table} · ${invite.places_max} place${invite.places_max === 1 ? '' : 's'} réservée${invite.places_max === 1 ? '' : 's'}`;
+
+    const item = document.createElement('li');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'roster-row';
+    button.dataset.inviteId = invite.id;
+    button.innerHTML = `
+      <span class="roster-row-name">${escapeHtml(invite.nom_foyer)}</span>
+      <span class="roster-row-details">${escapeHtml(secondary)}</span>
+      <span class="roster-row-chevron" aria-hidden="true">›</span>
+    `;
+    item.append(button);
+    rosterList.append(item);
+  });
+}
+
+async function openRoster() {
+  rosterFocusTarget = document.activeElement;
+  window.clearTimeout(autoReturnTimer);
+  stopScanner().catch((error) => {
+    console.error('Impossible de suspendre la caméra pour afficher les listes.', error);
+  });
+  resultPanel.hidden = true;
+  displayedInvite = null;
+  rosterOverlay.hidden = false;
+  document.body.classList.add('roster-open');
+  renderRoster();
+  rosterCloseButton.focus({ preventScroll: true });
+}
+
+function closeRoster({ returnToScanner = true, restoreFocus = true } = {}) {
+  if (rosterOverlay.hidden) return;
+  rosterOverlay.hidden = true;
+  document.body.classList.remove('roster-open');
+  if (returnToScanner && isAuthorized) {
+    startScanner().finally(() => manualToken.focus({ preventScroll: true }));
+  } else if (restoreFocus && rosterFocusTarget instanceof HTMLElement) {
+    rosterFocusTarget.focus({ preventScroll: true });
+  }
+}
+
 async function stopScanner() {
+  scannerShouldRun = false;
+  if (scannerStartPromise) await scannerStartPromise;
   if (scanner && scannerRunning) {
     await scanner.stop();
     scannerRunning = false;
@@ -159,44 +352,57 @@ async function stopScanner() {
 
 async function startScanner() {
   if (!isAuthorized || scannerRunning) return;
+  scannerShouldRun = true;
+  if (scannerStartPromise) return scannerStartPromise;
   if (!scanner) scanner = new Html5Qrcode('qr-reader', { verbose: false });
 
   cameraToggle.disabled = true;
   setMessage(scanMessage, 'Démarrage de la caméra…');
-  try {
-    await scanner.start(
-      { facingMode: 'environment' },
-      {
-        fps: 10,
-        aspectRatio: 1,
-        qrbox(viewfinderWidth, viewfinderHeight) {
-          const edge = Math.min(viewfinderWidth, viewfinderHeight, 300);
-          return { width: edge, height: edge };
+  scannerStartPromise = (async () => {
+    try {
+      await scanner.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          aspectRatio: 1,
+          qrbox(viewfinderWidth, viewfinderHeight) {
+            const edge = Math.min(viewfinderWidth, viewfinderHeight, 300);
+            return { width: edge, height: edge };
+          },
         },
-      },
-      (decodedText) => {
-        if (scanInProgress) return;
-        scanInProgress = true;
-        scanMessage.textContent = 'Code lu.';
-        handleLookup(decodedText.trim());
-      },
-      () => {},
-    );
-    scannerRunning = true;
-    cameraToggle.textContent = 'Désactiver la caméra';
-    cameraState.textContent = 'Caméra active';
-    setMessage(scanMessage, 'Pointez la caméra vers le code QR.');
-  } catch (error) {
-    console.error('Impossible de démarrer la caméra.', error);
-    cameraState.textContent = 'Caméra indisponible';
-    setMessage(
-      scanMessage,
-      'La caméra est inaccessible. Vérifiez la permission et HTTPS, ou utilisez la saisie/recherche ci-dessous.',
-      'error',
-    );
-  } finally {
-    cameraToggle.disabled = false;
-  }
+        (decodedText) => {
+          if (scanInProgress) return;
+          scanInProgress = true;
+          scanMessage.textContent = 'Code lu.';
+          handleLookup(decodedText.trim());
+        },
+        () => {},
+      );
+      scannerRunning = true;
+      if (!scannerShouldRun || !isAuthorized || !rosterOverlay.hidden) {
+        await scanner.stop();
+        scannerRunning = false;
+        cameraToggle.textContent = 'Activer la caméra';
+        cameraState.textContent = 'Caméra inactive';
+        return;
+      }
+      cameraToggle.textContent = 'Désactiver la caméra';
+      cameraState.textContent = 'Caméra active';
+      setMessage(scanMessage, 'Pointez la caméra vers le code QR.');
+    } catch (error) {
+      console.error('Impossible de démarrer la caméra.', error);
+      cameraState.textContent = 'Caméra indisponible';
+      setMessage(
+        scanMessage,
+        'La caméra est inaccessible. Vérifiez la permission et HTTPS, ou utilisez la saisie/recherche ci-dessous.',
+        'error',
+      );
+    } finally {
+      scannerStartPromise = null;
+      cameraToggle.disabled = false;
+    }
+  })();
+  return scannerStartPromise;
 }
 
 function renderRedResult(title, description) {
@@ -209,6 +415,7 @@ function renderRedResult(title, description) {
   `;
   resultActions.innerHTML =
     '<button class="secondary-button next-button" type="button" data-next>Scanner le suivant</button>';
+  resultActions.querySelector('[data-next]')?.focus({ preventScroll: true });
   scheduleAutoReturn();
 }
 
@@ -405,6 +612,7 @@ async function authorizeSession(session) {
     loginPanel.hidden = false;
     staffPanel.hidden = true;
     signOutButton.hidden = true;
+    adminLink.hidden = true;
     arrivalCounter.hidden = true;
     return;
   }
@@ -412,8 +620,8 @@ async function authorizeSession(session) {
   loginPanel.hidden = true;
   setMessage(loginMessage, '');
   try {
-    const authorized = await isStaffMember(session.user.id);
-    if (!authorized) {
+    const role = await getStaffRole(session.user.id);
+    if (!role) {
       await signOutStaff();
       loginPanel.hidden = false;
       staffPanel.hidden = true;
@@ -428,6 +636,7 @@ async function authorizeSession(session) {
     isAuthorized = true;
     staffPanel.hidden = false;
     signOutButton.hidden = false;
+    adminLink.hidden = role !== 'admin';
     await refreshDashboard();
     await startScanner();
     window.clearInterval(refreshTimer);
@@ -481,6 +690,7 @@ signOutButton.addEventListener('click', async () => {
     staffPanel.hidden = true;
     arrivalCounter.hidden = true;
     signOutButton.hidden = true;
+    adminLink.hidden = true;
     loginPanel.hidden = false;
   } catch (error) {
     console.error('Impossible de fermer la session de l’équipe.', error);
@@ -517,6 +727,61 @@ manualForm.addEventListener('submit', (submitEvent) => {
 
 searchInput.addEventListener('input', renderSearchResults);
 
+arrivalCounter.addEventListener('click', () => {
+  openRoster();
+});
+
+rosterCloseButton.addEventListener('click', () => closeRoster());
+rosterSearch.addEventListener('input', renderRoster);
+rosterTableFilter.addEventListener('change', renderRoster);
+
+rosterTabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => {
+    rosterTab = tab.dataset.rosterTab;
+    rosterTabs.forEach((item) => {
+      const selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+    });
+    renderRoster();
+    rosterList.focus({ preventScroll: true });
+  });
+  tab.addEventListener('keydown', (keyEvent) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(keyEvent.key)) {
+      return;
+    }
+    keyEvent.preventDefault();
+    const nextIndex =
+      keyEvent.key === 'Home'
+        ? 0
+        : keyEvent.key === 'End'
+          ? rosterTabs.length - 1
+          : (index + (keyEvent.key === 'ArrowRight' ? 1 : -1) + rosterTabs.length) %
+            rosterTabs.length;
+    rosterTabs[nextIndex].click();
+    rosterTabs[nextIndex].focus();
+  });
+});
+
+rosterList.addEventListener('click', (clickEvent) => {
+  const row = clickEvent.target.closest('[data-invite-id]');
+  if (!row) return;
+  const invite = inviteCache.find((item) => item.id === row.dataset.inviteId);
+  if (!invite) return;
+
+  window.clearTimeout(autoReturnTimer);
+  closeRoster({ returnToScanner: false, restoreFocus: false });
+  displayedInvite = invite;
+  scanInProgress = true;
+  renderInvite(invite);
+});
+
+window.addEventListener('keydown', (keyEvent) => {
+  if (keyEvent.key === 'Escape' && !rosterOverlay.hidden) {
+    closeRoster();
+  }
+});
+
 resultActions.addEventListener('click', (clickEvent) => {
   if (clickEvent.target.closest('[data-confirm]')) {
     setArrival(new Date().toISOString());
@@ -542,6 +807,7 @@ if (!supabaseConfigError) {
       staffPanel.hidden = true;
       arrivalCounter.hidden = true;
       loginPanel.hidden = false;
+      adminLink.hidden = true;
     }
   });
   authSubscription = subscription;

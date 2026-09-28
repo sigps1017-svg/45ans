@@ -31,6 +31,8 @@ modulaire suivante :
 - `src/rsvp/` : formulaire, confirmation/code QR et ajout au calendrier.
 - `src/lib/` : intégrations et utilitaires partagés, dont les clients et accès
   Supabase.
+- `accueil.html` : scanner et suivi des arrivées de l'équipe.
+- `gestion.html` : administration des invitations réservée au rôle `admin`.
 
 Importer les bibliothèques depuis npm. Avec la version récente de Three.js,
 utiliser `renderer.outputColorSpace` au lieu de l'ancienne API
@@ -57,7 +59,17 @@ enregistrés dans `public.staff`. La page d’accueil de l’équipe est `accuei
 elle permet la connexion Supabase Auth, le scan/recherche des invitations, le
 pointage des arrivées et leur annulation. Le serveur de développement utilise
 HTTPS local via `@vitejs/plugin-basic-ssl` pour permettre les tests caméra sur
-téléphone.
+téléphone. L’écran plein écran des listes invités est accessible depuis le
+compteur et se rafraîchit avec les mêmes données.
+
+La migration `supabase/migrations/20260928_admin_invitation_management.sql`
+ajoute le rôle `admin` à `staff`, cloisonne la lecture des tokens et fournit des
+RPC protégées pour la gestion des invitations. Après avoir créé un compte Auth
+et l’avoir ajouté à `staff`, un administrateur doit promouvoir au moins un
+compte en mettant son rôle à `admin` dans l’éditeur SQL. La page `gestion.html`
+permet ensuite de gérer les invitations, créer/copier/partager les liens et
+exporter la liste en CSV. L’équipe d’accueil recherche une invitation scannée
+via une RPC qui ne révèle pas le token.
 
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec fuseau horaire pour

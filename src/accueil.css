@@ -30,6 +30,10 @@ body {
     var(--staff-ink);
 }
 
+body.roster-open {
+  overflow: hidden;
+}
+
 button,
 input {
   font: inherit;
@@ -89,13 +93,24 @@ footer {
 
 .arrival-counter {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
+  justify-content: center;
   gap: 10px;
   padding: 10px 16px;
   border: 1px solid var(--staff-line);
   border-radius: 14px;
+  color: inherit;
   background: rgba(16, 30, 72, 0.8);
+  font-family: inherit;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.arrival-counter:hover,
+.arrival-counter:focus-visible {
+  border-color: var(--staff-ice);
+  background: #142653;
 }
 
 .arrival-counter strong {
@@ -107,6 +122,14 @@ footer {
 .arrival-counter span {
   color: var(--staff-muted);
   font-size: 0.88rem;
+}
+
+.arrival-counter .counter-hint {
+  flex-basis: 100%;
+  margin-top: -8px;
+  color: var(--staff-ice);
+  font-size: 0.72rem;
+  text-align: center;
 }
 
 .text-button,
@@ -283,6 +306,199 @@ input {
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
+}
+
+.roster-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  color: var(--staff-text);
+  background: var(--staff-ink);
+  overscroll-behavior: contain;
+}
+
+.roster-shell {
+  display: flex;
+  width: min(100%, 900px);
+  min-height: 100%;
+  flex-direction: column;
+  margin-inline: auto;
+  padding: max(16px, env(safe-area-inset-top)) 20px
+    max(20px, env(safe-area-inset-bottom));
+}
+
+.roster-header {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0 16px;
+  border-bottom: 1px solid var(--staff-line);
+  background: var(--staff-ink);
+}
+
+.roster-header h2 {
+  margin: 3px 0 0;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: clamp(1.5rem, 5vw, 2.15rem);
+  font-weight: 500;
+}
+
+.roster-close {
+  display: inline-flex;
+  min-width: 104px;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--staff-ice);
+  border-radius: 12px;
+  color: white;
+  background: #17306f;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.roster-close span {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.roster-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--staff-line);
+}
+
+.roster-tab {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--staff-line);
+  border-radius: 12px;
+  color: var(--staff-muted);
+  background: var(--staff-panel);
+  font-size: clamp(0.82rem, 2.5vw, 1rem);
+  font-weight: 700;
+}
+
+.roster-tab[aria-selected="true"] {
+  border-color: var(--staff-ice);
+  color: white;
+  background: #1a3478;
+}
+
+.roster-tab span {
+  display: inline-grid;
+  min-width: 28px;
+  min-height: 28px;
+  place-items: center;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--staff-ink);
+  background: var(--staff-ice);
+  font-variant-numeric: tabular-nums;
+}
+
+.roster-filters {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) auto minmax(130px, 0.75fr);
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.roster-filters label {
+  color: var(--staff-muted);
+  font-size: 0.88rem;
+}
+
+.roster-filters input,
+.roster-filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  padding: 9px 12px;
+  border: 1px solid var(--staff-line);
+  border-radius: 10px;
+  color: var(--staff-text);
+  background: var(--staff-panel);
+  font: inherit;
+}
+
+.roster-list-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.roster-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0 0 16px;
+  list-style: none;
+}
+
+.roster-row {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 76px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  gap: 4px 14px;
+  padding: 12px 48px 12px 16px;
+  border: 1px solid var(--staff-line);
+  border-radius: 13px;
+  color: var(--staff-text);
+  background: rgba(16, 30, 72, 0.84);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.roster-row:hover,
+.roster-row:focus-visible {
+  border-color: var(--staff-ice);
+  background: #142653;
+}
+
+.roster-row-name {
+  min-width: 0;
+  font-size: clamp(1.05rem, 3.5vw, 1.3rem);
+  font-weight: 700;
+}
+
+.roster-row-details {
+  min-width: 0;
+  color: var(--staff-muted);
+  font-size: 0.93rem;
+}
+
+.roster-row-chevron {
+  position: absolute;
+  top: 50%;
+  right: 17px;
+  color: var(--staff-ice);
+  font-size: 2rem;
+  transform: translateY(-54%);
+}
+
+.roster-empty {
+  padding: 28px 14px;
+  color: var(--staff-muted);
+  text-align: center;
 }
 
 .search-result {
@@ -472,6 +688,18 @@ footer {
   .tools-grid {
     grid-template-columns: 1fr;
   }
+
+  .roster-shell {
+    padding-inline: 14px;
+  }
+
+  .roster-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .roster-filters label {
+    align-self: end;
+  }
 }
 
 @media (max-width: 460px) {
@@ -490,6 +718,15 @@ footer {
     font-size: 0.88rem;
   }
 
+  .arrival-counter {
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .arrival-counter .counter-hint {
+    font-size: 0.68rem;
+  }
+
   .manual-form {
     flex-direction: column;
   }
@@ -504,5 +741,35 @@ footer {
 
   .result-actions button {
     width: 100%;
+  }
+
+  .roster-header {
+    gap: 8px;
+  }
+
+  .roster-close {
+    min-width: 88px;
+    min-height: 48px;
+    padding-inline: 9px;
+  }
+
+  .roster-tabs {
+    gap: 5px;
+  }
+
+  .roster-tab {
+    min-height: 54px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 3px;
+  }
+
+  .roster-filters {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .roster-filters label:not(:first-child) {
+    margin-top: 6px;
   }
 }

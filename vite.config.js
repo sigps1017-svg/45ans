@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         accueil: resolve(import.meta.dirname, 'accueil.html'),
+        gestion: resolve(import.meta.dirname, 'gestion.html'),
       },
     },
   },

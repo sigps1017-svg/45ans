@@ -21,13 +21,17 @@ export async function signOutStaff() {
 }
 
 export async function isStaffMember(userId) {
+  return (await getStaffRole(userId)) !== null;
+}
+
+export async function getStaffRole(userId) {
   const { data, error } = await getSupabaseClient()
     .from('staff')
-    .select('user_id')
+    .select('role')
     .eq('user_id', userId)
     .maybeSingle();
   if (error) throw error;
-  return Boolean(data);
+  return data?.role ?? null;
 }
 
 export async function loadStaffData() {
@@ -35,7 +39,7 @@ export async function loadStaffData() {
   const [inviteResult, responseResult] = await Promise.all([
     client
       .from('invites')
-      .select('id, token, nom_foyer, places_max, table_num')
+      .select('id, nom_foyer, places_max, table_num')
       .order('nom_foyer'),
     client
       .from('reponses')
@@ -74,23 +78,12 @@ export async function loadStaffData() {
 }
 
 export async function getStaffInviteByToken(token) {
-  const client = getSupabaseClient();
-  const { data: invite, error: inviteError } = await client
-    .from('invites')
-    .select('id, token, nom_foyer, places_max, table_num')
-    .eq('token', token)
-    .maybeSingle();
-  if (inviteError) throw inviteError;
-  if (!invite) return null;
-
-  const { data: response, error: responseError } = await client
-    .from('reponses')
-    .select('invite_id, presence, invites_detail, allergies, updated_at, checked_in_at')
-    .eq('invite_id', invite.id)
-    .maybeSingle();
-  if (responseError) throw responseError;
-
-  return { ...invite, response };
+  const { data, error } = await getSupabaseClient().rpc(
+    'get_invite_for_staff',
+    { p_token: token },
+  );
+  if (error) throw error;
+  return data;
 }
 
 export async function updateArrival(inviteId, checkedInAt) {
