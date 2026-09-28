@@ -5,6 +5,11 @@ import {
   createGoogleCalendarUrl,
   downloadIcsFile,
 } from './calendar.js';
+import {
+  getInvite,
+  submitInviteRsvp,
+  supabaseConfigError,
+} from '../lib/supabase.js';
 
 const STORAGE_KEY = 'noces-rsvp';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -22,20 +27,9 @@ function escapeHtml(value) {
   });
 }
 
-function createToken() {
-  const bytes = new Uint8Array(8);
-  window.crypto.getRandomValues(bytes);
-  const token = Array.from(bytes, (byte) => (byte % 36).toString(36))
-    .join('')
-    .slice(0, 6)
-    .toUpperCase();
-
-  return `S45-${token}`;
-}
-
-function readStoredResponse() {
+function readStoredResponse(token) {
   try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    const saved = window.localStorage.getItem(`${STORAGE_KEY}:${token}`);
     if (!saved) return { response: null, error: null };
 
     const response = JSON.parse(saved);
@@ -43,7 +37,8 @@ function readStoredResponse() {
       !response ||
       typeof response.name !== 'string' ||
       !['oui', 'non'].includes(response.presence) ||
-      typeof response.token !== 'string'
+      response.token !== token ||
+      !Array.isArray(response.guests)
     ) {
       throw new Error('Les données RSVP locales ont un format invalide.');
     }
@@ -68,6 +63,7 @@ export function initRsvp({ event, sceneReady }) {
   const cleanupCallbacks = [];
   const listeners = [];
   let scene = null;
+  let invite = null;
   let currentResponse = null;
   let previousFocus = null;
   let returnFocusFrame = 0;
@@ -80,20 +76,6 @@ export function initRsvp({ event, sceneReady }) {
   function showStorageWarning(message) {
     storageWarning.textContent = message;
     storageWarning.hidden = !message;
-  }
-
-  function saveResponse(response) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(response));
-      showStorageWarning('');
-      return true;
-    } catch (error) {
-      console.error('Impossible d’enregistrer la réponse RSVP localement.', error);
-      showStorageWarning(
-        'Votre navigateur n’a pas pu enregistrer cette réponse. Autorisez le stockage local puis réessayez.',
-      );
-      return false;
-    }
   }
 
   function moveCanvasIntoDialog() {
@@ -174,6 +156,9 @@ export function initRsvp({ event, sceneReady }) {
             `<li><span>${escapeHtml(guest.name)}</span><span>${escapeHtml(guest.drink)}</span></li>`,
         )
         .join('');
+      const tableSummary = response.tableNum
+        ? `Table ${escapeHtml(response.tableNum)}`
+        : 'Attribuée par les hôtes';
       const notes = response.notes
         ? `<p class="note">Allergies : ${escapeHtml(response.notes)}</p>`
         : '';
@@ -185,7 +170,7 @@ export function initRsvp({ event, sceneReady }) {
         <p class="token">${escapeHtml(response.token)}</p>
         <ul class="summary">
           ${guests}
-          <li><span>Table</span><span>Attribuée par les hôtes</span></li>
+          <li><span>Table</span><span>${tableSummary}</span></li>
         </ul>
         ${notes}
         <p class="note">Faites une capture d’écran de ce code pour l’avoir avec vous le jour venu.</p>
@@ -268,20 +253,95 @@ export function initRsvp({ event, sceneReady }) {
     }
   }
 
-  function submitResponse(data) {
-    const response = { ...data, token: createToken() };
-    if (!saveResponse(response)) return;
+  function saveResponse(response) {
+    try {
+      window.localStorage.setItem(
+        `${STORAGE_KEY}:${response.token}`,
+        JSON.stringify(response),
+      );
+      showStorageWarning('');
+    } catch (error) {
+      console.error('Impossible de conserver une copie locale du RSVP.', error);
+      showStorageWarning(
+        'Votre réponse est enregistrée en ligne, mais la copie locale n’a pas pu être conservée.',
+      );
+    }
+  }
 
-    openConfirmation(response).catch((error) => {
+  function responseFromInvite(inviteData) {
+    if (!inviteData?.reponse) return null;
+    return {
+      name: inviteData.nom_foyer,
+      token: inviteData.token,
+      tableNum: inviteData.table_num,
+      presence: inviteData.reponse.presence,
+      notes: inviteData.reponse.allergies ?? '',
+      guests: inviteData.reponse.invites_detail ?? [],
+    };
+  }
+
+  async function loadInvitation() {
+    const token = new URL(window.location.href).searchParams.get('i');
+    if (!token || !/^[a-f0-9]{24}$/.test(token)) {
+      form.setUnavailable(
+        'Ce formulaire est accessible avec le lien personnel reçu dans votre invitation. Vérifiez que votre lien contient un code valide.',
+      );
+      return;
+    }
+    if (supabaseConfigError) {
+      form.setUnavailable(supabaseConfigError);
+      return;
+    }
+
+    try {
+      invite = await getInvite(token);
+      if (!invite) {
+        form.setUnavailable(
+          'Cette invitation est introuvable ou son lien n’est plus valide. Utilisez le lien reçu ou contactez les hôtes.',
+        );
+        return;
+      }
+
+      const { response: localResponse, error } = readStoredResponse(token);
+      if (error) showStorageWarning(error);
+      currentResponse = responseFromInvite(invite) ?? localResponse;
+      if (currentResponse) againNotice.hidden = false;
+      form.setInvite(invite.nom_foyer, invite.places_max, currentResponse);
+    } catch (error) {
+      console.error('Impossible de charger l’invitation Supabase.', error);
+      form.setUnavailable(
+        'Impossible de vérifier cette invitation pour le moment. Vérifiez votre connexion et rechargez la page.',
+      );
+    }
+  }
+
+  async function submitResponse(data) {
+    if (!invite) {
+      throw new Error('Aucune invitation valide n’est chargée.');
+    }
+
+    const savedInvite = await submitInviteRsvp(invite.token, data);
+    const response = responseFromInvite(savedInvite);
+    if (!response) {
+      throw new Error('Supabase n’a pas renvoyé la réponse enregistrée.');
+    }
+
+    currentResponse = response;
+    saveResponse(response);
+    againNotice.hidden = false;
+    try {
+      await openConfirmation(response);
+    } catch (error) {
       console.error('Impossible d’afficher la confirmation RSVP.', error);
       showStorageWarning(
-        'Votre réponse est enregistrée, mais son écran de confirmation n’a pas pu être affiché.',
+        'Votre réponse est enregistrée en ligne, mais l’écran de confirmation n’a pas pu être affiché.',
       );
-    });
+    }
   }
 
   const form = initRsvpForm({ onSubmit: submitResponse });
   cleanupCallbacks.push(form.cleanup);
+  loadInvitation();
 
   listen(confirmationCard, 'click', (clickEvent) => {
     if (clickEvent.target.closest('[data-close-confirmation]')) {
@@ -314,14 +374,6 @@ export function initRsvp({ event, sceneReady }) {
       });
     }
   });
-
-  const stored = readStoredResponse();
-  if (stored.response) {
-    currentResponse = stored.response;
-    form.fill(stored.response);
-    againNotice.hidden = false;
-  }
-  if (stored.error) showStorageWarning(stored.error);
 
   return {
     setScene(sceneApi) {

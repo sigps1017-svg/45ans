@@ -524,7 +524,8 @@ footer {
 }
 
 .err,
-.storage-warning {
+.storage-warning,
+.invite-status {
   min-height: 1.3em;
   margin: 10px 0 0;
   color: #ffb4b4;
@@ -534,6 +535,11 @@ footer {
 
 .storage-warning {
   color: var(--gold);
+}
+
+.invite-status {
+  margin: 0 0 20px;
+  color: var(--muted);
 }
 
 .again {

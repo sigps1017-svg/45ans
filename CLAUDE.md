@@ -13,7 +13,7 @@ visuelle et comportementale pour le portage.
 - GSAP et ScrollTrigger pour les animations et les scènes pilotées par le
   défilement.
 - `qrcode` pour générer les codes QR, et `html5-qrcode` pour la lecture.
-- Supabase JS est prévu pour une étape ultérieure.
+- Supabase JS sert à valider les liens d’invitation et à enregistrer les RSVP.
 - Déploiement cible : Vercel.
 - Utiliser les dépendances npm du projet, pas de CDN.
 
@@ -45,11 +45,20 @@ repli si une image est absente.
 
 ## Persistance et limites actuelles
 
-Les réponses RSVP restent enregistrées localement dans le navigateur
-(`localStorage`), comme dans le prototype. Le parcours comprend les réponses
-oui/non, le code QR PNG et son animation en particules, Google Agenda et le
-téléchargement `.ics` avec fuseau horaire pour les calendriers mobiles. Ne pas
-connecter ni appeler Supabase avant l'étape suivante.
+Les réponses RSVP sont enregistrées dans Supabase via des fonctions RPC
+sécurisées; `localStorage` conserve seulement une copie de reprise par invitation.
+Le token de l’invitation vient du paramètre `?i=` et sert aussi de contenu au QR.
+Le schéma à exécuter manuellement se trouve dans `supabase/schema.sql`.
+Les secrets client sont fournis par `.env.local` avec
+`VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`; ne jamais les afficher ni les
+committer. Le schéma active RLS, ne donne aucun accès direct à `anon`, et réserve
+la lecture des listes ainsi que le marquage des arrivées aux utilisateurs Auth
+enregistrés dans `public.staff`. La page de scanner reste à créer lors d’une
+étape ultérieure.
+
+Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
+particules, Google Agenda et le téléchargement `.ics` avec fuseau horaire pour
+les calendriers mobiles.
 
 Le prototype contient des textes et coordonnées d'événement à personnaliser,
 ainsi que des images de souvenirs de remplacement. Conserver leur caractère

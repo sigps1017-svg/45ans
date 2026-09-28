@@ -31,14 +31,15 @@ export function createRsvpMarkup(event) {
       <div class="panel">
         <h2 id="rsvp-title">Votre réponse</h2>
         <p class="lede">Merci de répondre avant le ${escapeHtml(event.rsvpDeadline)}.</p>
+        <p class="invite-status" id="invite-status" role="status" aria-live="polite">Chargement de votre invitation…</p>
         <p class="again" id="again" hidden>
           Votre réponse est enregistrée.
           <button type="button" id="reopen-confirmation">Voir ma confirmation</button>
         </p>
-        <form id="rsvp-form" novalidate>
+        <form id="rsvp-form" novalidate hidden>
           <label class="field" for="household-name">
             <span>Nom du foyer</span>
-            <input id="household-name" name="name" autocomplete="name" placeholder="Ex. Famille LeBlanc" required>
+            <input id="household-name" name="name" autocomplete="name" readonly required>
           </label>
           <fieldset class="presence">
             <legend>Votre présence</legend>
@@ -61,7 +62,7 @@ export function createRsvpMarkup(event) {
             <div id="guests"></div>
             <label class="field notes-field" for="food-notes">
               <span>Allergies alimentaires (facultatif)</span>
-              <input id="food-notes" name="notes" placeholder="Ex. noix, fruits de mer">
+              <input id="food-notes" name="notes" maxlength="1000" placeholder="Ex. noix, fruits de mer">
             </label>
           </div>
           <button class="cta" type="submit" id="submit-rsvp">Confirmer ma présence</button>
@@ -82,12 +83,15 @@ export function initRsvpForm({ onSubmit }) {
   const countOutput = document.querySelector('#count');
   const errorElement = document.querySelector('#rsvp-error');
   const submitButton = document.querySelector('#submit-rsvp');
+  const inviteStatus = document.querySelector('#invite-status');
   const presenceButtons = Array.from(document.querySelectorAll('[data-presence]'));
   const minusButton = document.querySelector('#minus');
   const plusButton = document.querySelector('#plus');
   const listeners = [];
+  let guestListeners = [];
   let presence = 'oui';
-  let count = 2;
+  let count = 1;
+  let maxGuests = 1;
   let guests = [];
 
   function listen(element, type, handler) {
@@ -95,9 +99,17 @@ export function initRsvpForm({ onSubmit }) {
     listeners.push(() => element.removeEventListener(type, handler));
   }
 
+  function listenToGuest(element, type, handler) {
+    element.addEventListener(type, handler);
+    guestListeners.push(() => element.removeEventListener(type, handler));
+  }
+
   function renderGuests() {
+    count = Math.min(count, maxGuests);
     while (guests.length < count) guests.push({ name: '', drink: '' });
     guests.length = count;
+    guestListeners.forEach((removeListener) => removeListener());
+    guestListeners = [];
     guestsContainer.replaceChildren();
 
     guests.forEach((guest, index) => {
@@ -110,10 +122,11 @@ export function initRsvpForm({ onSubmit }) {
       nameCaption.textContent = `Prénom de la personne ${index + 1}`;
       const nameField = document.createElement('input');
       nameField.autocomplete = 'given-name';
+      nameField.maxLength = 100;
       nameField.value = guest.name;
       nameField.setAttribute('aria-label', nameCaption.textContent);
       nameLabel.append(nameCaption, nameField);
-      listen(nameField, 'input', () => {
+      listenToGuest(nameField, 'input', () => {
         guest.name = nameField.value;
       });
 
@@ -129,7 +142,7 @@ export function initRsvpForm({ onSubmit }) {
         button.dataset.drink = '';
         button.textContent = drink;
         button.setAttribute('aria-pressed', String(guest.drink === drink));
-        listen(button, 'click', () => {
+        listenToGuest(button, 'click', () => {
           guest.drink = drink;
           chips.querySelectorAll('[data-drink]').forEach((chip) => {
             chip.setAttribute('aria-pressed', String(chip === button));
@@ -145,7 +158,7 @@ export function initRsvpForm({ onSubmit }) {
 
     countOutput.value = String(count);
     minusButton.disabled = count <= 1;
-    plusButton.disabled = count >= 8;
+    plusButton.disabled = count >= maxGuests;
   }
 
   listen(minusButton, 'click', () => {
@@ -155,7 +168,7 @@ export function initRsvpForm({ onSubmit }) {
     }
   });
   listen(plusButton, 'click', () => {
-    if (count < 8) {
+    if (count < maxGuests) {
       count += 1;
       renderGuests();
     }
@@ -178,7 +191,7 @@ export function initRsvpForm({ onSubmit }) {
     errorElement.textContent = '';
   });
 
-  listen(form, 'submit', (submitEvent) => {
+  listen(form, 'submit', async (submitEvent) => {
     submitEvent.preventDefault();
     const name = nameInput.value.trim();
 
@@ -197,23 +210,46 @@ export function initRsvpForm({ onSubmit }) {
     }
 
     errorElement.textContent = '';
-    onSubmit({
-      name,
-      presence,
-      notes: notesInput.value.trim(),
-      guests:
-        presence === 'oui'
-          ? guests.map((guest, index) => ({
-              name: guest.name.trim() || `Personne ${index + 1}`,
-              drink: guest.drink,
-            }))
-          : [],
-    });
+    submitButton.disabled = true;
+    try {
+      await onSubmit({
+        name,
+        presence,
+        notes: notesInput.value.trim(),
+        guests:
+          presence === 'oui'
+            ? guests.map((guest, index) => ({
+                name: guest.name.trim() || `Personne ${index + 1}`,
+                drink: guest.drink,
+              }))
+            : [],
+      });
+    } catch (error) {
+      console.error('Impossible d’enregistrer la réponse RSVP.', error);
+      errorElement.textContent =
+        'Votre réponse n’a pas pu être enregistrée. Vérifiez votre connexion puis réessayez.';
+    } finally {
+      submitButton.disabled = false;
+    }
   });
 
   renderGuests();
 
   return {
+    setInvite(name, placesMax, response) {
+      maxGuests = placesMax;
+      nameInput.value = name;
+      count = Math.min(response?.guests?.length || 2, maxGuests);
+      inviteStatus.textContent =
+        `Invitation pour ${name} · jusqu’à ${placesMax} personne${placesMax > 1 ? 's' : ''}.`;
+      form.hidden = false;
+      if (response) this.fill(response);
+      else renderGuests();
+    },
+    setUnavailable(message) {
+      inviteStatus.textContent = message;
+      form.hidden = true;
+    },
     fill(data) {
       nameInput.value = data.name;
       notesInput.value = data.notes ?? '';
@@ -232,7 +268,12 @@ export function initRsvpForm({ onSubmit }) {
           name: guest.name ?? '',
           drink: guest.drink ?? '',
         }));
-        count = guests.length;
+        count = Math.min(guests.length, maxGuests);
+        guests.length = count;
+        renderGuests();
+      } else {
+        count = Math.min(2, maxGuests);
+        guests = [];
         renderGuests();
       }
     },
@@ -240,6 +281,7 @@ export function initRsvpForm({ onSubmit }) {
       errorElement.textContent = message;
     },
     cleanup() {
+      guestListeners.forEach((removeListener) => removeListener());
       listeners.forEach((removeListener) => removeListener());
     },
   };
