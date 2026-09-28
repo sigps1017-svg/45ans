@@ -45,10 +45,11 @@ repli si une image est absente.
 
 ## Persistance et limites actuelles
 
-Pour la première étape, les réponses RSVP restent enregistrées localement dans
-le navigateur (localStorage), comme dans le prototype. Ne pas connecter ni
-appeler Supabase pendant ce portage ; son intégration sera faite à l'étape
-suivante.
+Les réponses RSVP restent enregistrées localement dans le navigateur
+(`localStorage`), comme dans le prototype. Le parcours comprend les réponses
+oui/non, le code QR PNG et son animation en particules, Google Agenda et le
+téléchargement `.ics` avec fuseau horaire pour les calendriers mobiles. Ne pas
+connecter ni appeler Supabase avant l'étape suivante.
 
 Le prototype contient des textes et coordonnées d'événement à personnaliser,
 ainsi que des images de souvenirs de remplacement. Conserver leur caractère

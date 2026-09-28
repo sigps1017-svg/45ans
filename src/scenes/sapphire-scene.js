@@ -41,6 +41,7 @@ export function createSapphireScene(canvas) {
     helixOpacity: 0,
     framesZ: 0,
     framesOpacity: 0,
+    qr: 0,
   };
 
   scene.add(new THREE.AmbientLight(0x6f86c9, 0.55));
@@ -118,6 +119,7 @@ export function createSapphireScene(canvas) {
   const particleCount = isSmall ? 2600 : 4200;
   const targetPositions = new Float32Array(particleCount * 3);
   const startPositions = new Float32Array(particleCount * 3);
+  const qrPositions = new Float32Array(particleCount * 3);
   const randomValues = new Float32Array(particleCount);
   const triangleGeometry = gemGeometry.toNonIndexed();
   const trianglePositions = triangleGeometry.attributes.position;
@@ -145,6 +147,7 @@ export function createSapphireScene(canvas) {
       .multiplyScalar(1.03);
     targetPositions.set([point.x, point.y, point.z], index * 3);
     startPositions.set(randomSpherePoint(6, 8), index * 3);
+    qrPositions.set([point.x, point.y, point.z], index * 3);
     randomValues[index] = Math.random();
   }
   triangleGeometry.dispose();
@@ -158,6 +161,7 @@ export function createSapphireScene(canvas) {
     'aStart',
     new THREE.BufferAttribute(startPositions, 3),
   );
+  particleGeometry.setAttribute('aQR', new THREE.BufferAttribute(qrPositions, 3));
   particleGeometry.setAttribute(
     'aRandom',
     new THREE.BufferAttribute(randomValues, 1),
@@ -165,6 +169,7 @@ export function createSapphireScene(canvas) {
 
   const particleUniforms = {
     uProgress: { value: 0 },
+    uQR: { value: 0 },
     uTime: { value: 0 },
     uSize: { value: 22 },
     uPixelRatio: { value: renderer.getPixelRatio() },
@@ -178,33 +183,37 @@ export function createSapphireScene(canvas) {
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     vertexShader: `
-      uniform float uProgress, uTime, uSize, uPixelRatio;
-      attribute vec3 aStart;
+      uniform float uProgress, uQR, uTime, uSize, uPixelRatio;
+      attribute vec3 aStart, aQR;
       attribute float aRandom;
-      varying float vAlpha;
+      varying float vAlpha, vQR;
       void main() {
         float progress = smoothstep(0.0, 1.0, clamp(uProgress * 1.3 - aRandom * 0.3, 0.0, 1.0));
         vec3 pos = mix(aStart, position, progress);
+        float qrProgress = smoothstep(0.0, 1.0, clamp(uQR * 1.35 - aRandom * 0.35, 0.0, 1.0));
+        vec3 burst = normalize(position + vec3(0.0001)) * sin(qrProgress * 3.14159) * (1.0 + aRandom * 2.2);
+        pos = mix(pos, aQR, qrProgress) + burst;
         pos += vec3(
           sin(uTime * 1.3 + aRandom * 40.0),
           cos(uTime * 1.1 + aRandom * 30.0),
           sin(uTime * 0.9 + aRandom * 20.0)
-        ) * 0.018;
+        ) * 0.018 * (1.0 - qrProgress);
         vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
         gl_Position = projectionMatrix * mvPosition;
-        gl_PointSize = uSize * uPixelRatio * (0.55 + aRandom * 0.9) / -mvPosition.z;
+        gl_PointSize = uSize * uPixelRatio * (0.55 + aRandom * 0.9) * (1.0 + qrProgress * 0.5) / -mvPosition.z;
         vAlpha = 0.45 + 0.55 * sin(uTime * 2.6 + aRandom * 60.0);
+        vQR = qrProgress;
       }
     `,
     fragmentShader: `
       uniform float uOpacity;
       uniform vec3 uColorA, uColorB;
-      varying float vAlpha;
+      varying float vAlpha, vQR;
       void main() {
         float distanceFromCenter = length(gl_PointCoord - 0.5);
         if (distanceFromCenter > 0.5) discard;
-        float alpha = smoothstep(0.5, 0.0, distanceFromCenter);
-        gl_FragColor = vec4(mix(uColorA, uColorB, vAlpha), alpha * vAlpha * uOpacity);
+        float alpha = 1.0 - smoothstep(0.0, 0.5, distanceFromCenter);
+        gl_FragColor = vec4(mix(uColorA, uColorB, vQR), alpha * mix(vAlpha, 1.0, vQR) * uOpacity);
       }
     `,
   });
@@ -292,14 +301,20 @@ export function createSapphireScene(canvas) {
     particleUniforms.uTime.value = time;
     particleUniforms.uProgress.value = state.introProgress;
     rotation += delta * (0.35 + state.spin);
+    const qrProgress = state.qr;
 
     gem.rotation.y = rotation;
     gem.rotation.x = Math.sin(time * 0.5) * 0.12;
-    particles.rotation.y = rotation;
-    gemGroup.position.set(0, state.gemY + Math.sin(time * 1.1) * 0.05, 0);
-    gemGroup.scale.setScalar(state.gemScale);
-    gemMaterial.opacity = state.introProgress;
-    edgeMaterial.opacity = state.introProgress * 0.5;
+    particles.rotation.y = rotation * (1 - qrProgress);
+    gemGroup.position.set(
+      0,
+      THREE.MathUtils.lerp(state.gemY + Math.sin(time * 1.1) * 0.05, 0.35, qrProgress),
+      0,
+    );
+    gemGroup.scale.setScalar(THREE.MathUtils.lerp(state.gemScale, 1, qrProgress));
+    gemMaterial.opacity = state.introProgress * (1 - qrProgress);
+    edgeMaterial.opacity = state.introProgress * (1 - qrProgress) * 0.5;
+    particleUniforms.uSize.value = THREE.MathUtils.lerp(22, 30, qrProgress);
 
     helix.forEach(({ curve, geometry, material, mesh, head, headMaterial }) => {
       const indexCount = geometry.index?.count ?? 0;
@@ -307,10 +322,11 @@ export function createSapphireScene(canvas) {
         0,
         Math.floor((indexCount * state.helixProgress) / 3) * 3,
       );
-      material.opacity = state.helixOpacity * 0.9;
+      material.opacity = state.helixOpacity * (1 - qrProgress) * 0.9;
       head.position.copy(curve.getPointAt(Math.max(0.001, state.helixProgress)));
       headMaterial.opacity =
         state.helixOpacity *
+        (1 - qrProgress) *
         (state.helixProgress > 0.005 && state.helixProgress < 0.995 ? 1 : 0);
       mesh.visible = material.opacity > 0.001;
     });
@@ -319,7 +335,7 @@ export function createSapphireScene(canvas) {
     memoryFrames.forEach(({ mesh, material }) => {
       const worldZ = mesh.position.z + state.framesZ;
       const proximity = THREE.MathUtils.clamp((baseZ - 0.6 - worldZ) / 2.2, 0, 1);
-      material.opacity = state.framesOpacity * proximity;
+      material.opacity = state.framesOpacity * (1 - qrProgress) * proximity;
       mesh.visible = material.opacity > 0.001;
     });
 
@@ -359,6 +375,37 @@ export function createSapphireScene(canvas) {
     renderer,
     framesGroup,
     memoryFrames,
+    canvas,
+    uniforms: particleUniforms,
+    setQrPattern({ size, darkModules }) {
+      if (!Number.isInteger(size) || size < 1 || darkModules.length === 0) {
+        throw new Error('La grille du code QR est invalide.');
+      }
+
+      const shuffledModules = darkModules.map(([row, column]) => [row, column]);
+      for (let index = shuffledModules.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffledModules[index], shuffledModules[swapIndex]] = [
+          shuffledModules[swapIndex],
+          shuffledModules[index],
+        ];
+      }
+
+      const qrSize = window.innerWidth / window.innerHeight < 0.75 ? 2.3 : 2.6;
+      const attribute = particleGeometry.attributes.aQR;
+      for (let index = 0; index < particleCount; index += 1) {
+        const [row, column] = shuffledModules[index % shuffledModules.length];
+        attribute.setXYZ(
+          index,
+          ((column + 0.5 + (Math.random() - 0.5) * 0.8) / size) * qrSize -
+            qrSize / 2,
+          qrSize / 2 -
+            ((row + 0.5 + (Math.random() - 0.5) * 0.8) / size) * qrSize,
+          (Math.random() - 0.5) * 0.05,
+        );
+      }
+      attribute.needsUpdate = true;
+    },
     addResizeHandler(handler) {
       resizeHandlers.add(handler);
       handler();

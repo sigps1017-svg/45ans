@@ -3,14 +3,19 @@ export const event = Object.freeze({
   anniversaryYears: 45,
   date: '2026-11-14',
   dateLabel: 'Samedi 14 novembre 2026',
+  startTime: '17:00',
   cocktailTime: '17 h',
   dinnerTime: '18 h 30',
+  endTime: '23:00',
+  timeZone: 'America/Moncton',
   venue: 'Nom de la salle',
   address: 'Adresse, Dieppe (N.-B.)',
   location: 'Nom de la salle, Dieppe (N.-B.)',
   hosts: ['Prénom', 'Prénom'],
   rsvpDeadline: '15 octobre 2026',
   dressCode: 'Chic, avec une touche de bleu saphir',
+  calendarDetails:
+    'Soirée en l’honneur de leurs 45 ans de mariage. Apportez votre code QR.',
 });
 
 export const drinks = Object.freeze([
