@@ -29,7 +29,7 @@ modulaire suivante :
   (année, légende et chemin de photo).
 - `src/scenes/` : intro, histoire et souvenirs.
 - `src/rsvp/` : formulaire, confirmation/code QR et ajout au calendrier.
-- `src/lib/` : intégrations et utilitaires partagés, dont le futur client
+- `src/lib/` : intégrations et utilitaires partagés, dont les clients et accès
   Supabase.
 
 Importer les bibliothèques depuis npm. Avec la version récente de Three.js,
@@ -53,8 +53,11 @@ Les secrets client sont fournis par `.env.local` avec
 `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`; ne jamais les afficher ni les
 committer. Le schéma active RLS, ne donne aucun accès direct à `anon`, et réserve
 la lecture des listes ainsi que le marquage des arrivées aux utilisateurs Auth
-enregistrés dans `public.staff`. La page de scanner reste à créer lors d’une
-étape ultérieure.
+enregistrés dans `public.staff`. La page d’accueil de l’équipe est `accueil.html`;
+elle permet la connexion Supabase Auth, le scan/recherche des invitations, le
+pointage des arrivées et leur annulation. Le serveur de développement utilise
+HTTPS local via `@vitejs/plugin-basic-ssl` pour permettre les tests caméra sur
+téléphone.
 
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec fuseau horaire pour

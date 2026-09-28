@@ -16,6 +16,10 @@ function requireClient() {
   return supabase;
 }
 
+export function getSupabaseClient() {
+  return requireClient();
+}
+
 export async function getInvite(token) {
   const { data, error } = await requireClient().rpc('get_invite', {
     p_token: token,
