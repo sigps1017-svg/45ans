@@ -1,0 +1,21 @@
+{
+  "name": "45ans",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "gsap": "^3.15.0",
+    "html5-qrcode": "^2.3.8",
+    "qrcode": "^1.5.4",
+    "three": "^0.186.1"
+  }
+}

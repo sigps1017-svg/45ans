@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>45 ans d'amour – Noces de saphir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070d24; --ink-2:#0d1838; --sapphire:#2451e0; --ice:#bcd3ff;
+  --gold:#d8b87a; --text:#eef1fb; --muted:#93a0c4;
+  --glass:rgba(16,30,72,.46); --line:rgba(188,211,255,.18);
+  --serif:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --sans:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Le site est volontairement nocturne : mêmes jetons en clair et en sombre */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --ink:#070d24; --text:#eef1fb; --muted:#93a0c4; }
+}
+:root[data-theme="dark"]{ --ink:#070d24; --text:#eef1fb; --muted:#93a0c4; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+*,*::before,*::after{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--ink); color:var(--text);
+  font-family:var(--sans); font-weight:300; line-height:1.55;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+body.locked{ overflow:hidden; }
+#webgl{ position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; display:block; }
+main{ position:relative; z-index:1; }
+button,input{ font:inherit; color:inherit; }
+:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:6px; }
+
+.skip{
+  position:fixed; z-index:5; right:16px; top:calc(14px + env(safe-area-inset-top,0px));
+  background:rgba(7,13,36,.55); border:1px solid var(--line); border-radius:999px;
+  padding:8px 16px; font-size:14px; letter-spacing:.02em; cursor:pointer;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+}
+
+/* Héros */
+#hero{
+  min-height:100svh; display:flex; flex-direction:column; justify-content:flex-end;
+  align-items:center; text-align:center; padding:0 24px 11svh;
+}
+.dates{ font-family:var(--serif); font-style:italic; font-size:19px; color:var(--ice); margin:0 0 6px; opacity:0; }
+.title{
+  font-family:var(--serif); font-weight:300; margin:0; line-height:.9;
+  font-size:clamp(76px, 22vw, 190px); letter-spacing:-.02em; perspective:600px;
+}
+.title-sub{
+  font-family:var(--serif); font-style:italic; font-weight:300; margin:4px 0 18px;
+  font-size:clamp(34px, 8vw, 64px); color:var(--gold); perspective:600px;
+}
+.names{ font-size:15px; letter-spacing:.14em; color:var(--muted); margin:0; opacity:0; }
+.word{ display:inline-block; white-space:nowrap; }
+.char{ display:inline-block; will-change:transform; }
+.hint{ margin-top:34px; font-size:13px; color:var(--muted); opacity:0; }
+.hint span{ display:block; width:1px; height:34px; margin:10px auto 0; background:linear-gradient(var(--gold),transparent); animation:drip 2.2s ease-in-out infinite; }
+@keyframes drip{ 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+/* Scènes collantes */
+.stage{ position:relative; }
+#histoire{ height:260svh; }
+#souvenirs{ height:360svh; }
+.sticky{ position:sticky; top:0; height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding:0 24px 12svh; text-align:center; }
+.year{
+  font-family:var(--serif); font-weight:300; font-size:clamp(88px, 26vw, 220px);
+  line-height:1; letter-spacing:-.03em; font-variant-numeric:lining-nums tabular-nums;
+  background:linear-gradient(180deg,#fff 20%, var(--ice) 60%, var(--sapphire));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.lines{ position:relative; height:3.4em; width:min(560px,100%); font-family:var(--serif); font-size:clamp(22px,5.4vw,32px); font-style:italic; }
+.lines p{ position:absolute; inset:0; margin:0; opacity:0; }
+.souv-title{ justify-content:flex-start; padding-top:14svh; }
+.souv-title h2{ font-family:var(--serif); font-weight:300; font-size:clamp(34px,8vw,64px); margin:0; line-height:1.05; }
+.souv-title p{ color:var(--muted); margin:10px 0 0; font-size:15px; }
+
+/* Invitation & réponse */
+.panel{
+  width:min(560px,100%); margin:0 auto; background:var(--glass);
+  border:1px solid var(--line); border-radius:28px; padding:36px 28px;
+  backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2);
+}
+#invitation, #rsvp{ padding:14svh 18px; }
+#invitation{ min-height:100svh; display:flex; align-items:center; }
+.panel h2{ font-family:var(--serif); font-weight:300; font-size:clamp(34px,7.5vw,50px); line-height:1.05; margin:0 0 8px; text-align:center; }
+.lede{ text-align:center; color:var(--muted); margin:0 0 28px; font-size:16px; }
+.details{ display:grid; gap:0; margin:0; }
+.details div{ display:grid; grid-template-columns:92px 1fr; gap:14px; padding:16px 0; border-top:1px solid var(--line); }
+.details dt{ font-family:var(--serif); font-style:italic; color:var(--gold); font-size:19px; }
+.details dd{ margin:0; font-size:16px; }
+.details dd small{ display:block; color:var(--muted); font-size:14px; }
+
+.field{ display:block; margin:0 0 22px; }
+.field > span{ display:block; font-size:14px; color:var(--muted); margin-bottom:8px; }
+.field input{
+  width:100%; background:rgba(7,13,36,.5); border:1px solid var(--line); border-radius:14px;
+  padding:14px 16px; font-size:16px; outline:none; transition:border-color .2s;
+}
+.field input:focus{ border-color:var(--ice); }
+.presence{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+.pres{
+  background:transparent; border:1px solid var(--line); border-radius:16px; padding:16px 12px;
+  cursor:pointer; text-align:left; font-size:15px; line-height:1.3; transition:all .25s;
+}
+.pres strong{ display:block; font-family:var(--serif); font-weight:500; font-size:21px; margin-bottom:2px; }
+.pres[aria-pressed="true"]{ border-color:var(--gold); background:rgba(216,184,122,.1); }
+.stepper{ display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px; }
+.stepper button{ width:46px; height:46px; background:none; border:0; font-size:22px; cursor:pointer; }
+.stepper output{ min-width:36px; text-align:center; font-family:var(--serif); font-size:26px; }
+.guest{ border-top:1px solid var(--line); padding:18px 0 6px; }
+.guest input{ width:100%; background:none; border:0; border-bottom:1px solid var(--line); padding:6px 0 8px; margin-bottom:12px; font-family:var(--serif); font-size:21px; outline:none; }
+.guest input:focus{ border-bottom-color:var(--ice); }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  border:1px solid var(--line); background:rgba(7,13,36,.35); border-radius:999px;
+  padding:8px 14px; font-size:14px; cursor:pointer; transition:all .2s;
+}
+.chip[aria-pressed="true"]{ background:var(--sapphire); border-color:var(--ice); box-shadow:0 0 18px rgba(36,81,224,.6); }
+.cta{
+  width:100%; margin-top:18px; border:0; border-radius:999px; padding:17px 20px; cursor:pointer;
+  background:linear-gradient(135deg,#f0d9a6,var(--gold) 55%,#b8924e); color:#1a1430;
+  font-weight:500; font-size:17px; letter-spacing:.02em;
+}
+.err{ color:#ffb4b4; font-size:14px; min-height:1.3em; margin:10px 0 0; text-align:center; }
+.again{ text-align:center; margin:0 0 22px; font-size:15px; color:var(--muted); }
+.again button{ background:none; border:0; color:var(--gold); text-decoration:underline; cursor:pointer; padding:0; }
+footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-style:italic; font-size:18px; padding:4svh 20px 10svh; }
+
+/* Confirmation */
+#confirm{
+  position:fixed; inset:0; z-index:10; overflow-y:auto; display:none;
+  background:radial-gradient(ellipse at 50% 30%, rgba(7,13,36,.1), rgba(7,13,36,.75) 70%);
+  padding:calc(24px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px));
+}
+#confirm.open{ display:block; }
+.confirm-card{ width:min(440px,100%); margin:6svh auto; text-align:center; opacity:0; }
+.confirm-card h2{ font-family:var(--serif); font-weight:300; font-size:clamp(34px,8vw,46px); margin:0; line-height:1.05; }
+.confirm-card .lede{ margin:8px 0 22px; }
+.qrbox{ background:#fff; border-radius:22px; padding:18px; width:max-content; margin:0 auto 10px; box-shadow:0 0 60px rgba(36,81,224,.55); }
+.qrbox img,.qrbox canvas{ display:block; width:220px !important; height:220px !important; }
+.token{ font-family:var(--serif); font-style:italic; color:var(--ice); font-size:18px; margin:0 0 18px; }
+.summary{ text-align:left; list-style:none; padding:0; margin:0 0 18px; }
+.summary li{ display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); font-size:15px; }
+.summary li span:first-child{ color:var(--muted); }
+.note{ font-size:14px; color:var(--muted); margin:0 0 18px; }
+.btn-ghost{
+  display:block; width:100%; text-align:center; text-decoration:none; margin-top:10px;
+  border:1px solid var(--line); border-radius:999px; padding:14px; background:none; cursor:pointer; font-size:15px;
+}
+
+@media (prefers-reduced-motion: reduce){ .hint span{ animation:none; } }
+</style>
+</head>
+<body>
+<canvas id="webgl" aria-hidden="true"></canvas>
+<button class="skip" id="skip" type="button">Passer à l'invitation</button>
+
+<main>
+  <section id="hero">
+    <p class="dates">1981 – 2026</p>
+    <h1 class="title split" id="t1">45 ans</h1>
+    <p class="title-sub split" id="t2">d'amour</p>
+    <p class="names">Prénom et Prénom</p>
+    <div class="hint">Faites défiler<span></span></div>
+  </section>
+
+  <section id="histoire" class="stage">
+    <div class="sticky">
+      <div class="year" id="year">1981</div>
+      <div class="lines" id="lines">
+        <p>Deux chemins se sont croisés.</p>
+        <p>Ils ont bâti, grandi, aimé.</p>
+        <p>Quarante-cinq ans plus tard, l'histoire continue.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="souvenirs" class="stage">
+    <div class="sticky souv-title">
+      <h2>Quarante-cinq ans<br>de souvenirs</h2>
+      <p>Les photos du couple défileront ici.</p>
+    </div>
+  </section>
+
+  <section id="invitation">
+    <div class="panel">
+      <h2>Célébrons leurs noces de saphir</h2>
+      <p class="lede">Vous êtes invités à une soirée en leur honneur.</p>
+      <dl class="details">
+        <div><dt>Quand</dt><dd>Samedi 14 novembre 2026<small>Cocktail à 17 h, souper à 18 h 30</small></dd></div>
+        <div><dt>Où</dt><dd>Nom de la salle<small>Adresse, Dieppe (N.-B.)</small></dd></div>
+        <div><dt>Tenue</dt><dd>Chic, avec une touche de bleu saphir</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="rsvp">
+    <div class="panel">
+      <h2>Votre réponse</h2>
+      <p class="lede">Merci de répondre avant le 15 octobre.</p>
+      <p class="again" id="again" hidden>Vous avez déjà répondu. <button type="button" id="reopen">Voir mon code QR</button></p>
+
+      <div id="rsvpForm">
+        <label class="field"><span>Nom du foyer</span>
+          <input id="fName" autocomplete="name" placeholder="Ex. Famille LeBlanc">
+        </label>
+        <div class="presence" role="group" aria-label="Présence">
+          <button type="button" class="pres" data-v="oui" aria-pressed="true"><strong>Avec joie</strong>Je serai là</button>
+          <button type="button" class="pres" data-v="non" aria-pressed="false"><strong>Hélas</strong>Je ne pourrai pas venir</button>
+        </div>
+        <div id="yesBlock">
+          <div class="field"><span>Nombre de personnes</span>
+            <div class="stepper">
+              <button type="button" id="minus" aria-label="Retirer une personne">−</button>
+              <output id="count">2</output>
+              <button type="button" id="plus" aria-label="Ajouter une personne">+</button>
+            </div>
+          </div>
+          <div id="guests"></div>
+          <label class="field" style="margin-top:18px"><span>Allergies alimentaires (facultatif)</span>
+            <input id="fNotes" placeholder="Ex. noix, fruits de mer">
+          </label>
+        </div>
+        <button class="cta" type="button" id="submit">Confirmer ma présence</button>
+        <p class="err" id="err" role="alert"></p>
+      </div>
+    </div>
+  </section>
+  <footer>Avec tout notre amour</footer>
+</main>
+
+<div id="confirm" role="dialog" aria-modal="true" aria-labelledby="cTitle">
+  <div class="confirm-card" id="card"></div>
+</div>
+<div id="qrHidden" style="position:absolute;left:-9999px;top:0" aria-hidden="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+gsap.registerPlugin(ScrollTrigger);
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isSmall = Math.min(innerWidth, innerHeight) < 700;
+
+/* ---------- Événement (à personnaliser) ---------- */
+const EVENT = {
+  title: "Noces de saphir – 45 ans de mariage",
+  location: "Nom de la salle, Dieppe (N.-B.)",
+  gcalDates: "20261114T210000Z/20261115T030000Z",
+  details: "Soirée en l'honneur de leurs 45 ans de mariage. Apportez votre code QR."
+};
+const DRINKS = ["Vin rouge","Vin blanc","Mousseux","Bière","Cocktail sans alcool","Jus ou eau"];
+
+/* ---------- Three.js ---------- */
+const canvas = document.getElementById('webgl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x070d24, 1);
+renderer.outputEncoding = THREE.sRGBEncoding;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x070d24, 9, 34);
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+let baseZ = 7;
+function fitCamera(){
+  const a = innerWidth/innerHeight;
+  baseZ = a < 0.75 ? 8.6 : 7;
+  camera.aspect = a; camera.updateProjectionMatrix();
+}
+fitCamera();
+camera.position.set(0,0,baseZ);
+
+// Lumières
+scene.add(new THREE.AmbientLight(0x6f86c9, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(3,5,4); scene.add(key);
+const pl = [
+  new THREE.PointLight(0x7fb2ff, 2.2, 12),
+  new THREE.PointLight(0xffffff, 1.6, 12),
+  new THREE.PointLight(0xb07cff, 1.8, 12)
+];
+pl.forEach(l => scene.add(l));
+
+// Étoiles
+{
+  const n = isSmall ? 900 : 1600, pos = new Float32Array(n*3);
+  for(let i=0;i<n;i++){
+    const r = 14 + Math.random()*18, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    pos[i*3]=r*Math.sin(ph)*Math.cos(th); pos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pos[i*3+2]=r*Math.cos(ph)-6;
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  var stars = new THREE.Points(g, new THREE.PointsMaterial({ color:0xbcd3ff, size:0.06, transparent:true, opacity:.8, fog:false }));
+  scene.add(stars);
+}
+
+// Saphir taillé
+const gemGroup = new THREE.Group(); scene.add(gemGroup);
+const profile = [
+  new THREE.Vector2(0.0001,-1.15), new THREE.Vector2(1.0,0.02), new THREE.Vector2(1.0,0.12),
+  new THREE.Vector2(0.58,0.55), new THREE.Vector2(0.0001,0.55)
+];
+const gemGeo = new THREE.LatheGeometry(profile, 8);
+const gemMat = new THREE.MeshPhysicalMaterial({
+  color:0x1d47d8, emissive:0x0a1f6a, emissiveIntensity:.7, metalness:.15, roughness:.08,
+  clearcoat:1, clearcoatRoughness:.05, flatShading:true, transparent:true, opacity:0, side:THREE.DoubleSide
+});
+const gem = new THREE.Mesh(gemGeo, gemMat);
+const edgeMat = new THREE.LineBasicMaterial({ color:0xbcd3ff, transparent:true, opacity:0 });
+gem.add(new THREE.LineSegments(new THREE.EdgesGeometry(gemGeo, 1), edgeMat));
+gemGroup.add(gem);
+
+// Particules : dispersion -> surface du saphir -> code QR
+const N = isSmall ? 2600 : 4200;
+const target = new Float32Array(N*3), start = new Float32Array(N*3), qrPos = new Float32Array(N*3), rnd = new Float32Array(N);
+{
+  const tri = gemGeo.toNonIndexed().attributes.position, triCount = tri.count/3;
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for(let i=0;i<N;i++){
+    const t = Math.floor(Math.random()*triCount);
+    a.fromBufferAttribute(tri,t*3); b.fromBufferAttribute(tri,t*3+1); c.fromBufferAttribute(tri,t*3+2);
+    let u = Math.random(), v = Math.random(); if(u+v>1){ u=1-u; v=1-v; }
+    const p = a.clone().add(b.clone().sub(a).multiplyScalar(u)).add(c.clone().sub(a).multiplyScalar(v)).multiplyScalar(1.03);
+    target.set([p.x,p.y,p.z], i*3);
+    const r = 6 + Math.random()*8, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    start.set([r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th), r*Math.cos(ph)], i*3);
+    qrPos.set([p.x,p.y,p.z], i*3);
+    rnd[i] = Math.random();
+  }
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(target,3));
+pGeo.setAttribute('aStart', new THREE.BufferAttribute(start,3));
+pGeo.setAttribute('aQR', new THREE.BufferAttribute(qrPos,3));
+pGeo.setAttribute('aRand', new THREE.BufferAttribute(rnd,1));
+const pUni = {
+  uProgress:{value:0}, uQR:{value:0}, uTime:{value:0}, uSize:{value:22},
+  uPR:{value:renderer.getPixelRatio()}, uOpacity:{value:1},
+  uColorA:{value:new THREE.Color(0x9ec2ff)}, uColorB:{value:new THREE.Color(0xf3dca8)}
+};
+const pMat = new THREE.ShaderMaterial({
+  uniforms:pUni, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  vertexShader:`
+    uniform float uProgress, uQR, uTime, uSize, uPR;
+    attribute vec3 aStart; attribute vec3 aQR; attribute float aRand;
+    varying float vAlpha; varying float vQ;
+    void main(){
+      float p = smoothstep(0.0,1.0, clamp(uProgress*1.3 - aRand*0.3, 0.0, 1.0));
+      vec3 pos = mix(aStart, position, p);
+      float q = smoothstep(0.0,1.0, clamp(uQR*1.35 - aRand*0.35, 0.0, 1.0));
+      vec3 burst = normalize(position + vec3(0.0001)) * sin(q*3.14159) * (1.0 + aRand*2.2);
+      pos = mix(pos, aQR, q) + burst;
+      pos += vec3(sin(uTime*1.3+aRand*40.0), cos(uTime*1.1+aRand*30.0), sin(uTime*0.9+aRand*20.0)) * 0.018 * (1.0-q);
+      vec4 mv = modelViewMatrix * vec4(pos,1.0);
+      gl_Position = projectionMatrix * mv;
+      gl_PointSize = uSize * uPR * (0.55 + aRand*0.9) * (1.0 + q*0.5) / -mv.z;
+      vAlpha = 0.45 + 0.55*sin(uTime*2.6 + aRand*60.0);
+      vQ = q;
+    }`,
+  fragmentShader:`
+    uniform float uOpacity; uniform vec3 uColorA, uColorB;
+    varying float vAlpha; varying float vQ;
+    void main(){
+      float d = length(gl_PointCoord - 0.5);
+      if(d > 0.5) discard;
+      float a = smoothstep(0.5, 0.0, d);
+      gl_FragColor = vec4(mix(uColorA, uColorB, vQ), a * mix(vAlpha, 1.0, vQ) * uOpacity);
+    }`
+});
+const points = new THREE.Points(pGeo, pMat); points.frustumCulled = false;
+gemGroup.add(points);
+
+// Deux chemins de lumière qui s'entrelacent
+const helix = [];
+[[0xd8b87a,0],[0x7fb2ff,Math.PI]].forEach(([col,phase])=>{
+  const pts = [];
+  for(let i=0;i<=220;i++){
+    const t = i/220, ang = t*Math.PI*5 + phase, r = 3.2*(1-t)+0.12;
+    pts.push(new THREE.Vector3(Math.cos(ang)*r, -3.6 + t*5.1, Math.sin(ang)*r*0.6 - 0.5));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const geo = new THREE.TubeGeometry(curve, 440, 0.022, 6, false);
+  const mat = new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false });
+  const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,16), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending }));
+  scene.add(head);
+  helix.push({ curve, geo, mat, head });
+});
+
+// Cadres photo (textures dessinées en attendant les vraies photos)
+const framesGroup = new THREE.Group(); scene.add(framesGroup);
+const FRAMES = [
+  ["1981","Le jour du oui"],["1986","Le premier chez-soi"],["1993","La famille grandit"],
+  ["2004","Les voyages"],["2015","Les fêtes de famille"],["2026","Quarante-cinq ans"]
+];
+const frameMats = [];
+function frameTexture(year, caption){
+  const c = document.createElement('canvas'); c.width=512; c.height=660;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,512,660); g.addColorStop(0,'#f0d9a6'); g.addColorStop(.5,'#b8924e'); g.addColorStop(1,'#f0d9a6');
+  x.fillStyle=g; x.fillRect(0,0,512,660);
+  x.fillStyle='#f6f1e6'; x.fillRect(14,14,484,632);
+  const ph = x.createLinearGradient(0,40,0,500); ph.addColorStop(0,'#27408f'); ph.addColorStop(1,'#0c1636');
+  x.fillStyle=ph; x.fillRect(40,40,432,440);
+  const rg = x.createRadialGradient(256,230,10,256,230,220); rg.addColorStop(0,'rgba(188,211,255,.35)'); rg.addColorStop(1,'rgba(188,211,255,0)');
+  x.fillStyle=rg; x.fillRect(40,40,432,440);
+  x.strokeStyle='rgba(188,211,255,.6)'; x.lineWidth=2;
+  x.beginPath(); x.moveTo(256,210); x.lineTo(286,240); x.lineTo(256,280); x.lineTo(226,240); x.closePath(); x.stroke();
+  x.fillStyle='rgba(188,211,255,.75)'; x.textAlign='center';
+  x.font='italic 26px "Cormorant Garamond", Georgia, serif'; x.fillText('Photo à venir',256,330);
+  x.fillStyle='#16224d'; x.font='300 78px "Cormorant Garamond", Georgia, serif'; x.fillText(year,256,572);
+  x.fillStyle='#8a6a32'; x.font='italic 30px "Cormorant Garamond", Georgia, serif'; x.fillText(caption,256,618);
+  const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
+  return tex;
+}
+function buildFrames(){
+  const narrow = innerWidth/innerHeight < 0.8;
+  FRAMES.forEach(([y,cap],i)=>{
+    const mat = new THREE.MeshBasicMaterial({ map:frameTexture(y,cap), transparent:true, opacity:0, side:THREE.DoubleSide });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.6,2.06), mat);
+    const side = i%2 ? 1 : -1;
+    m.position.set(side*(narrow?0.62:1.55), (i%3-1)*0.25, -6 - i*5);
+    m.rotation.y = -side*0.28; m.scale.setScalar(narrow?0.82:1);
+    framesGroup.add(m); frameMats.push({ mat, mesh:m });
+  });
+}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(buildFrames);
+
+/* ---------- État piloté par le défilement ---------- */
+const st = { gemY:.75, gemScale:1, gemOp:1, spin:0, helixP:0, helixOp:0, framesZ:0, framesOp:0, qr:0 };
+const intro = { gem:0 };
+
+function scrub(trigger, startPos, endPos, from, to, extra){
+  gsap.fromTo(st, from, Object.assign({}, to, { ease:'none', immediateRender:false,
+    scrollTrigger:Object.assign({ trigger, start:startPos, end:endPos, scrub:0.9 }, extra||{}) }));
+}
+const yearEl = document.getElementById('year');
+const lineEls = [...document.querySelectorAll('#lines p')];
+scrub('#histoire','top bottom','top top', {gemY:.75,gemScale:1,helixOp:0}, {gemY:1.55,gemScale:.55,helixOp:1});
+scrub('#histoire','top top','bottom bottom', {helixP:0,spin:0}, {helixP:1,spin:1.4}, {
+  onUpdate(self){
+    const p = self.progress;
+    yearEl.textContent = Math.round(1981 + 45*p);
+    const idx = Math.min(2, Math.floor(p*3));
+    lineEls.forEach((el,i)=> gsap.to(el,{ opacity: i===idx?1:0, y: i===idx?0:(i<idx?-14:14), duration:.5, overwrite:true }));
+  }
+});
+scrub('#souvenirs','top bottom','top top', {gemY:1.55,gemScale:.55,helixOp:1,framesOp:0,spin:1.4}, {gemY:2.3,gemScale:.3,helixOp:0,framesOp:1,spin:.3});
+scrub('#souvenirs','top top','bottom bottom', {framesZ:0}, {framesZ:33});
+scrub('#invitation','top bottom','top top', {framesOp:1,gemY:2.3,gemScale:.3}, {framesOp:0,gemY:.35,gemScale:.9});
+scrub('#rsvp','top bottom','top top', {gemOp:1,gemY:.35}, {gemOp:.35,gemY:0});
+gsap.set(lineEls[0],{opacity:1});
+
+/* ---------- Boucle de rendu ---------- */
+const clock = new THREE.Clock();
+let rot = 0, mx = 0, my = 0, cx = 0, cy = 0;
+addEventListener('pointermove', e => { mx = (e.clientX/innerWidth - .5); my = (e.clientY/innerHeight - .5); });
+const lerp = (a,b,t) => a + (b-a)*t;
+function tick(){
+  const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+  pUni.uTime.value = t;
+  const q = st.qr, uq = pUni.uQR.value;
+  rot += dt*(0.35 + st.spin);
+  gem.rotation.y = rot; gem.rotation.x = Math.sin(t*.5)*.12;
+  points.rotation.y = rot*(1-uq);
+
+  gemGroup.position.set(0, lerp(st.gemY + Math.sin(t*1.1)*.05, .35, q), 0);
+  gemGroup.scale.setScalar(lerp(st.gemScale, 1, q));
+  const gOp = intro.gem * st.gemOp * (1-uq);
+  gemMat.opacity = gOp; edgeMat.opacity = gOp*.5;
+  pUni.uSize.value = lerp(22, 30, uq);
+
+  helix.forEach(h => {
+    const idx = h.geo.index.count;
+    h.geo.setDrawRange(0, Math.floor(idx*st.helixP/3)*3);
+    h.mat.opacity = st.helixOp*(1-q)*.9;
+    h.head.position.copy(h.curve.getPointAt(Math.max(.001, st.helixP)));
+    h.head.material.opacity = st.helixOp*(1-q)*(st.helixP>0.005 && st.helixP<0.995 ? 1 : 0);
+  });
+
+  framesGroup.position.z = st.framesZ;
+  frameMats.forEach(f => {
+    const wz = f.mesh.position.z + st.framesZ;
+    const near = THREE.MathUtils.clamp((baseZ - 0.6 - wz)/2.2, 0, 1);
+    f.mat.opacity = st.framesOp*(1-q)*near;
+    f.mesh.visible = f.mat.opacity > 0.001;
+  });
+
+  pl[0].position.set(Math.cos(t*.7)*3, 1.5, Math.sin(t*.7)*3);
+  pl[1].position.set(Math.cos(t*.5+2)*3, -1, Math.sin(t*.5+2)*3);
+  pl[2].position.set(Math.cos(t*.9+4)*3, .5, Math.sin(t*.9+4)*3);
+  stars.rotation.y = t*.01;
+
+  cx = lerp(cx, mx*.5, .04); cy = lerp(cy, -my*.35, .04);
+  camera.position.set(cx, cy, baseZ);
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+
+addEventListener('resize', () => {
+  fitCamera(); renderer.setSize(innerWidth, innerHeight);
+  pUni.uPR.value = renderer.getPixelRatio(); ScrollTrigger.refresh();
+});
+
+/* ---------- Introduction ---------- */
+function split(el){
+  const words = el.textContent.split(' ');
+  el.textContent = '';
+  words.forEach((w,i)=>{
+    const ws = document.createElement('span'); ws.className='word';
+    [...w].forEach(ch => { const s=document.createElement('span'); s.className='char'; s.textContent=ch; ws.appendChild(s); });
+    el.appendChild(ws);
+    if(i < words.length-1) el.appendChild(document.createTextNode(' '));
+  });
+  return el.querySelectorAll('.char');
+}
+const c1 = split(document.getElementById('t1')), c2 = split(document.getElementById('t2'));
+const tl = gsap.timeline();
+const dur = reduce ? .6 : 1;
+tl.to(pUni.uProgress, { value:1, duration: reduce ? .8 : 3.4, ease:'power2.inOut' }, 0)
+  .to(intro, { gem:1, duration:1.4*dur, ease:'power2.out' }, reduce ? .4 : 2.4)
+  .from(c1, { yPercent:115, rotateX:-80, opacity:0, stagger:.06, duration:1.2*dur, ease:'power4.out' }, reduce ? .3 : 1.9)
+  .from(c2, { yPercent:100, opacity:0, stagger:.035, duration:1*dur, ease:'power3.out' }, reduce ? .4 : 2.4)
+  .to('.dates', { opacity:1, duration:1 }, reduce ? .4 : 2.6)
+  .to('.names', { opacity:1, duration:1 }, reduce ? .5 : 2.9)
+  .to('.hint', { opacity:1, duration:1 }, reduce ? .6 : 3.3);
+
+document.getElementById('skip').addEventListener('click', () =>
+  document.getElementById('rsvp').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }));
+
+/* ---------- Formulaire ---------- */
+let presence = 'oui', count = 2;
+const guests = [];
+const guestsEl = document.getElementById('guests');
+function renderGuests(){
+  while(guests.length < count) guests.push({ name:'', drink:null });
+  guests.length = count;
+  guestsEl.innerHTML = '';
+  guests.forEach((g,i)=>{
+    const div = document.createElement('div'); div.className='guest';
+    const inp = document.createElement('input');
+    inp.placeholder = 'Prénom de la personne ' + (i+1); inp.value = g.name;
+    inp.setAttribute('aria-label', 'Prénom de la personne ' + (i+1));
+    inp.addEventListener('input', e => g.name = e.target.value);
+    const chips = document.createElement('div'); chips.className='chips'; chips.setAttribute('role','group');
+    chips.setAttribute('aria-label','Boisson de la personne ' + (i+1));
+    DRINKS.forEach(d => {
+      const b = document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=d;
+      b.setAttribute('aria-pressed', String(g.drink===d));
+      b.addEventListener('click', () => {
+        g.drink = d;
+        chips.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+        if(!reduce) gsap.fromTo(b, { scale:.9 }, { scale:1, duration:.4, ease:'back.out(3)' });
+      });
+      chips.appendChild(b);
+    });
+    div.append(inp, chips); guestsEl.appendChild(div);
+  });
+  document.getElementById('count').textContent = count;
+}
+renderGuests();
+document.getElementById('minus').onclick = () => { if(count>1){ count--; renderGuests(); } };
+document.getElementById('plus').onclick = () => { if(count<8){ count++; renderGuests(); } };
+document.querySelectorAll('.pres').forEach(b => b.addEventListener('click', () => {
+  presence = b.dataset.v;
+  document.querySelectorAll('.pres').forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+  document.getElementById('yesBlock').style.display = presence==='oui' ? '' : 'none';
+  document.getElementById('submit').textContent = presence==='oui' ? 'Confirmer ma présence' : 'Envoyer ma réponse';
+}));
+
+const err = document.getElementById('err');
+document.getElementById('submit').addEventListener('click', () => {
+  const name = document.getElementById('fName').value.trim();
+  if(!name){ err.textContent = 'Indiquez le nom de votre foyer pour continuer.'; document.getElementById('fName').focus(); return; }
+  if(presence==='oui'){
+    const missing = guests.findIndex(g => !g.drink);
+    if(missing>-1){ err.textContent = 'Choisissez une boisson pour la personne ' + (missing+1) + '.'; return; }
+  }
+  err.textContent = '';
+  const data = {
+    name, presence, notes: document.getElementById('fNotes').value.trim(),
+    guests: presence==='oui' ? guests.map((g,i)=>({ name:g.name.trim() || ('Personne '+(i+1)), drink:g.drink })) : [],
+    token: 'S45-' + Math.random().toString(36).slice(2,8).toUpperCase()
+  };
+  try{ localStorage.setItem('noces-rsvp', JSON.stringify(data)); }catch(e){}
+  openConfirm(data);
+});
+
+/* ---------- Confirmation + code QR en particules ---------- */
+const confirmEl = document.getElementById('confirm'), card = document.getElementById('card');
+function buildQRTargets(text){
+  const holder = document.getElementById('qrHidden'); holder.innerHTML = '';
+  const qr = new QRCode(holder, { text, width:220, height:220, correctLevel:QRCode.CorrectLevel.M });
+  const m = qr._oQRCode, n = m.getModuleCount(), dark = [];
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(m.isDark(r,c)) dark.push([r,c]);
+  for(let i=dark.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [dark[i],dark[j]]=[dark[j],dark[i]]; }
+  const S = innerWidth/innerHeight < 0.75 ? 2.3 : 2.6, attr = pGeo.attributes.aQR;
+  for(let i=0;i<N;i++){
+    const [r,c] = dark[i % dark.length];
+    attr.setXYZ(i, (c+.5+(Math.random()-.5)*.8)/n*S - S/2, S/2 - (r+.5+(Math.random()-.5)*.8)/n*S, (Math.random()-.5)*.05);
+  }
+  attr.needsUpdate = true;
+}
+function gcalLink(d){
+  const p = new URLSearchParams({ action:'TEMPLATE', text:EVENT.title, dates:EVENT.gcalDates,
+    details:EVENT.details + ' Code : ' + d.token, location:EVENT.location });
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+function openConfirm(d){
+  document.body.classList.add('locked');
+  confirmEl.classList.add('open');
+  gsap.set(card, { opacity:0, y:30 });
+  if(d.presence==='oui'){
+    card.innerHTML = `
+      <h2 id="cTitle">Merci, ${esc(d.name)}</h2>
+      <p class="lede">Votre présence est confirmée. Présentez ce code à l'entrée.</p>
+      <div class="qrbox" id="qrVisible"></div>
+      <p class="token">${d.token}</p>
+      <ul class="summary">
+        ${d.guests.map(g=>`<li><span>${esc(g.name)}</span><span>${esc(g.drink)}</span></li>`).join('')}
+        <li><span>Table</span><span>Attribuée par les hôtes</span></li>
+      </ul>
+      <p class="note">Faites une capture d'écran de ce code pour l'avoir sous la main le jour venu.</p>
+      <a class="btn-ghost" href="${gcalLink(d)}" target="_blank" rel="noopener">Ajouter à mon agenda Google</a>
+      <button class="btn-ghost" type="button" id="closeC">Revenir au site</button>`;
+    new QRCode(document.getElementById('qrVisible'), { text:d.token, width:220, height:220, colorDark:'#0d1838', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+    buildQRTargets(d.token);
+    const t = gsap.timeline();
+    t.to(st, { qr:1, duration:1.1, ease:'power2.inOut' }, 0)
+     .to(pUni.uQR, { value:1, duration: reduce ? .6 : 2.6, ease:'power2.inOut' }, .2)
+     .to(pUni.uOpacity, { value:.0, duration:.8 }, reduce ? 1 : 3.1)
+     .to(card, { opacity:1, y:0, duration:.9, ease:'power3.out' }, reduce ? .9 : 2.9);
+  } else {
+    card.innerHTML = `
+      <h2 id="cTitle">Merci, ${esc(d.name)}</h2>
+      <p class="lede">Votre réponse a bien été reçue. Vous nous manquerez, et le couple sera touché de votre attention.</p>
+      <button class="btn-ghost" type="button" id="closeC">Revenir au site</button>`;
+    gsap.timeline().to(st, { qr:1, duration:1 }, 0).to(card, { opacity:1, y:0, duration:.9 }, .4);
+  }
+  document.getElementById('closeC').addEventListener('click', closeConfirm);
+  document.getElementById('again').hidden = false;
+}
+function closeConfirm(){
+  gsap.timeline({ onComplete(){ confirmEl.classList.remove('open'); document.body.classList.remove('locked'); } })
+    .to(card, { opacity:0, y:20, duration:.4 }, 0)
+    .to(pUni.uOpacity, { value:1, duration:.6 }, 0)
+    .to(pUni.uQR, { value:0, duration:1.6, ease:'power2.inOut' }, .1)
+    .to(st, { qr:0, duration:1.2, ease:'power2.inOut' }, .3);
+}
+document.getElementById('reopen').addEventListener('click', () => {
+  try{ const d = JSON.parse(localStorage.getItem('noces-rsvp')); if(d) openConfirm(d); }catch(e){}
+});
+try{ if(localStorage.getItem('noces-rsvp')) document.getElementById('again').hidden = false; }catch(e){}
+})();
+</script>
+</body>
+</html>
