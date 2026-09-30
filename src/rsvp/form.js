@@ -20,7 +20,7 @@ export function createRsvpMarkup(event) {
         <h2 id="invitation-title">Célébrons leurs noces de saphir</h2>
         <p class="lede">Vous êtes invités à une soirée en leur honneur.</p>
         <dl class="details">
-          <div><dt>Quand</dt><dd>${escapeHtml(event.dateLabel)}<small>Cocktail à ${escapeHtml(event.cocktailTime)}, souper à ${escapeHtml(event.dinnerTime)}</small></dd></div>
+          <div><dt>Quand</dt><dd>${escapeHtml(event.dateLabel)}<small>Cocktail à ${escapeHtml(event.cocktailTime)}, dîner à ${escapeHtml(event.dinnerTime)}</small></dd></div>
           <div><dt>Où</dt><dd>${escapeHtml(event.venue)}<small>${escapeHtml(event.address)}</small></dd></div>
           <div><dt>Dress Code</dt><dd>${escapeHtml(event.dressCode)}</dd></div>
         </dl>

@@ -2,7 +2,12 @@
 
 ## Objectif
 
-Site d'invitation familial pour célébrer 45 ans de mariage (noces de saphir).
+Site d'invitation familial pour célébrer 45 ans de mariage (noces de saphir)
+en Côte d'Ivoire. L'événement a lieu à Rivieira, Attoban près du 30ème, le
+26 décembre 2026. Les données de date, horaires et lieu sont centralisées dans
+`src/config.js` et les heures qui y figurent sont les heures locales d'Abidjan
+(`Africa/Abidjan`, UTC+0, sans heure d'été). Le programme prévoit un cocktail
+à 17 h et un dîner à 18 h 30.
 Le fichier `reference-apercu.html` est le prototype fonctionnel et la référence
 visuelle et comportementale pour le portage.
 
@@ -90,8 +95,10 @@ même fonction sur `/api/team`. En production, Vercel détecte directement
 `api/team.js`.
 
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
-particules, Google Agenda et le téléchargement `.ics` avec fuseau horaire pour
-les calendriers mobiles.
+particules, Google Agenda et le téléchargement `.ics` avec le fuseau fixe
+`Africa/Abidjan`. Le fichier `.ics` déclare un seul bloc `STANDARD` à UTC+0;
+Google Agenda reçoit les heures locales et `ctz=Africa/Abidjan`. Les pages
+publiées doivent obtenir le lieu uniquement depuis `src/config.js`.
 
 Le prototype contient des textes et coordonnées d'événement à personnaliser,
 ainsi que des images de souvenirs de remplacement. Conserver leur caractère

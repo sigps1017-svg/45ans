@@ -8,35 +8,8 @@ function formatUtcDate(date) {
     .replace(/\.\d{3}Z$/, 'Z');
 }
 
-function zonedDateTimeToUtc(time) {
-  const [year, month, day] = event.date.split('-').map(Number);
-  const [hour, minute] = time.split(':').map(Number);
-  const localTimeAsUtc = Date.UTC(year, month - 1, day, hour, minute);
-  const formattedParts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: event.timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(new Date(localTimeAsUtc));
-  const parts = Object.fromEntries(
-    formattedParts
-      .filter(({ type }) => type !== 'literal')
-      .map(({ type, value }) => [type, Number(value)]),
-  );
-  const zonedTimeAsUtc = Date.UTC(
-    parts.year,
-    parts.month - 1,
-    parts.day,
-    parts.hour,
-    parts.minute,
-    parts.second,
-  );
-
-  return new Date(localTimeAsUtc - (zonedTimeAsUtc - localTimeAsUtc));
+function formatLocalDateTime(time) {
+  return `${event.date.replaceAll('-', '')}T${time.replace(':', '')}00`;
 }
 
 function escapeIcsText(value) {
@@ -69,21 +42,19 @@ function foldIcsLine(line) {
 }
 
 export function createGoogleCalendarUrl(response) {
-  const start = zonedDateTimeToUtc(event.startTime);
-  const end = zonedDateTimeToUtc(event.endTime);
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: event.title,
-    dates: `${formatUtcDate(start)}/${formatUtcDate(end)}`,
+    dates: `${formatLocalDateTime(event.startTime)}/${formatLocalDateTime(event.endTime)}`,
     details: `${event.calendarDetails} Code : ${response.token}`,
     location: event.location,
+    ctz: event.timeZone,
   });
 
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
 export function createIcsFile(response) {
-  const [year, month, day] = event.date.split('-');
   const uid = `${response.token.toLowerCase()}@noces-de-saphir`;
   const lines = [
     'BEGIN:VCALENDAR',
@@ -93,26 +64,18 @@ export function createIcsFile(response) {
     'METHOD:PUBLISH',
     'BEGIN:VTIMEZONE',
     `TZID:${event.timeZone}`,
-    'BEGIN:DAYLIGHT',
-    'TZOFFSETFROM:-0400',
-    'TZOFFSETTO:-0300',
-    'TZNAME:ADT',
-    'DTSTART:19700308T020000',
-    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
-    'END:DAYLIGHT',
     'BEGIN:STANDARD',
-    'TZOFFSETFROM:-0300',
-    'TZOFFSETTO:-0400',
-    'TZNAME:AST',
-    'DTSTART:19701101T020000',
-    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+    'DTSTART:19700101T000000',
+    'TZOFFSETFROM:+0000',
+    'TZOFFSETTO:+0000',
+    'TZNAME:GMT',
     'END:STANDARD',
     'END:VTIMEZONE',
     'BEGIN:VEVENT',
     `UID:${uid}`,
     `DTSTAMP:${formatUtcDate(new Date())}`,
-    `DTSTART;TZID=${event.timeZone}:${year}${month}${day}T${event.startTime.replace(':', '')}00`,
-    `DTEND;TZID=${event.timeZone}:${year}${month}${day}T${event.endTime.replace(':', '')}00`,
+    `DTSTART;TZID=${event.timeZone}:${formatLocalDateTime(event.startTime)}`,
+    `DTEND;TZID=${event.timeZone}:${formatLocalDateTime(event.endTime)}`,
     `SUMMARY:${escapeIcsText(event.title)}`,
     `DESCRIPTION:${escapeIcsText(`${event.calendarDetails} Code : ${response.token}`)}`,
     `LOCATION:${escapeIcsText(event.location)}`,

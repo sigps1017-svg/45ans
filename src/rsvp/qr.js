@@ -191,7 +191,7 @@ export async function createTicketPng(token, response, event) {
   context.fillStyle = '#93a0c4';
   context.font = `400 30px ${sans}`;
   context.fillText(
-    `Cocktail ${event.cocktailTime} · Souper ${event.dinnerTime}`,
+    `Cocktail ${event.cocktailTime} · Dîner ${event.dinnerTime}`,
     width / 2,
     qrY + qrSize + 355,
   );
