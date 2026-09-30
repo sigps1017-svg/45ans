@@ -22,7 +22,7 @@ export function createRsvpMarkup(event) {
         <dl class="details">
           <div><dt>Quand</dt><dd>${escapeHtml(event.dateLabel)}<small>Cocktail à ${escapeHtml(event.cocktailTime)}, souper à ${escapeHtml(event.dinnerTime)}</small></dd></div>
           <div><dt>Où</dt><dd>${escapeHtml(event.venue)}<small>${escapeHtml(event.address)}</small></dd></div>
-          <div><dt>Tenue</dt><dd>${escapeHtml(event.dressCode)}</dd></div>
+          <div><dt>Dress Code</dt><dd>${escapeHtml(event.dressCode)}</dd></div>
         </dl>
       </div>
     </section>
