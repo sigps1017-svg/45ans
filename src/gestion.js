@@ -11,6 +11,13 @@ import {
   signInStaff,
   signOutStaff,
 } from './lib/staff.js';
+import {
+  changeTeamRole,
+  createTeamMember,
+  loadTeam,
+  removeTeamMember,
+  resetTeamPassword,
+} from './lib/team-admin.js';
 import { getSupabaseClient, supabaseConfigError } from './lib/supabase.js';
 
 const root = document.querySelector('#admin-app');
@@ -37,35 +44,80 @@ root.innerHTML = `
       <p class="notice" id="login-notice" role="alert" aria-live="assertive"></p>
     </section>
     <section class="admin-content" id="admin-content" hidden>
-      <section class="create-panel">
-        <div>
-          <p class="eyebrow">Nouvelle entrée</p>
-          <h2>Créer une invitation</h2>
-        </div>
-        <form id="create-form" class="create-form">
-          <label>Nom du foyer<input name="name" maxlength="120" required placeholder="Ex. Famille LeBlanc"></label>
-          <label>Places<input name="places" type="number" min="1" max="30" value="2" required></label>
-          <label>Table (facultative)<input name="table" type="number" min="1" placeholder="—"></label>
-          <button class="primary-button" type="submit" id="create-submit">Créer l’invitation</button>
-        </form>
-        <p class="notice" id="create-notice" role="status" aria-live="polite"></p>
-      </section>
-      <section class="invite-list-panel">
-        <div class="list-heading">
+      <nav class="admin-tabs" role="tablist" aria-label="Administration">
+        <button class="admin-tab" id="tab-invitations" type="button" role="tab" aria-selected="true" aria-controls="invitations-panel" data-admin-tab="invitations">Invitations</button>
+        <button class="admin-tab" id="tab-team" type="button" role="tab" aria-selected="false" aria-controls="team-panel" data-admin-tab="team" tabindex="-1">Équipe</button>
+      </nav>
+      <div class="admin-tab-panel" id="invitations-panel" role="tabpanel" aria-labelledby="tab-invitations">
+        <section class="create-panel">
           <div>
-            <p class="eyebrow">Administration</p>
-            <h2>Toutes les invitations <span id="invite-total">0</span></h2>
+            <p class="eyebrow">Nouvelle entrée</p>
+            <h2>Créer une invitation</h2>
           </div>
-          <button class="secondary-button" type="button" id="export-csv">Exporter les liens CSV</button>
-        </div>
-        <label class="search-label" for="invite-search">Rechercher par nom</label>
-        <input id="invite-search" class="invite-search" type="search" autocomplete="off" placeholder="Nom du foyer…">
-        <div class="refresh-status" id="refresh-status" aria-live="polite"></div>
-        <ul class="invite-list" id="invite-list"></ul>
+          <form id="create-form" class="create-form">
+            <label>Nom du foyer<input name="name" maxlength="120" required placeholder="Ex. Famille LeBlanc"></label>
+            <label>Places<input name="places" type="number" min="1" max="30" value="2" required></label>
+            <label>Table (facultative)<input name="table" type="number" min="1" placeholder="—"></label>
+            <button class="primary-button" type="submit" id="create-submit">Créer l’invitation</button>
+          </form>
+          <p class="notice" id="create-notice" role="status" aria-live="polite"></p>
+        </section>
+        <section class="invite-list-panel">
+          <div class="list-heading">
+            <div>
+              <p class="eyebrow">Administration</p>
+              <h2>Toutes les invitations <span id="invite-total">0</span></h2>
+            </div>
+            <button class="secondary-button" type="button" id="export-csv">Exporter les liens CSV</button>
+          </div>
+          <label class="search-label" for="invite-search">Rechercher par nom</label>
+          <input id="invite-search" class="invite-search" type="search" autocomplete="off" placeholder="Nom du foyer…">
+          <div class="refresh-status" id="refresh-status" aria-live="polite"></div>
+          <ul class="invite-list" id="invite-list"></ul>
+        </section>
+      </div>
+      <section class="admin-tab-panel team-panel" id="team-panel" role="tabpanel" aria-labelledby="tab-team" hidden>
+        <section class="create-panel">
+          <div>
+            <p class="eyebrow">Accès au site d’accueil</p>
+            <h2>Ajouter un membre</h2>
+          </div>
+          <form id="team-create-form" class="team-create-form">
+            <label>Courriel<input name="email" type="email" autocomplete="off" maxlength="254" required></label>
+            <label>Mot de passe temporaire
+              <span class="password-control">
+                <input name="password" type="text" autocomplete="new-password" minlength="10" maxlength="128" required>
+                <button class="secondary-button" type="button" data-generate-password>Générer</button>
+              </span>
+            </label>
+            <label>Rôle
+              <select name="role" required>
+                <option value="accueil">Accueil</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+            <button class="primary-button" type="submit" id="team-create-submit">Créer le compte</button>
+          </form>
+          <p class="team-help">Le compte sera confirmé immédiatement. Le mot de passe temporaire ne sera pas envoyé par courriel : transmettez-le au membre par un canal sûr.</p>
+          <p class="notice" id="team-create-notice" role="status" aria-live="polite"></p>
+        </section>
+        <section class="invite-list-panel team-list-panel">
+          <div class="list-heading">
+            <div>
+              <p class="eyebrow">Comptes autorisés</p>
+              <h2>Utilisateurs Auth <span id="team-total">0</span></h2>
+            </div>
+            <button class="secondary-button" type="button" id="refresh-team">Actualiser</button>
+          </div>
+          <label class="search-label" for="team-search">Rechercher un utilisateur</label>
+          <input id="team-search" class="invite-search" type="search" autocomplete="off" placeholder="Courriel…">
+          <div class="refresh-status team-status" id="team-status" aria-live="polite"></div>
+          <ul class="team-list" id="team-list"></ul>
+        </section>
       </section>
     </section>
   </main>
-  <footer>Les liens d’invitation contiennent un code privé : partagez-les uniquement aux destinataires concernés.</footer>
+  <footer>Les liens d’invitation contiennent un code privé : partagez-les uniquement aux destinataires concernés. Les mots de passe temporaires doivent être transmis par un canal sûr.</footer>
 `;
 
 const loginPanel = document.querySelector('#login-panel');
@@ -82,11 +134,24 @@ const inviteList = document.querySelector('#invite-list');
 const inviteTotal = document.querySelector('#invite-total');
 const refreshStatus = document.querySelector('#refresh-status');
 const exportButton = document.querySelector('#export-csv');
+const adminTabs = Array.from(document.querySelectorAll('[data-admin-tab]'));
+const invitationsPanel = document.querySelector('#invitations-panel');
+const teamPanel = document.querySelector('#team-panel');
+const teamCreateForm = document.querySelector('#team-create-form');
+const teamCreateSubmit = document.querySelector('#team-create-submit');
+const teamCreateNotice = document.querySelector('#team-create-notice');
+const teamTotal = document.querySelector('#team-total');
+const teamStatus = document.querySelector('#team-status');
+const teamList = document.querySelector('#team-list');
+const refreshTeamButton = document.querySelector('#refresh-team');
+const teamSearch = document.querySelector('#team-search');
 
 let invites = [];
+let team = [];
 let refreshTimer = 0;
 let authSubscription = null;
 let isAdmin = false;
+let currentAdminId = null;
 
 function setNotice(element, message, kind = '') {
   element.textContent = message;
@@ -187,6 +252,145 @@ async function refreshInvites() {
   }).format(new Date())}`;
 }
 
+function generateTemporaryPassword() {
+  const groups = [
+    'abcdefghijkmnopqrstuvwxyz',
+    'ABCDEFGHJKLMNPQRSTUVWXYZ',
+    '23456789',
+    '!@#$%*-_?',
+  ];
+  const allCharacters = groups.join('');
+  const passwordCharacters = groups.map((group) => {
+    const values = new Uint32Array(1);
+    crypto.getRandomValues(values);
+    return group[values[0] % group.length];
+  });
+  const values = new Uint32Array(14);
+  crypto.getRandomValues(values);
+  for (const value of values) {
+    passwordCharacters.push(allCharacters[value % allCharacters.length]);
+  }
+  for (let index = passwordCharacters.length - 1; index > 0; index -= 1) {
+    const valuesToShuffle = new Uint32Array(1);
+    crypto.getRandomValues(valuesToShuffle);
+    const swapIndex = valuesToShuffle[0] % (index + 1);
+    [passwordCharacters[index], passwordCharacters[swapIndex]] = [
+      passwordCharacters[swapIndex],
+      passwordCharacters[index],
+    ];
+  }
+  return passwordCharacters.join('');
+}
+
+function formatTeamCreated(date) {
+  const createdAt = new Date(date);
+  if (Number.isNaN(createdAt.getTime())) return 'Date indisponible';
+  return new Intl.DateTimeFormat('fr-CA', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(createdAt);
+}
+
+function renderTeam() {
+  teamTotal.textContent = String(team.length);
+  teamList.replaceChildren();
+
+  const query = teamSearch.value.trim().toLocaleLowerCase('fr-CA');
+  const filteredTeam = team.filter((member) =>
+    member.email.toLocaleLowerCase('fr-CA').includes(query),
+  );
+
+  if (!filteredTeam.length) {
+    const empty = document.createElement('li');
+    empty.className = 'empty-state';
+    empty.textContent = query
+      ? 'Aucun utilisateur ne correspond à cette recherche.'
+      : 'Aucun compte utilisateur Auth.';
+    teamList.append(empty);
+    return;
+  }
+
+  filteredTeam.forEach((member) => {
+    const item = document.createElement('li');
+    item.className = 'team-card';
+    item.dataset.memberId = member.id;
+    const isSelfAdmin = member.id === currentAdminId && member.role === 'admin';
+    const roleLabel =
+      member.role === 'admin'
+        ? 'Admin'
+        : member.role === 'accueil'
+          ? 'Accueil'
+          : 'Aucun accès équipe';
+    item.innerHTML = `
+      <div class="team-card-heading">
+        <div>
+          <h3>${escapeHtml(member.email || 'Courriel indisponible')}</h3>
+          <p>Compte créé le ${escapeHtml(formatTeamCreated(member.created_at))}</p>
+        </div>
+        <span class="team-role${member.role ? '' : ' no-team-role'}">${roleLabel}</span>
+      </div>
+      <form class="member-role-form" data-role-form>
+        <label>Rôle
+          <select name="role" required ${isSelfAdmin ? 'disabled' : ''}>
+            ${member.role ? '' : '<option value="" selected disabled>Choisir un rôle</option>'}
+            <option value="accueil" ${member.role === 'accueil' ? 'selected' : ''}>Accueil</option>
+            <option value="admin" ${member.role === 'admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        </label>
+        <button class="secondary-button" type="submit" ${isSelfAdmin ? 'disabled' : ''}>${member.role ? 'Modifier le rôle' : 'Ajouter à l’équipe'}</button>
+      </form>
+      <form class="member-password-form" data-password-form>
+        <label>Nouveau mot de passe temporaire
+          <span class="password-control">
+            <input name="password" type="text" autocomplete="new-password" minlength="10" maxlength="128" required>
+            <button class="secondary-button" type="button" data-generate-password>Générer</button>
+          </span>
+        </label>
+        <button class="secondary-button" type="submit">Réinitialiser le mot de passe</button>
+      </form>
+      <div class="member-remove-actions">
+        <button class="delete-button" type="button" data-remove-access ${!member.role || isSelfAdmin ? 'disabled' : ''}>Retirer de l’équipe</button>
+        <button class="delete-button" type="button" data-delete-account ${isSelfAdmin ? 'disabled' : ''}>${member.role ? 'Retirer et supprimer le compte' : 'Supprimer le compte Auth'}</button>
+      </div>
+      ${!member.role ? '<p class="team-help">Compte Auth existant, mais non inscrit dans la table staff. Choisissez un rôle pour lui donner accès à l’équipe.</p>' : ''}
+      ${isSelfAdmin ? '<p class="team-help">Vous ne pouvez pas retirer votre propre rôle admin.</p>' : ''}
+      <p class="card-notice" data-member-notice role="status" aria-live="polite"></p>
+    `;
+    teamList.append(item);
+  });
+}
+
+async function refreshTeam() {
+  teamStatus.classList.remove('error');
+  teamStatus.textContent = 'Actualisation de l’équipe…';
+  try {
+    const data = await loadTeam();
+    if (!Array.isArray(data)) throw new Error('La liste reçue du serveur est invalide.');
+    team = data;
+    renderTeam();
+    teamStatus.textContent = `Actualisé à ${new Intl.DateTimeFormat('fr-CA', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date())}`;
+  } catch (error) {
+    console.error('Impossible d’actualiser les membres de l’équipe.', error);
+    teamStatus.textContent = error.message || 'Actualisation impossible. Vérifiez le réseau.';
+    teamStatus.classList.add('error');
+  }
+}
+
+function selectAdminTab(tabName) {
+  const isTeamTab = tabName === 'team';
+  invitationsPanel.hidden = isTeamTab;
+  teamPanel.hidden = !isTeamTab;
+  adminTabs.forEach((tab) => {
+    const selected = tab.dataset.adminTab === tabName;
+    tab.setAttribute('aria-selected', String(selected));
+    tab.tabIndex = selected ? 0 : -1;
+  });
+  if (isTeamTab && isAdmin) refreshTeam();
+}
+
 async function copyLink(invite, notice) {
   try {
     await navigator.clipboard.writeText(invitationUrl(invite));
@@ -254,6 +458,7 @@ function exportCsv() {
 async function showAdmin(session) {
   if (!session?.user) {
     isAdmin = false;
+    currentAdminId = null;
     loginPanel.hidden = false;
     adminContent.hidden = true;
     signOutButton.hidden = true;
@@ -268,6 +473,7 @@ async function showAdmin(session) {
       loginPanel.hidden = false;
       adminContent.hidden = true;
       signOutButton.hidden = true;
+      currentAdminId = null;
       setNotice(
         loginNotice,
         role
@@ -279,8 +485,10 @@ async function showAdmin(session) {
     }
 
     isAdmin = true;
+    currentAdminId = session.user.id;
     adminContent.hidden = false;
     signOutButton.hidden = false;
+    renderTeam();
     setNotice(loginNotice, '');
     await refreshInvites();
     window.clearInterval(refreshTimer);
@@ -289,10 +497,12 @@ async function showAdmin(session) {
         console.error('Impossible d’actualiser les invitations.', error);
         refreshStatus.textContent = 'Actualisation impossible. Vérifiez le réseau.';
       });
+      if (!teamPanel.hidden) refreshTeam();
     }, 15_000);
   } catch (error) {
     console.error('Impossible de vérifier le rôle administrateur.', error);
     isAdmin = false;
+    currentAdminId = null;
     loginPanel.hidden = false;
     adminContent.hidden = true;
     setNotice(loginNotice, 'La vérification des droits a échoué. Réessayez.', 'error');
@@ -341,6 +551,151 @@ createForm.addEventListener('submit', async (event) => {
     createSubmit.disabled = false;
   }
 });
+
+adminTabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => {
+    selectAdminTab(tab.dataset.adminTab);
+  });
+  tab.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const nextIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? adminTabs.length - 1
+          : (index + (event.key === 'ArrowRight' ? 1 : -1) + adminTabs.length) %
+            adminTabs.length;
+    adminTabs[nextIndex].click();
+    adminTabs[nextIndex].focus();
+  });
+});
+
+teamCreateForm.addEventListener('click', (event) => {
+  if (!event.target.closest('[data-generate-password]')) return;
+  teamCreateForm.elements.password.value = generateTemporaryPassword();
+});
+
+teamSearch.addEventListener('input', renderTeam);
+
+teamCreateForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!isAdmin) return;
+  teamCreateSubmit.disabled = true;
+  setNotice(teamCreateNotice, 'Création du compte…');
+  const formData = new FormData(teamCreateForm);
+  const temporaryPassword = String(formData.get('password'));
+  try {
+    await createTeamMember({
+      email: String(formData.get('email')).trim(),
+      password: temporaryPassword,
+      role: String(formData.get('role')),
+    });
+    teamCreateForm.reset();
+    await refreshTeam();
+    setNotice(
+      teamCreateNotice,
+      `Compte créé et confirmé. Mot de passe temporaire : ${temporaryPassword}`,
+      'success',
+    );
+  } catch (error) {
+    console.error('Impossible de créer ce membre.', error);
+    setNotice(
+      teamCreateNotice,
+      error.message || 'Création impossible. Vérifiez les champs et réessayez.',
+      'error',
+    );
+  } finally {
+    teamCreateSubmit.disabled = false;
+  }
+});
+
+teamList.addEventListener('click', async (event) => {
+  const generateButton = event.target.closest('[data-generate-password]');
+  if (generateButton) {
+    generateButton
+      .closest('.password-control')
+      .querySelector('input[name="password"]').value = generateTemporaryPassword();
+    return;
+  }
+
+  const card = event.target.closest('[data-member-id]');
+  if (!card || !isAdmin) return;
+  const member = team.find((item) => item.id === card.dataset.memberId);
+  if (!member) return;
+  const deleteAccount = event.target.closest('[data-delete-account]');
+  const removeAccess = event.target.closest('[data-remove-access]');
+  if (!deleteAccount && !removeAccess) return;
+  if (member.id === currentAdminId && member.role === 'admin') return;
+
+  const confirmed = window.confirm(
+    deleteAccount
+      ? `Supprimer définitivement le compte Auth de ${member.email}${member.role ? ' et retirer son accès à l’équipe' : ''} ? Cette action est irréversible.`
+      : `Retirer ${member.email} de l’équipe ? Son compte Auth restera présent, mais il ne pourra plus accéder aux fonctions d’accueil.`,
+  );
+  if (!confirmed) return;
+
+  const actionButtons = Array.from(card.querySelectorAll('button'));
+  actionButtons.forEach((button) => {
+    button.disabled = true;
+  });
+  try {
+    const result = await removeTeamMember(member.id, Boolean(deleteAccount));
+    await refreshTeam();
+    teamStatus.textContent = result.warning
+      || (deleteAccount ? 'Membre et compte Auth supprimés.' : 'Accès à l’équipe retiré.');
+    if (result.warning) teamStatus.classList.add('error');
+  } catch (error) {
+    console.error('Impossible de retirer ce membre.', error);
+    const notice = card.querySelector('[data-member-notice]');
+    notice.textContent = error.message || 'Retrait impossible. Réessayez.';
+    notice.className = 'card-notice error';
+    actionButtons.forEach((button) => {
+      button.disabled = false;
+    });
+  }
+});
+
+teamList.addEventListener('submit', async (event) => {
+  const roleForm = event.target.closest('[data-role-form]');
+  const passwordForm = event.target.closest('[data-password-form]');
+  if (!roleForm && !passwordForm) return;
+  event.preventDefault();
+  if (!isAdmin) return;
+
+  const form = roleForm || passwordForm;
+  const card = form.closest('[data-member-id]');
+  const member = team.find((item) => item.id === card.dataset.memberId);
+  if (!member) return;
+  const submitButton = form.querySelector('button[type="submit"]');
+  const formData = new FormData(form);
+  const password = String(formData.get('password') || '');
+  submitButton.disabled = true;
+
+  try {
+    if (roleForm) {
+      await changeTeamRole(member.id, String(formData.get('role')));
+      await refreshTeam();
+      teamStatus.textContent = member.role
+        ? `Rôle de ${member.email} modifié.`
+        : `${member.email} a été ajouté à l’équipe.`;
+      return;
+    }
+
+    await resetTeamPassword(member.id, password);
+    await refreshTeam();
+    teamStatus.textContent =
+      `Mot de passe réinitialisé pour ${member.email}. Mot de passe temporaire : ${password}`;
+  } catch (error) {
+    console.error('Impossible de modifier ce membre.', error);
+    const notice = card.querySelector('[data-member-notice]');
+    notice.textContent = error.message || 'Modification impossible. Réessayez.';
+    notice.className = 'card-notice error';
+    submitButton.disabled = false;
+  }
+});
+
+refreshTeamButton.addEventListener('click', refreshTeam);
 
 inviteSearch.addEventListener('input', renderInvites);
 exportButton.addEventListener('click', exportCsv);
@@ -413,6 +768,8 @@ signOutButton.addEventListener('click', async () => {
   try {
     await signOutStaff();
     isAdmin = false;
+    currentAdminId = null;
+    team = [];
     window.clearInterval(refreshTimer);
     adminContent.hidden = true;
     loginPanel.hidden = false;
@@ -432,6 +789,8 @@ if (supabaseConfigError) {
   } = getSupabaseClient().auth.onAuthStateChange((_event, session) => {
     if (!session) {
       isAdmin = false;
+      currentAdminId = null;
+      team = [];
       window.clearInterval(refreshTimer);
       adminContent.hidden = true;
       signOutButton.hidden = true;

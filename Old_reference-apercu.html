@@ -67,7 +67,7 @@ button,input{ font:inherit; color:inherit; }
 /* Scènes collantes */
 .stage{ position:relative; }
 #histoire{ height:260svh; }
-#souvenirs{ height:440svh; }
+#souvenirs{ height:360svh; }
 .sticky{ position:sticky; top:0; height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding:0 24px 12svh; text-align:center; }
 .year{
   font-family:var(--serif); font-weight:300; font-size:clamp(88px, 26vw, 220px);
@@ -140,38 +140,21 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
   padding:calc(24px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px));
 }
 #confirm.open{ display:block; }
-.confirm-card{ position:relative; z-index:1; width:min(440px,100%); margin:6svh auto; text-align:center; opacity:0; }
-.veil{ position:fixed; inset:0; background:rgba(7,13,36,.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; pointer-events:none; }
+.confirm-card{ width:min(440px,100%); margin:6svh auto; text-align:center; opacity:0; }
 .confirm-card h2{ font-family:var(--serif); font-weight:300; font-size:clamp(34px,8vw,46px); margin:0; line-height:1.05; }
 .confirm-card .lede{ margin:8px 0 22px; }
-.ticket{ display:block; width:min(340px,100%); height:auto; margin:4px auto 16px; border-radius:22px;
-  box-shadow:0 0 70px rgba(36,81,224,.5), 0 20px 50px rgba(0,0,0,.45); -webkit-touch-callout:default; }
+.qrbox{ background:#fff; border-radius:22px; padding:18px; width:max-content; margin:0 auto 10px; box-shadow:0 0 60px rgba(36,81,224,.55); }
+.qrbox img,.qrbox canvas{ display:block; width:220px !important; height:220px !important; }
 .token{ font-family:var(--serif); font-style:italic; color:var(--ice); font-size:18px; margin:0 0 18px; }
 .summary{ text-align:left; list-style:none; padding:0; margin:0 0 18px; }
 .summary li{ display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); font-size:15px; }
 .summary li span:first-child{ color:var(--muted); }
 .note{ font-size:14px; color:var(--muted); margin:0 0 18px; }
 .btn-ghost{
-  display:block; width:100%; text-align:center; text-decoration:none; color:var(--text); margin-top:10px;
+  display:block; width:100%; text-align:center; text-decoration:none; margin-top:10px;
   border:1px solid var(--line); border-radius:999px; padding:14px; background:none; cursor:pointer; font-size:15px;
 }
 
-/* Visionneuse de photos */
-#lightbox{ position:fixed; inset:0; z-index:12; display:flex; align-items:center; justify-content:center;
-  padding:calc(64px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px)); }
-#lightbox[hidden]{ display:none; }
-.lb-veil{ position:absolute; inset:0; background:rgba(5,9,26,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
-.lb-fig{ position:relative; margin:0; width:min(560px,100%); }
-.lb-fig img{ display:block; width:100%; max-height:62svh; object-fit:contain; border-radius:18px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px var(--line); user-select:none; -webkit-user-drag:none; }
-.lb-fig figcaption{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:16px; }
-.lb-fig strong{ font-family:var(--serif); font-weight:300; font-size:36px; line-height:1; color:var(--gold); }
-.lb-fig span{ font-family:var(--serif); font-style:italic; font-size:22px; }
-.lb-fig small{ margin-left:auto; color:var(--muted); font-size:14px; }
-.lb-nav{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
-.lb-nav button, .lb-close{ border:1px solid var(--line); background:rgba(16,30,72,.6); border-radius:999px;
-  padding:13px; font-size:15px; cursor:pointer; }
-.lb-close{ position:fixed; top:calc(14px + env(safe-area-inset-top,0px)); right:16px; padding:10px 18px; z-index:1; }
 @media (prefers-reduced-motion: reduce){ .hint span{ animation:none; } }
 </style>
 </head>
@@ -202,7 +185,7 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
   <section id="souvenirs" class="stage">
     <div class="sticky souv-title">
       <h2>Quarante-cinq ans<br>de souvenirs</h2>
-      <p>Touchez une photo pour l'agrandir.<br>Faites glisser un cube pour le tourner.</p>
+      <p>Les photos du couple défileront ici.</p>
     </div>
   </section>
 
@@ -254,20 +237,7 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
 </main>
 
 <div id="confirm" role="dialog" aria-modal="true" aria-labelledby="cTitle">
-  <div class="veil" id="veil"></div>
   <div class="confirm-card" id="card"></div>
-</div>
-<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Photo agrandie">
-  <div class="lb-veil" id="lbVeil"></div>
-  <button class="lb-close" id="lbClose" type="button">Fermer</button>
-  <figure class="lb-fig" id="lbFig">
-    <img id="lbImg" alt="">
-    <figcaption><strong id="lbYear"></strong><span id="lbCap"></span><small id="lbCount"></small></figcaption>
-    <div class="lb-nav">
-      <button type="button" id="lbPrev">Précédente</button>
-      <button type="button" id="lbNext">Suivante</button>
-    </div>
-  </figure>
 </div>
 <div id="qrHidden" style="position:absolute;left:-9999px;top:0" aria-hidden="true"></div>
 
@@ -284,11 +254,6 @@ const isSmall = Math.min(innerWidth, innerHeight) < 700;
 /* ---------- Événement (à personnaliser) ---------- */
 const EVENT = {
   title: "Noces de saphir – 45 ans de mariage",
-  couple: "Prénom et Prénom",
-  dateLong: "Samedi 14 novembre 2026",
-  heure: "Accueil dès 17 h",
-  lieu: "Nom de la salle",
-  ville: "Dieppe (N.-B.)",
   location: "Nom de la salle, Dieppe (N.-B.)",
   gcalDates: "20261114T210000Z/20261115T030000Z",
   details: "Soirée en l'honneur de leurs 45 ans de mariage. Apportez votre code QR."
@@ -302,8 +267,6 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x070d24, 1);
 renderer.outputEncoding = THREE.sRGBEncoding;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x070d24, 9, 34);
@@ -339,205 +302,30 @@ pl.forEach(l => scene.add(l));
   scene.add(stars);
 }
 
-// Environnement de studio (reflets du bijou), généré sans fichier externe
-function makeEnvironment(){
-  const env = new THREE.Scene();
-  env.add(new THREE.Mesh(new THREE.BoxGeometry(24,24,24), new THREE.MeshBasicMaterial({ color:0x0b1438, side:THREE.BackSide })));
-  const panel = (w,h,col,k,x,y,z) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({ color:new THREE.Color(col).multiplyScalar(k), side:THREE.DoubleSide }));
-    m.position.set(x,y,z); m.lookAt(0,0,0); env.add(m);
-  };
-  panel(9,3,0xffffff,7, 0,10,0);
-  panel(3,7,0xffffff,5, -10,1,3);
-  panel(3,7,0xe4ecff,4, 10,2,-3);
-  panel(7,2,0x7aa2ff,4, 0,-3,10);
-  panel(2,2,0xffffff,10, 5,6,9);
-  panel(1.4,1.4,0xffffff,10, -6,4,8);
-  panel(5,1.6,0xffe2b0,3, -6,-5,-8);
-  const pm = new THREE.PMREMGenerator(renderer);
-  const tex = pm.fromScene(env, 0.02).texture; pm.dispose();
-  return tex;
-}
-scene.environment = makeEnvironment();
-
-// Saphir taille ovale brillant : 8 facettes de table, couronne, rondiste, pavillon
-function buildGemGeometry(){
-  const SX = 1.16, SZ = 0.88, T = Math.PI*2;
-  const rings = [
-    { n:8,  r:0.54, y:0.40,  off:0 },
-    { n:16, r:0.80, y:0.27,  off:T/32 },
-    { n:32, r:1.00, y:0.07,  off:0 },
-    { n:32, r:1.00, y:-0.01, off:0 },
-    { n:16, r:0.58, y:-0.55, off:T/32 }
-  ].map(R => Array.from({length:R.n}, (_,i) => {
-    const a = R.off + i*T/R.n;
-    return { a, v:new THREE.Vector3(Math.cos(a)*R.r*SX, R.y, Math.sin(a)*R.r*SZ) };
-  }));
-  const pos = [], inside = new THREE.Vector3(0,-0.1,0);
-  const e1 = new THREE.Vector3(), e2 = new THREE.Vector3(), n = new THREE.Vector3(), c = new THREE.Vector3();
-  function tri(a,b,d){
-    e1.subVectors(b,a); e2.subVectors(d,a); n.crossVectors(e1,e2);
-    c.copy(a).add(b).add(d).divideScalar(3).sub(inside);
-    if(n.dot(c) < 0){ const t=b; b=d; d=t; }
-    pos.push(a.x,a.y,a.z, b.x,b.y,b.z, d.x,d.y,d.z);
-  }
-  function stitch(A,B){
-    const na=A.length, nb=B.length;
-    const ang = (R,k,m) => R[k%m].a + Math.floor(k/m)*T;
-    let i=0, j=0;
-    while(i<na || j<nb){
-      if(j>=nb || (i<na && ang(A,i+1,na) <= ang(B,j+1,nb))){ tri(A[i%na].v, A[(i+1)%na].v, B[j%nb].v); i++; }
-      else { tri(A[i%na].v, B[(j+1)%nb].v, B[j%nb].v); j++; }
-    }
-  }
-  const top = new THREE.Vector3(0, 0.40, 0), culet = new THREE.Vector3(0, -1.08, 0);
-  for(let i=0;i<8;i++) tri(top, rings[0][i].v, rings[0][(i+1)%8].v);
-  for(let k=0;k<4;k++) stitch(rings[k], rings[k+1]);
-  for(let i=0;i<16;i++) tri(culet, rings[4][i].v, rings[4][(i+1)%16].v);
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
-  g.computeVertexNormals();
-  return { geo:g, crown:[...rings[0],...rings[1],...rings[2]].map(r=>r.v) };
-}
+// Saphir taillé
 const gemGroup = new THREE.Group(); scene.add(gemGroup);
-const { geo:gemGeo, crown } = buildGemGeometry();
+const profile = [
+  new THREE.Vector2(0.0001,-1.15), new THREE.Vector2(1.0,0.02), new THREE.Vector2(1.0,0.12),
+  new THREE.Vector2(0.58,0.55), new THREE.Vector2(0.0001,0.55)
+];
+const gemGeo = new THREE.LatheGeometry(profile, 8);
 const gemMat = new THREE.MeshPhysicalMaterial({
-  color:0xffffff, transmission:1, thickness:1.5, ior:1.77, roughness:0.02, metalness:0,
-  attenuationColor:new THREE.Color(0x0f34c4), attenuationDistance:0.5,
-  specularIntensity:1, clearcoat:1, clearcoatRoughness:0,
-  iridescence:0.18, iridescenceIOR:1.4, envMapIntensity:2.4, flatShading:true
+  color:0x1d47d8, emissive:0x0a1f6a, emissiveIntensity:.7, metalness:.15, roughness:.08,
+  clearcoat:1, clearcoatRoughness:.05, flatShading:true, transparent:true, opacity:0, side:THREE.DoubleSide
 });
 const gem = new THREE.Mesh(gemGeo, gemMat);
-// Cœur interne : ses facettes arrière sont vues à travers la réfraction, comme dans une vraie pierre
-const core = new THREE.Mesh(gemGeo, new THREE.MeshStandardMaterial({
-  color:0x2456f0, metalness:1, roughness:0.06, envMapIntensity:2.6, flatShading:true,
-  side:THREE.BackSide, emissive:0x0a2380, emissiveIntensity:.55
-}));
-core.scale.setScalar(0.96);
-gem.add(core);
-gem.rotation.order = 'XYZ';
+const edgeMat = new THREE.LineBasicMaterial({ color:0xbcd3ff, transparent:true, opacity:0 });
+gem.add(new THREE.LineSegments(new THREE.EdgesGeometry(gemGeo, 1), edgeMat));
 gemGroup.add(gem);
-
-// Halo doux derrière la pierre
-function radialTex(stops){
-  const c = document.createElement('canvas'); c.width = c.height = 128;
-  const x = c.getContext('2d'), g = x.createRadialGradient(64,64,0,64,64,64);
-  stops.forEach(([o,col]) => g.addColorStop(o,col));
-  x.fillStyle = g; x.fillRect(0,0,128,128);
-  return new THREE.CanvasTexture(c);
-}
-const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-  map:radialTex([[0,'rgba(120,160,255,.9)'],[.35,'rgba(60,100,255,.35)'],[1,'rgba(20,40,160,0)']]),
-  transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false
-}));
-glow.scale.set(6,6,1); glow.position.z = -1.2; gemGroup.add(glow);
-
-// Éclats scintillants sur les arêtes de la couronne
-const starTex = (() => {
-  const c = document.createElement('canvas'); c.width = c.height = 128;
-  const x = c.getContext('2d');
-  const rg = x.createRadialGradient(64,64,0,64,64,22); rg.addColorStop(0,'rgba(255,255,255,1)'); rg.addColorStop(1,'rgba(255,255,255,0)');
-  x.fillStyle = rg; x.fillRect(0,0,128,128);
-  [[128,5],[5,128]].forEach(([w,h]) => {
-    const lg = w>h ? x.createLinearGradient(0,0,128,0) : x.createLinearGradient(0,0,0,128);
-    lg.addColorStop(0,'rgba(255,255,255,0)'); lg.addColorStop(.5,'rgba(255,255,255,1)'); lg.addColorStop(1,'rgba(255,255,255,0)');
-    x.fillStyle = lg; x.fillRect(64-w/2, 64-h/2, w, h);
-  });
-  return new THREE.CanvasTexture(c);
-})();
-const sparkles = [];
-for(let i=0;i<16;i++){
-  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:starTex, color:i%3?0xffffff:0xcfe0ff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false, toneMapped:false }));
-  s.position.copy(crown[Math.floor(Math.random()*crown.length)]).multiplyScalar(1.02);
-  s.userData = { ph:Math.random()*20, sp:.8 + Math.random()*1.6 };
-  gem.add(s); sparkles.push(s);
-}
-const REST_OP = 0.2;
-
-// Petites étoiles : orbite autour du saphir, puis forment un cœur, s'effacent et recommencent
-const HN = isSmall ? 130 : 170;
-const hOrbit = new Float32Array(HN*4), hHeart = new Float32Array(HN*3), hRand = new Float32Array(HN);
-for(let i=0;i<HN;i++){
-  hOrbit.set([Math.random()*Math.PI*2, 1.55 + Math.random()*0.35, (Math.random()-.5)*0.25, 0.35 + Math.random()*0.35], i*4);
-  const t = (i/HN)*Math.PI*2 + (Math.random()-.5)*0.03, k = 1.62/16;
-  const x = 16*Math.pow(Math.sin(t),3);
-  const y = 13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t) + 4.2;
-  hHeart.set([x*k, y*k, -0.35 + (Math.random()-.5)*0.08], i*3);
-  hRand[i] = Math.random();
-}
-const hGeo = new THREE.BufferGeometry();
-hGeo.setAttribute('position', new THREE.BufferAttribute(hHeart,3));
-hGeo.setAttribute('aOrbit', new THREE.BufferAttribute(hOrbit,4));
-hGeo.setAttribute('aRand', new THREE.BufferAttribute(hRand,1));
-const hUni = { uTime:{value:0}, uMorph:{value:0}, uFade:{value:0}, uBeat:{value:0}, uPR:{value:renderer.getPixelRatio()} };
-const heartStars = new THREE.Points(hGeo, new THREE.ShaderMaterial({
-  uniforms:hUni, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
-  vertexShader:`
-    uniform float uTime, uMorph, uBeat, uPR;
-    attribute vec4 aOrbit; attribute float aRand;
-    varying float vTw; varying float vGold;
-    void main(){
-      float ang = aOrbit.x + uTime*aOrbit.w;
-      vec3 o = vec3(cos(ang)*aOrbit.y, aOrbit.z + sin(ang*2.0+aRand*6.0)*0.08, sin(ang)*aOrbit.y);
-      float cx = cos(0.38), sx = sin(0.38);
-      o = vec3(o.x, o.y*cx - o.z*sx, o.y*sx + o.z*cx);
-      float cz = cos(-0.18), sz = sin(-0.18);
-      o = vec3(o.x*cz - o.y*sz, o.x*sz + o.y*cz, o.z);
-      float m = smoothstep(0.0, 1.0, clamp(uMorph*1.5 - aRand*0.5, 0.0, 1.0));
-      vec3 h = position * (1.0 + uBeat*0.07);
-      vec3 p = mix(o, h, m);
-      p.z += sin(m*3.14159)*0.9;
-      vec4 mv = modelViewMatrix * vec4(p,1.0);
-      gl_Position = projectionMatrix * mv;
-      vTw = 0.55 + 0.45*sin(uTime*(3.0+aRand*4.0) + aRand*50.0);
-      vGold = step(0.45, aRand);
-      gl_PointSize = (38.0 + aRand*30.0) * (0.8 + vTw*0.5) * uPR * (1.0 + m*0.25) / -mv.z;
-    }`,
-  fragmentShader:`
-    uniform float uFade;
-    varying float vTw; varying float vGold;
-    void main(){
-      vec2 c = gl_PointCoord - 0.5;
-      float d = length(c);
-      float core = smoothstep(0.22, 0.0, d);
-      float cross = max(smoothstep(0.035,0.0,abs(c.x)) * smoothstep(0.5,0.0,abs(c.y)),
-                        smoothstep(0.035,0.0,abs(c.y)) * smoothstep(0.5,0.0,abs(c.x)));
-      float a = max(core, cross*0.85);
-      if(a < 0.01) discard;
-      vec3 col = mix(vec3(0.85,0.92,1.0), vec3(1.0,0.86,0.55), vGold);
-      gl_FragColor = vec4(col * 1.3, min(1.0, a * (0.35 + vTw) * uFade));
-    }`
-}));
-heartStars.frustumCulled = false;
-gemGroup.add(heartStars);
-
-// Cycle : orbite -> cœur (battement) -> fondu -> orbite
-const heartCycle = gsap.timeline({ repeat:-1, paused:true });
-heartCycle
-  .to(hUni.uFade, { value:1, duration:1.2, ease:'power1.out' })
-  .to({}, { duration:4.5 })
-  .to(hUni.uMorph, { value:1, duration:2.4, ease:'power2.inOut' })
-  .to({}, { duration:3.2 })
-  .to(hUni.uFade, { value:0, duration:1.1, ease:'power1.in' })
-  .set(hUni.uMorph, { value:0 });
-
-const tmpV = new THREE.Vector3();
 
 // Particules : dispersion -> surface du saphir -> code QR
 const N = isSmall ? 2600 : 4200;
 const target = new Float32Array(N*3), start = new Float32Array(N*3), qrPos = new Float32Array(N*3), rnd = new Float32Array(N);
 {
-  const tri = gemGeo.attributes.position, triCount = tri.count/3;
+  const tri = gemGeo.toNonIndexed().attributes.position, triCount = tri.count/3;
   const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
-  const cum = []; let tot = 0;
-  for(let k=0;k<triCount;k++){
-    a.fromBufferAttribute(tri,k*3); b.fromBufferAttribute(tri,k*3+1); c.fromBufferAttribute(tri,k*3+2);
-    tot += b.clone().sub(a).cross(c.clone().sub(a)).length()/2; cum.push(tot);
-  }
   for(let i=0;i<N;i++){
-    const rr = Math.random()*tot; let lo=0, hi=triCount-1;
-    while(lo<hi){ const mid=(lo+hi)>>1; if(cum[mid]<rr) lo=mid+1; else hi=mid; }
-    const t = lo;
+    const t = Math.floor(Math.random()*triCount);
     a.fromBufferAttribute(tri,t*3); b.fromBufferAttribute(tri,t*3+1); c.fromBufferAttribute(tri,t*3+2);
     let u = Math.random(), v = Math.random(); if(u+v>1){ u=1-u; v=1-v; }
     const p = a.clone().add(b.clone().sub(a).multiplyScalar(u)).add(c.clone().sub(a).multiplyScalar(v)).multiplyScalar(1.03);
@@ -600,172 +388,54 @@ const helix = [];
   }
   const curve = new THREE.CatmullRomCurve3(pts);
   const geo = new THREE.TubeGeometry(curve, 440, 0.022, 6, false);
-  const mat = new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false });
+  const mat = new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false });
   const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,16), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending }));
   scene.add(head);
   helix.push({ curve, geo, mat, head });
 });
 
-// Cubes de souvenirs : chaque face porte une photo (images dessinées en attendant les vraies)
+// Cadres photo (textures dessinées en attendant les vraies photos)
 const framesGroup = new THREE.Group(); scene.add(framesGroup);
-const CUBES = [
-  { year:"1981", caption:"Le jour du oui" },
-  { year:"1986", caption:"Le premier chez-soi" },
-  { year:"1993", caption:"La famille grandit" },
-  { year:"2004", caption:"Les voyages" },
-  { year:"2015", caption:"Les fêtes de famille" },
-  { year:"2026", caption:"Quarante-cinq ans" }
-].map(c => Object.assign(c, { photos:[null,null,null,null,null,null] })); // mettre ici les chemins des vraies photos
-const HUES = [222, 200, 262, 18, 340, 170];
-function seeded(n){ return () => { n |= 0; n = n + 0x6D2B79F5 | 0; let t = Math.imul(n ^ n >>> 15, 1 | n); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function drawPhoto(x, S, data, idx){
-  const rnd = seeded(parseInt(data.year,10)*10 + idx);
-  const hue = HUES[(idx + parseInt(data.year,10)) % HUES.length], b = S*0.05;
-  x.fillStyle = '#f6f1e6'; x.fillRect(0,0,S,S);
-  const g = x.createLinearGradient(b,b,S-b,S-b);
-  g.addColorStop(0, `hsl(${hue},48%,36%)`); g.addColorStop(1, `hsl(${hue+35},55%,13%)`);
-  x.fillStyle = g; x.fillRect(b,b,S-2*b,S-2*b);
-  x.save(); x.beginPath(); x.rect(b,b,S-2*b,S-2*b); x.clip();
-  for(let i=0;i<9;i++){
-    const cx = b + rnd()*(S-2*b), cy = b + rnd()*(S-2*b), r = S*(0.05 + rnd()*0.16);
-    const rg = x.createRadialGradient(cx,cy,0,cx,cy,r);
-    rg.addColorStop(0,`rgba(255,240,220,${0.10+rnd()*0.14})`); rg.addColorStop(1,'rgba(255,240,220,0)');
-    x.fillStyle = rg; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fill();
-  }
-  const band = x.createLinearGradient(0,S*0.62,0,S-b);
-  band.addColorStop(0,'rgba(5,9,26,0)'); band.addColorStop(1,'rgba(5,9,26,.7)');
-  x.fillStyle = band; x.fillRect(b,S*0.62,S-2*b,S*0.38-b);
-  x.restore();
-  x.strokeStyle = 'rgba(216,184,122,.9)'; x.lineWidth = S*0.006; x.strokeRect(b*0.5,b*0.5,S-b,S-b);
-  const cx = S/2, cy = S*0.4, d = S*0.06;
-  x.strokeStyle = 'rgba(220,232,255,.7)'; x.lineWidth = S*0.004;
-  x.beginPath(); x.moveTo(cx,cy-d); x.lineTo(cx+d*0.8,cy); x.lineTo(cx,cy+d*1.2); x.lineTo(cx-d*0.8,cy); x.closePath(); x.stroke();
-  x.textAlign = 'center'; x.fillStyle = 'rgba(220,232,255,.75)';
-  x.font = `italic ${S*0.05}px "Cormorant Garamond", Georgia, serif`; x.fillText('Photo à venir', cx, cy + d*2.4);
-  x.textAlign = 'left'; x.fillStyle = '#f0d9a6';
-  x.font = `300 ${S*0.12}px "Cormorant Garamond", Georgia, serif`; x.fillText(data.year, b*1.8, S - b*2.4);
-  x.textAlign = 'right'; x.fillStyle = 'rgba(238,241,251,.8)';
-  x.font = `italic ${S*0.052}px "Cormorant Garamond", Georgia, serif`; x.fillText(`${idx+1} / 6`, S - b*1.8, S - b*2.6);
-}
-function faceTexture(data, idx){
-  const c = document.createElement('canvas'); c.width = c.height = 384;
-  drawPhoto(c.getContext('2d'), 384, data, idx);
+const FRAMES = [
+  ["1981","Le jour du oui"],["1986","Le premier chez-soi"],["1993","La famille grandit"],
+  ["2004","Les voyages"],["2015","Les fêtes de famille"],["2026","Quarante-cinq ans"]
+];
+const frameMats = [];
+function frameTexture(year, caption){
+  const c = document.createElement('canvas'); c.width=512; c.height=660;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,512,660); g.addColorStop(0,'#f0d9a6'); g.addColorStop(.5,'#b8924e'); g.addColorStop(1,'#f0d9a6');
+  x.fillStyle=g; x.fillRect(0,0,512,660);
+  x.fillStyle='#f6f1e6'; x.fillRect(14,14,484,632);
+  const ph = x.createLinearGradient(0,40,0,500); ph.addColorStop(0,'#27408f'); ph.addColorStop(1,'#0c1636');
+  x.fillStyle=ph; x.fillRect(40,40,432,440);
+  const rg = x.createRadialGradient(256,230,10,256,230,220); rg.addColorStop(0,'rgba(188,211,255,.35)'); rg.addColorStop(1,'rgba(188,211,255,0)');
+  x.fillStyle=rg; x.fillRect(40,40,432,440);
+  x.strokeStyle='rgba(188,211,255,.6)'; x.lineWidth=2;
+  x.beginPath(); x.moveTo(256,210); x.lineTo(286,240); x.lineTo(256,280); x.lineTo(226,240); x.closePath(); x.stroke();
+  x.fillStyle='rgba(188,211,255,.75)'; x.textAlign='center';
+  x.font='italic 26px "Cormorant Garamond", Georgia, serif'; x.fillText('Photo à venir',256,330);
+  x.fillStyle='#16224d'; x.font='300 78px "Cormorant Garamond", Georgia, serif'; x.fillText(year,256,572);
+  x.fillStyle='#8a6a32'; x.font='italic 30px "Cormorant Garamond", Georgia, serif'; x.fillText(caption,256,618);
   const tex = new THREE.CanvasTexture(c); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
-  if(data.photos[idx]) new THREE.TextureLoader().load(data.photos[idx], t => { t.encoding = THREE.sRGBEncoding; cubes.forEach(cb => cb.mats.forEach(m => { if(m.map === tex) { m.map = t; m.needsUpdate = true; } })); });
   return tex;
 }
-const cubes = [];
-function buildCubes(){
+function buildFrames(){
   const narrow = innerWidth/innerHeight < 0.8;
-  const geo = new THREE.BoxGeometry(1.35,1.35,1.35);
-  const edges = new THREE.EdgesGeometry(geo);
-  CUBES.forEach((data,i)=>{
-    const mats = Array.from({length:6}, (_,k) => new THREE.MeshBasicMaterial({ map:faceTexture(data,k), transparent:true, opacity:0, toneMapped:false }));
-    const mesh = new THREE.Mesh(geo, mats);
-    const edge = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color:0xd8b87a, transparent:true, opacity:0, toneMapped:false }));
-    edge.scale.setScalar(1.004); mesh.add(edge);
+  FRAMES.forEach(([y,cap],i)=>{
+    const mat = new THREE.MeshBasicMaterial({ map:frameTexture(y,cap), transparent:true, opacity:0, side:THREE.DoubleSide });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(1.6,2.06), mat);
     const side = i%2 ? 1 : -1;
-    mesh.position.set(side*(narrow?0.55:1.5), (i%3-1)*0.3, -6 - i*5);
-    mesh.scale.setScalar(narrow?0.82:1);
-    framesGroup.add(mesh);
-    cubes.push({ data, mesh, mats, edge, ux:0, uy:0, vx:0, vy:0, i });
+    m.position.set(side*(narrow?0.62:1.55), (i%3-1)*0.25, -6 - i*5);
+    m.rotation.y = -side*0.28; m.scale.setScalar(narrow?0.82:1);
+    framesGroup.add(m); frameMats.push({ mat, mesh:m });
   });
 }
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(buildCubes);
-
-// Interaction : toucher pour agrandir, glisser pour tourner
-const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
-let drag = null, lightboxOpen = false;
-function canInteract(){ return !lightboxOpen && !document.getElementById('confirm').classList.contains('open') && st.framesOp > 0.3; }
-function hitCube(px, py){
-  ndc.set(px/innerWidth*2 - 1, -(py/innerHeight)*2 + 1);
-  raycaster.setFromCamera(ndc, camera);
-  const vis = cubes.filter(c => c.mesh.visible && c.mats[0].opacity > 0.5).map(c => c.mesh);
-  const h = raycaster.intersectObjects(vis, false)[0];
-  return h ? { cube:cubes.find(c => c.mesh === h.object), face:h.face.materialIndex } : null;
-}
-function dragStart(px, py){
-  if(!canInteract()) return false;
-  const h = hitCube(px, py); if(!h) return false;
-  drag = Object.assign(h, { x0:px, y0:py, lx:px, ly:py, t0:performance.now(), moved:false });
-  h.cube.vx = h.cube.vy = 0;
-  return true;
-}
-function dragMove(px, py){
-  if(!drag) return;
-  const dx = px - drag.lx, dy = py - drag.ly, c = drag.cube;
-  if(Math.hypot(px - drag.x0, py - drag.y0) > 8) drag.moved = true;
-  c.uy += dx*0.011; c.ux += dy*0.011; c.vy = dx*0.011; c.vx = dy*0.011;
-  drag.lx = px; drag.ly = py;
-}
-function dragEnd(){
-  if(!drag) return;
-  if(!drag.moved && performance.now() - drag.t0 < 500) openLightbox(drag.cube, drag.face);
-  drag = null;
-}
-const ignoreTarget = e => e.target.closest && e.target.closest('button, a, input, #lightbox, #confirm');
-addEventListener('pointerdown', e => { if(e.pointerType !== 'mouse' || e.button !== 0 || ignoreTarget(e)) return; if(dragStart(e.clientX, e.clientY)) e.preventDefault(); });
-addEventListener('pointermove', e => {
-  if(e.pointerType !== 'mouse') return;
-  if(drag) { dragMove(e.clientX, e.clientY); document.body.style.cursor = 'grabbing'; }
-  else document.body.style.cursor = (canInteract() && hitCube(e.clientX, e.clientY)) ? 'grab' : '';
-});
-addEventListener('pointerup', e => { if(e.pointerType === 'mouse'){ dragEnd(); document.body.style.cursor = ''; } });
-addEventListener('touchstart', e => { if(e.touches.length !== 1 || ignoreTarget(e)) return; const t = e.touches[0]; dragStart(t.clientX, t.clientY); }, { passive:true });
-addEventListener('touchmove', e => { if(!drag) return; const t = e.touches[0]; dragMove(t.clientX, t.clientY); if(e.cancelable) e.preventDefault(); }, { passive:false });
-addEventListener('touchend', dragEnd);
-addEventListener('touchcancel', () => { drag = null; });
-
-// Visionneuse
-const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg');
-let lbCube = null, lbFace = 0;
-function renderLightbox(){
-  const d = lbCube.data;
-  if(d.photos[lbFace]) lbImg.src = d.photos[lbFace];
-  else { const c = document.createElement('canvas'); c.width = c.height = 1000; drawPhoto(c.getContext('2d'), 1000, d, lbFace); lbImg.src = c.toDataURL('image/jpeg', .9); }
-  lbImg.alt = `${d.caption}, ${d.year}, photo ${lbFace+1} sur 6`;
-  document.getElementById('lbYear').textContent = d.year;
-  document.getElementById('lbCap').textContent = d.caption;
-  document.getElementById('lbCount').textContent = `Photo ${lbFace+1} sur 6`;
-}
-function openLightbox(cube, face){
-  lbCube = cube; lbFace = face; renderLightbox();
-  lightboxOpen = true; lb.hidden = false; document.body.classList.add('locked');
-  gsap.fromTo('#lbVeil', { opacity:0 }, { opacity:1, duration:.35 });
-  gsap.fromTo('#lbFig', { opacity:0, scale:.8, y:24 }, { opacity:1, scale:1, y:0, duration:.6, ease:'back.out(1.5)' });
-  gsap.fromTo('#lbClose', { opacity:0 }, { opacity:1, duration:.4, delay:.2 });
-  document.getElementById('lbClose').focus({ preventScroll:true });
-}
-function closeLightbox(){
-  if(!lightboxOpen) return;
-  gsap.to('#lbFig', { opacity:0, scale:.9, duration:.25 });
-  gsap.to('#lbClose', { opacity:0, duration:.2 });
-  gsap.to('#lbVeil', { opacity:0, duration:.3, onComplete(){ lb.hidden = true; lightboxOpen = false; document.body.classList.remove('locked'); } });
-}
-function stepLightbox(dir){
-  gsap.to(lbImg, { opacity:0, x:-dir*30, duration:.18, onComplete(){
-    lbFace = (lbFace + dir + 6) % 6; renderLightbox();
-    gsap.fromTo(lbImg, { opacity:0, x:dir*30 }, { opacity:1, x:0, duration:.28, ease:'power2.out' });
-  }});
-}
-document.getElementById('lbClose').addEventListener('click', closeLightbox);
-document.getElementById('lbVeil').addEventListener('click', closeLightbox);
-document.getElementById('lbPrev').addEventListener('click', () => stepLightbox(-1));
-document.getElementById('lbNext').addEventListener('click', () => stepLightbox(1));
-addEventListener('keydown', e => {
-  if(!lightboxOpen) return;
-  if(e.key === 'Escape') closeLightbox();
-  if(e.key === 'ArrowLeft') stepLightbox(-1);
-  if(e.key === 'ArrowRight') stepLightbox(1);
-});
-{ let sx = null;
-  lbImg.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive:true });
-  lbImg.addEventListener('touchend', e => { if(sx === null) return; const dx = e.changedTouches[0].clientX - sx; if(Math.abs(dx) > 45) stepLightbox(dx < 0 ? 1 : -1); sx = null; });
-}
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(buildFrames);
 
 /* ---------- État piloté par le défilement ---------- */
-const st = { gemY:1.05, gemScale:1, gemOp:1, spin:0, helixP:0, helixOp:0, framesZ:0, framesOp:0, qr:0 };
+const st = { gemY:.75, gemScale:1, gemOp:1, spin:0, helixP:0, helixOp:0, framesZ:0, framesOp:0, qr:0 };
 const intro = { gem:0 };
 
 function scrub(trigger, startPos, endPos, from, to, extra){
@@ -774,7 +444,7 @@ function scrub(trigger, startPos, endPos, from, to, extra){
 }
 const yearEl = document.getElementById('year');
 const lineEls = [...document.querySelectorAll('#lines p')];
-scrub('#histoire','top bottom','top top', {gemY:1.05,gemScale:1,helixOp:0}, {gemY:1.55,gemScale:.55,helixOp:1});
+scrub('#histoire','top bottom','top top', {gemY:.75,gemScale:1,helixOp:0}, {gemY:1.55,gemScale:.55,helixOp:1});
 scrub('#histoire','top top','bottom bottom', {helixP:0,spin:0}, {helixP:1,spin:1.4}, {
   onUpdate(self){
     const p = self.progress;
@@ -783,9 +453,9 @@ scrub('#histoire','top top','bottom bottom', {helixP:0,spin:0}, {helixP:1,spin:1
     lineEls.forEach((el,i)=> gsap.to(el,{ opacity: i===idx?1:0, y: i===idx?0:(i<idx?-14:14), duration:.5, overwrite:true }));
   }
 });
-scrub('#souvenirs','top bottom','top top', {gemY:1.55,gemScale:.55,helixOp:1,framesOp:0,spin:1.4}, {gemY:3.6,gemScale:.3,helixOp:0,framesOp:1,spin:.3});
+scrub('#souvenirs','top bottom','top top', {gemY:1.55,gemScale:.55,helixOp:1,framesOp:0,spin:1.4}, {gemY:2.3,gemScale:.3,helixOp:0,framesOp:1,spin:.3});
 scrub('#souvenirs','top top','bottom bottom', {framesZ:0}, {framesZ:33});
-scrub('#invitation','top bottom','top top', {framesOp:1,gemY:3.6,gemScale:.3}, {framesOp:0,gemY:.35,gemScale:.9});
+scrub('#invitation','top bottom','top top', {framesOp:1,gemY:2.3,gemScale:.3}, {framesOp:0,gemY:.35,gemScale:.9});
 scrub('#rsvp','top bottom','top top', {gemOp:1,gemY:.35}, {gemOp:.35,gemY:0});
 gsap.set(lineEls[0],{opacity:1});
 
@@ -799,27 +469,13 @@ function tick(){
   pUni.uTime.value = t;
   const q = st.qr, uq = pUni.uQR.value;
   rot += dt*(0.35 + st.spin);
-  gem.rotation.x = 0.32 + Math.sin(t*.5)*.08; gem.rotation.y = rot;
+  gem.rotation.y = rot; gem.rotation.x = Math.sin(t*.5)*.12;
   points.rotation.y = rot*(1-uq);
 
   gemGroup.position.set(0, lerp(st.gemY + Math.sin(t*1.1)*.05, .35, q), 0);
-  gemGroup.scale.setScalar(lerp(st.gemScale, 1, q) * 0.86);
-  const vis = intro.gem * (1-uq);
-  gem.scale.setScalar(Math.max(0.0001, vis));
-  gem.visible = vis > 0.001;
-  glow.material.opacity = .55 * vis * (0.6 + 0.4*st.gemOp) * (0.9 + Math.sin(t*1.4)*.1);
-  hUni.uTime.value = t;
-  hUni.uPR.value = renderer.getPixelRatio();
-  { const b = (t*1.1) % 1; hUni.uBeat.value = (Math.exp(-Math.pow((b-0.08)/0.05,2)) + 0.6*Math.exp(-Math.pow((b-0.26)/0.05,2))) * hUni.uMorph.value; }
-  heartStars.visible = vis > 0.01;
-  heartStars.scale.setScalar(Math.max(0.0001, vis));
-  sparkles.forEach(sp => {
-    sp.getWorldPosition(tmpV);
-    const facing = THREE.MathUtils.clamp((tmpV.z - gemGroup.position.z) * 1.5, 0, 1);
-    const f = Math.pow(Math.max(0, Math.sin(t*sp.userData.sp + sp.userData.ph)), 18);
-    sp.material.opacity = f * facing * vis;
-    sp.scale.setScalar(0.3 + f*0.55);
-  });
+  gemGroup.scale.setScalar(lerp(st.gemScale, 1, q));
+  const gOp = intro.gem * st.gemOp * (1-uq);
+  gemMat.opacity = gOp; edgeMat.opacity = gOp*.5;
   pUni.uSize.value = lerp(22, 30, uq);
 
   helix.forEach(h => {
@@ -831,15 +487,11 @@ function tick(){
   });
 
   framesGroup.position.z = st.framesZ;
-  cubes.forEach(c => {
-    const wz = c.mesh.position.z + st.framesZ;
+  frameMats.forEach(f => {
+    const wz = f.mesh.position.z + st.framesZ;
     const near = THREE.MathUtils.clamp((baseZ - 0.6 - wz)/2.2, 0, 1);
-    const op = st.framesOp*(1-q)*near;
-    c.mats.forEach(m => m.opacity = op); c.edge.material.opacity = op*0.85;
-    c.mesh.visible = op > 0.001;
-    if(!(drag && drag.cube === c)){ c.vx *= 0.94; c.vy *= 0.94; c.ux += c.vx; c.uy += c.vy; }
-    c.mesh.rotation.x = Math.sin(st.framesZ*0.18 + c.i*1.7)*0.55 + c.ux;
-    c.mesh.rotation.y = st.framesZ*0.42 + t*0.12 + c.i*0.9 + c.uy;
+    f.mat.opacity = st.framesOp*(1-q)*near;
+    f.mesh.visible = f.mat.opacity > 0.001;
   });
 
   pl[0].position.set(Math.cos(t*.7)*3, 1.5, Math.sin(t*.7)*3);
@@ -876,9 +528,7 @@ const c1 = split(document.getElementById('t1')), c2 = split(document.getElementB
 const tl = gsap.timeline();
 const dur = reduce ? .6 : 1;
 tl.to(pUni.uProgress, { value:1, duration: reduce ? .8 : 3.4, ease:'power2.inOut' }, 0)
-  .to(intro, { gem:1, duration:1.8*dur, ease:'back.out(1.4)' }, reduce ? .4 : 2.3)
-  .to(pUni.uOpacity, { value:REST_OP, duration:1.6 }, reduce ? .8 : 3.1)
-  .add(() => heartCycle.play(), reduce ? 1 : 3.6)
+  .to(intro, { gem:1, duration:1.4*dur, ease:'power2.out' }, reduce ? .4 : 2.4)
   .from(c1, { yPercent:115, rotateX:-80, opacity:0, stagger:.06, duration:1.2*dur, ease:'power4.out' }, reduce ? .3 : 1.9)
   .from(c2, { yPercent:100, opacity:0, stagger:.035, duration:1*dur, ease:'power3.out' }, reduce ? .4 : 2.4)
   .to('.dates', { opacity:1, duration:1 }, reduce ? .4 : 2.6)
@@ -947,10 +597,10 @@ document.getElementById('submit').addEventListener('click', () => {
 });
 
 /* ---------- Confirmation + code QR en particules ---------- */
-const confirmEl = document.getElementById('confirm'), card = document.getElementById('card'), veil = document.getElementById('veil');
+const confirmEl = document.getElementById('confirm'), card = document.getElementById('card');
 function buildQRTargets(text){
   const holder = document.getElementById('qrHidden'); holder.innerHTML = '';
-  const qr = new QRCode(holder, { text, width:220, height:220, correctLevel:QRCode.CorrectLevel.H });
+  const qr = new QRCode(holder, { text, width:220, height:220, correctLevel:QRCode.CorrectLevel.M });
   const m = qr._oQRCode, n = m.getModuleCount(), dark = [];
   for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(m.isDark(r,c)) dark.push([r,c]);
   for(let i=dark.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [dark[i],dark[j]]=[dark[j],dark[i]]; }
@@ -968,94 +618,36 @@ function gcalLink(d){
 }
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
-// Carte d'entrée personnalisée : le QR code porte l'identité de l'événement
-function drawGem(x, cx, cy, w){
-  const h = w*0.82, top = cy - h*0.38, gird = cy - h*0.12, bot = cy + h*0.62, tw = w*0.28;
-  const g = x.createLinearGradient(cx-w/2, top, cx+w/2, bot);
-  g.addColorStop(0,'#8fb4ff'); g.addColorStop(.45,'#2451e0'); g.addColorStop(1,'#0a1f6a');
-  x.fillStyle = g; x.beginPath();
-  x.moveTo(cx-tw, top); x.lineTo(cx+tw, top); x.lineTo(cx+w/2, gird); x.lineTo(cx, bot); x.lineTo(cx-w/2, gird); x.closePath(); x.fill();
-  x.strokeStyle = 'rgba(220,232,255,.75)'; x.lineWidth = Math.max(1, w*0.018); x.lineJoin = 'round';
-  x.beginPath();
-  x.moveTo(cx-w/2, gird); x.lineTo(cx+w/2, gird);
-  x.moveTo(cx-tw, top); x.lineTo(cx-tw*0.45, gird); x.lineTo(cx, top); x.lineTo(cx+tw*0.45, gird); x.lineTo(cx+tw, top);
-  x.moveTo(cx-tw*0.45, gird); x.lineTo(cx, bot); x.lineTo(cx+tw*0.45, gird);
-  x.stroke();
-  x.fillStyle = 'rgba(255,255,255,.55)'; x.beginPath();
-  x.moveTo(cx-tw*0.7, top+h*0.03); x.lineTo(cx-tw*0.2, top+h*0.03); x.lineTo(cx-tw*0.55, gird-h*0.03); x.closePath(); x.fill();
-}
-function roundRect(x, X, Y, W, H, r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+W,Y,X+W,Y+H,r); x.arcTo(X+W,Y+H,X,Y+H,r); x.arcTo(X,Y+H,X,Y,r); x.arcTo(X,Y,X+W,Y,r); x.closePath(); }
-function drawTicket(d){
-  const W = 1080, H = 1680, c = document.createElement('canvas'); c.width = W; c.height = H;
-  const x = c.getContext('2d'), serif = '"Cormorant Garamond", Georgia, serif', sans = '"Jost", "Segoe UI", sans-serif';
-  const bg = x.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#13224f'); bg.addColorStop(.5,'#0b1535'); bg.addColorStop(1,'#060b1f');
-  x.fillStyle = bg; roundRect(x,0,0,W,H,56); x.fill();
-  const glow = x.createRadialGradient(W/2,190,0,W/2,190,420); glow.addColorStop(0,'rgba(80,120,255,.35)'); glow.addColorStop(1,'rgba(80,120,255,0)');
-  x.fillStyle = glow; x.fillRect(0,0,W,700);
-  const gold = x.createLinearGradient(0,0,W,H); gold.addColorStop(0,'#f0d9a6'); gold.addColorStop(.5,'#b8924e'); gold.addColorStop(1,'#f0d9a6');
-  x.strokeStyle = gold; x.lineWidth = 4; roundRect(x,34,34,W-68,H-68,40); x.stroke();
-  x.lineWidth = 1.5; x.globalAlpha = .6; roundRect(x,50,50,W-100,H-100,30); x.stroke(); x.globalAlpha = 1;
-
-  drawGem(x, W/2, 175, 120);
-  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
-  x.fillStyle = '#d8b87a'; x.font = `italic 400 54px ${serif}`; x.fillText('Noces de saphir', W/2, 320);
-  x.fillStyle = '#ffffff'; x.font = `300 104px ${serif}`; x.fillText('45 ans d\u2019amour', W/2, 425);
-  x.fillStyle = '#bcd3ff'; x.font = `400 34px ${sans}`; x.fillText(EVENT.couple, W/2, 485);
-
-  const qy = 540, qs = 640, qx = (W-qs)/2;
-  x.fillStyle = '#ffffff'; roundRect(x, qx, qy, qs, qs, 36); x.fill();
-  const holder = document.createElement('div');
-  const q = new QRCode(holder, { text:d.token, width:64, height:64, correctLevel:QRCode.CorrectLevel.H })._oQRCode;
-  const n = q.getModuleCount(), pad = 44, cell = (qs - pad*2) / n;
-  x.fillStyle = '#0d1838';
-  for(let r=0;r<n;r++) for(let cc=0;cc<n;cc++) if(q.isDark(r,cc)) x.fillRect(Math.floor(qx+pad+cc*cell), Math.floor(qy+pad+r*cell), Math.ceil(cell), Math.ceil(cell));
-  const ls = qs*0.2, lx = W/2 - ls/2, ly = qy + qs/2 - ls/2;
-  x.fillStyle = '#ffffff'; roundRect(x, lx, ly, ls, ls, 22); x.fill();
-  x.strokeStyle = '#d8b87a'; x.lineWidth = 4; roundRect(x, lx+8, ly+8, ls-16, ls-16, 16); x.stroke();
-  drawGem(x, W/2, qy + qs/2 - 6, ls*0.58);
-
-  x.fillStyle = '#bcd3ff'; x.font = `italic 400 34px ${serif}`; x.fillText(d.token, W/2, qy + qs + 56);
-  x.fillStyle = '#ffffff'; x.font = `400 64px ${serif}`; x.fillText(d.name, W/2, qy + qs + 150, W - 160);
-  const nb = d.guests.length;
-  x.fillStyle = '#93a0c4'; x.font = `400 32px ${sans}`; x.fillText(`${nb} ${nb>1?'personnes':'personne'}`, W/2, qy + qs + 200);
-  x.strokeStyle = 'rgba(216,184,122,.55)'; x.lineWidth = 2;
-  x.beginPath(); x.moveTo(W/2-200, qy+qs+245); x.lineTo(W/2+200, qy+qs+245); x.stroke();
-  x.fillStyle = '#eef1fb'; x.font = `400 38px ${sans}`; x.fillText(`${EVENT.dateLong}`, W/2, qy + qs + 305);
-  x.fillStyle = '#93a0c4'; x.font = `400 32px ${sans}`; x.fillText(`${EVENT.heure}, ${EVENT.lieu}, ${EVENT.ville}`, W/2, qy + qs + 355, W - 160);
-  x.fillStyle = '#d8b87a'; x.font = `italic 400 40px ${serif}`; x.fillText('Carte d\u2019entrée à présenter à l\u2019accueil', W/2, H - 90);
-  return c.toDataURL('image/png');
-}
-
 function openConfirm(d){
   document.body.classList.add('locked');
   confirmEl.classList.add('open');
-  gsap.set(card, { opacity:0, y:30 }); gsap.set(veil, { opacity:0 });
+  gsap.set(card, { opacity:0, y:30 });
   if(d.presence==='oui'){
     card.innerHTML = `
       <h2 id="cTitle">Merci, ${esc(d.name)}</h2>
-      <p class="lede">Votre présence est confirmée. Voici votre carte d'entrée.</p>
-      <img class="ticket" src="${drawTicket(d)}" alt="Carte d'entrée Noces de saphir pour ${esc(d.name)}, code ${d.token}">
+      <p class="lede">Votre présence est confirmée. Présentez ce code à l'entrée.</p>
+      <div class="qrbox" id="qrVisible"></div>
+      <p class="token">${d.token}</p>
       <ul class="summary">
         ${d.guests.map(g=>`<li><span>${esc(g.name)}</span><span>${esc(g.drink)}</span></li>`).join('')}
         <li><span>Table</span><span>Attribuée par les hôtes</span></li>
       </ul>
-      <p class="note">Appuyez longuement sur la carte pour l'enregistrer dans vos photos, ou faites une capture d'écran.</p>
+      <p class="note">Faites une capture d'écran de ce code pour l'avoir sous la main le jour venu.</p>
       <a class="btn-ghost" href="${gcalLink(d)}" target="_blank" rel="noopener">Ajouter à mon agenda Google</a>
       <button class="btn-ghost" type="button" id="closeC">Revenir au site</button>`;
+    new QRCode(document.getElementById('qrVisible'), { text:d.token, width:220, height:220, colorDark:'#0d1838', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
     buildQRTargets(d.token);
     const t = gsap.timeline();
     t.to(st, { qr:1, duration:1.1, ease:'power2.inOut' }, 0)
-     .to(pUni.uOpacity, { value:1, duration:.4 }, 0)
      .to(pUni.uQR, { value:1, duration: reduce ? .6 : 2.6, ease:'power2.inOut' }, .2)
      .to(pUni.uOpacity, { value:.0, duration:.8 }, reduce ? 1 : 3.1)
-     .to(veil, { opacity:1, duration:.8 }, reduce ? .9 : 2.9)
      .to(card, { opacity:1, y:0, duration:.9, ease:'power3.out' }, reduce ? .9 : 2.9);
   } else {
     card.innerHTML = `
       <h2 id="cTitle">Merci, ${esc(d.name)}</h2>
       <p class="lede">Votre réponse a bien été reçue. Vous nous manquerez, et le couple sera touché de votre attention.</p>
       <button class="btn-ghost" type="button" id="closeC">Revenir au site</button>`;
-    gsap.timeline().to(st, { qr:1, duration:1 }, 0).to(veil, { opacity:1, duration:.8 }, .4).to(card, { opacity:1, y:0, duration:.9 }, .4);
+    gsap.timeline().to(st, { qr:1, duration:1 }, 0).to(card, { opacity:1, y:0, duration:.9 }, .4);
   }
   document.getElementById('closeC').addEventListener('click', closeConfirm);
   document.getElementById('again').hidden = false;
@@ -1063,8 +655,7 @@ function openConfirm(d){
 function closeConfirm(){
   gsap.timeline({ onComplete(){ confirmEl.classList.remove('open'); document.body.classList.remove('locked'); } })
     .to(card, { opacity:0, y:20, duration:.4 }, 0)
-    .to(veil, { opacity:0, duration:.5 }, 0)
-    .to(pUni.uOpacity, { value:REST_OP, duration:.6 }, 0)
+    .to(pUni.uOpacity, { value:1, duration:.6 }, 0)
     .to(pUni.uQR, { value:0, duration:1.6, ease:'power2.inOut' }, .1)
     .to(st, { qr:0, duration:1.2, ease:'power2.inOut' }, .3);
 }

@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import { initRsvpForm } from './form.js';
-import { createQrPattern, createQrPng } from './qr.js';
+import { createQrPattern, createTicketPng } from './qr.js';
 import {
   createGoogleCalendarUrl,
   downloadIcsFile,
@@ -25,6 +25,16 @@ function escapeHtml(value) {
     };
     return entities[character];
   });
+}
+
+function createTicketFilename(familyName) {
+  const familySlug = familyName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('fr')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `Noces-de-saphir-${familySlug || 'invitation'}.png`;
 }
 
 function readStoredResponse(token) {
@@ -144,8 +154,8 @@ export function initRsvp({ event, sceneReady }) {
     document.body.classList.add('locked');
 
     if (response.presence === 'oui') {
-      const [qrImageUrl, qrPattern, readyScene] = await Promise.all([
-        createQrPng(response.token),
+      const [ticketImageUrl, qrPattern, readyScene] = await Promise.all([
+        createTicketPng(response.token, response, event),
         createQrPattern(response.token),
         sceneReady,
       ]);
@@ -165,16 +175,18 @@ export function initRsvp({ event, sceneReady }) {
 
       confirmationCard.innerHTML = `
         <h2 id="confirm-title">Merci, ${escapeHtml(response.name)}</h2>
-        <p class="lede">Votre présence est confirmée. Présentez ce code à l’entrée.</p>
-        <div class="qrbox"><img src="${qrImageUrl}" alt="Code QR d’entrée ${escapeHtml(response.token)}"></div>
+        <p class="lede">Votre présence est confirmée. Voici votre carte d’entrée.</p>
+        <a class="ticket-download" href="${ticketImageUrl}" download="${escapeHtml(createTicketFilename(response.name))}">
+          <img class="ticket-image" src="${ticketImageUrl}" alt="Carte d’entrée Noces de saphir pour ${escapeHtml(response.name)}, code ${escapeHtml(response.token)}">
+        </a>
         <p class="token">${escapeHtml(response.token)}</p>
         <ul class="summary">
           ${guests}
           <li><span>Table</span><span>${tableSummary}</span></li>
         </ul>
         ${notes}
-        <p class="note">Faites une capture d’écran de ce code pour l’avoir avec vous le jour venu.</p>
-        <a class="cta qr-download" href="${qrImageUrl}" download="${escapeHtml(response.token)}.png">Enregistrer mon code QR</a>
+        <p class="note">Enregistrez la carte d’entrée pour la présenter à l’accueil le jour venu.</p>
+        <a class="cta ticket-save" href="${ticketImageUrl}" download="${escapeHtml(createTicketFilename(response.name))}">Enregistrer mon code QR</a>
         <a class="btn-ghost" href="${escapeHtml(calendarUrl)}" target="_blank" rel="noopener">Ajouter à Google Agenda</a>
         <button class="btn-ghost" type="button" data-download-ics>Ajouter à mon calendrier (.ics)</button>
         <button class="btn-ghost" type="button" data-close-confirmation>Revenir au site</button>
@@ -205,7 +217,9 @@ export function initRsvp({ event, sceneReady }) {
       gsap.killTweensOf(scene.uniforms.uQR);
       gsap.killTweensOf(scene.uniforms.uOpacity);
       gsap.killTweensOf(scene.state, 'introProgress');
+      gsap.killTweensOf(scene.state, 'gemReveal');
       scene.state.introProgress = 1;
+      scene.state.gemReveal = 1;
       scene.state.qr = 0;
       scene.uniforms.uQR.value = 0;
       scene.uniforms.uOpacity.value = 1;

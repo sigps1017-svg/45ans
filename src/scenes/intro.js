@@ -42,7 +42,7 @@ function splitText(element) {
   return characters;
 }
 
-export function initIntro(sceneState) {
+export function initIntro(sceneState, startHeartCycle) {
   const firstTitle = document.querySelector('#t1');
   const secondTitle = document.querySelector('#t2');
   const firstCharacters = splitText(firstTitle);
@@ -57,6 +57,15 @@ export function initIntro(sceneState) {
       duration: reduce ? 0.8 : 3.4,
       ease: 'power2.inOut',
     })
+    .to(
+      sceneState,
+      {
+        gemReveal: 1,
+        duration: 1.8 * duration,
+        ease: 'back.out(1.4)',
+      },
+      reduce ? 0.4 : 2.3,
+    )
     .from(
       firstCharacters,
       {
@@ -82,7 +91,8 @@ export function initIntro(sceneState) {
     )
     .to('.dates', { opacity: 1, duration: reduce ? 0.2 : 1 }, reduce ? 0 : 2.6)
     .to('.names', { opacity: 1, duration: reduce ? 0.2 : 1 }, reduce ? 0 : 2.9)
-    .to('.hint', { opacity: 1, duration: reduce ? 0.2 : 1 }, reduce ? 0 : 3.3);
+    .to('.hint', { opacity: 1, duration: reduce ? 0.2 : 1 }, reduce ? 0 : 3.3)
+    .add(startHeartCycle);
 
   return () => timeline.kill();
 }

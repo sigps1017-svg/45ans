@@ -26,7 +26,7 @@ Porter progressivement le contenu de `reference-apercu.html` dans la structure
 modulaire suivante :
 
 - `src/config.js` : données de l'événement, prénoms, boissons et souvenirs
-  (année, légende et chemin de photo).
+  (année, légende et six photos facultatives par souvenir).
 - `src/scenes/` : intro, histoire et souvenirs.
 - `src/rsvp/` : formulaire, confirmation/code QR et ajout au calendrier.
 - `src/lib/` : intégrations et utilitaires partagés, dont les clients et accès
@@ -40,10 +40,11 @@ utiliser `renderer.outputColorSpace` au lieu de l'ancienne API
 utiliser `QRCode.create()` et ses données de modules plutôt que des propriétés
 internes du DOM ou de l'objet QR.
 
-Les photos des souvenirs sont servies depuis `public/photos/` avec un fichier
-par année configurée (par exemple `1981.jpg`). Charger les textures avec
-`THREE.TextureLoader` et conserver la texture illustrée générée en canvas comme
-repli si une image est absente.
+Les six faces photo de chaque cube souvenir sont configurées dans `src/config.js`
+et les images renseignées sont servies depuis `public/photos/`. Charger les
+fichiers avec `THREE.TextureLoader`, réduire les textures utilisées sur les cubes
+pour ménager la mémoire graphique mobile, et conserver la texture illustrée
+générée en canvas comme repli si une image est absente.
 
 ## Persistance et limites actuelles
 
@@ -70,6 +71,23 @@ compte en mettant son rôle à `admin` dans l’éditeur SQL. La page `gestion.h
 permet ensuite de gérer les invitations, créer/copier/partager les liens et
 exporter la liste en CSV. L’équipe d’accueil recherche une invitation scannée
 via une RPC qui ne révèle pas le token.
+
+La gestion des comptes de l'équipe est fournie par `/api/team` (fonction Node
+Vercel) et l'onglet « Équipe » de `gestion.html`. La liste présente tous les
+comptes Auth, y compris ceux qui ne sont pas encore enregistrés dans `staff`;
+ces derniers peuvent être ajoutés à l'équipe en leur attribuant un rôle.
+Chaque appel serveur valide le jeton Auth et le rôle admin avant toute opération. La clé serveur
+`SUPABASE_SECRET_KEY` ne doit jamais porter le préfixe `VITE_`; configurer aussi
+`SUPABASE_URL` dans l'environnement Vercel (en local, l'URL client
+`VITE_SUPABASE_URL` peut être réutilisée côté serveur). Exécuter
+`supabase/migrations/20260929_admin_team_management.sql`, puis
+`supabase/migrations/20260930_admin_auth_user_membership.sql` manuellement
+avant d'utiliser la gestion des rôles : la fonction verrouille les écritures
+sur `staff`, protège le dernier admin et inscrit les comptes Auth existants
+dans `staff` lorsqu'un rôle leur est attribué. Pour servir les pages et
+fonctions API en local, utiliser `npm run dev`; le serveur Vite branche la
+même fonction sur `/api/team`. En production, Vercel détecte directement
+`api/team.js`.
 
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec fuseau horaire pour

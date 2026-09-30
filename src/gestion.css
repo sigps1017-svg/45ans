@@ -34,6 +34,7 @@ body {
 
 button,
 input,
+select,
 a {
   font: inherit;
 }
@@ -45,7 +46,8 @@ a {
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid var(--admin-ice);
   outline-offset: 3px;
 }
@@ -126,7 +128,8 @@ main {
 
 .admin-login,
 .create-panel,
-.invite-list-panel {
+.invite-list-panel,
+.team-card {
   border: 1px solid var(--admin-line);
   border-radius: 18px;
   background: rgba(16, 30, 72, 0.86);
@@ -150,13 +153,17 @@ main {
 }
 
 .admin-login form,
-.create-form {
+.create-form,
+.team-create-form {
   display: grid;
   gap: 10px;
 }
 
 .admin-login label,
 .create-form label,
+.team-create-form label,
+.member-role-form label,
+.member-password-form label,
 .search-label,
 .invite-link-block label {
   display: grid;
@@ -174,6 +181,18 @@ input {
   border-radius: 10px;
   color: var(--admin-text);
   background: rgba(7, 13, 36, 0.75);
+  font-size: 1rem;
+}
+
+select {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 9px 12px;
+  border: 1px solid var(--admin-line);
+  border-radius: 10px;
+  color: var(--admin-text);
+  background: #101e48;
   font-size: 1rem;
 }
 
@@ -207,6 +226,139 @@ input {
 
 .create-form button {
   min-height: 46px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--admin-line);
+}
+
+.admin-tab {
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--admin-muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-tab[aria-selected="true"] {
+  border-bottom-color: var(--admin-ice);
+  color: var(--admin-text);
+}
+
+.admin-tab-panel {
+  min-width: 0;
+}
+
+.team-create-form {
+  grid-template-columns: minmax(180px, 1.2fr) minmax(260px, 1.6fr) minmax(140px, 0.8fr) auto;
+  align-items: end;
+  margin-top: 18px;
+}
+
+.password-control {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.password-control input {
+  flex: 1;
+}
+
+.password-control button {
+  flex: none;
+}
+
+.team-help {
+  margin: 12px 0 0;
+  color: var(--admin-muted);
+  font-size: 0.88rem;
+}
+
+.team-list {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-card {
+  min-width: 0;
+  padding: clamp(14px, 3vw, 22px);
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+  background: rgba(7, 13, 36, 0.48);
+}
+
+.team-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.team-card-heading h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+}
+
+.team-card-heading p {
+  margin: 5px 0 0;
+  color: var(--admin-muted);
+  font-size: 0.88rem;
+}
+
+.team-role {
+  flex: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: var(--admin-ink);
+  background: var(--admin-ice);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.team-role.no-team-role {
+  color: var(--admin-text);
+  background: rgba(216, 184, 122, 0.3);
+}
+
+.member-role-form,
+.member-password-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.member-remove-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.member-remove-actions .delete-button:last-child {
+  border-color: rgba(255, 110, 110, 0.65);
+  background: rgba(100, 18, 35, 0.52);
+}
+
+.team-list-panel {
+  margin-top: 22px;
+}
+
+.team-status.error {
+  color: #ffaaaa;
 }
 
 .notice,
@@ -370,7 +522,8 @@ footer {
 
 @media (max-width: 800px) {
   .create-form,
-  .edit-form {
+  .edit-form,
+  .team-create-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -380,7 +533,8 @@ footer {
   }
 
   .create-form button,
-  .edit-form button {
+  .edit-form button,
+  .team-create-form button {
     grid-column: 1 / -1;
   }
 }
@@ -423,13 +577,16 @@ footer {
   }
 
   .create-form,
-  .edit-form {
+  .edit-form,
+  .team-create-form {
     grid-template-columns: minmax(0, 1fr) minmax(100px, 0.65fr);
     gap: 9px;
   }
 
   .create-form label:first-child,
-  .edit-form label:first-child {
+  .edit-form label:first-child,
+  .team-create-form label:first-child,
+  .team-create-form label:nth-child(2) {
     grid-column: 1 / -1;
   }
 
@@ -439,7 +596,8 @@ footer {
   }
 
   .create-form button,
-  .edit-form button {
+  .edit-form button,
+  .team-create-form button {
     grid-column: 1 / -1;
   }
 
@@ -450,5 +608,15 @@ footer {
   .delete-button {
     padding-inline: 10px;
     font-size: 0.88rem;
+  }
+
+  .member-role-form,
+  .member-password-form {
+    grid-template-columns: 1fr;
+  }
+
+  .member-role-form button,
+  .member-password-form button {
+    width: 100%;
   }
 }

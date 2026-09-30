@@ -40,7 +40,7 @@ const scenePromise = import('./scenes/sapphire-scene.js')
     rsvp.setScene(scene);
     resolveSceneReady(scene);
     cleanups.push(
-      initIntro(scene.state),
+      initIntro(scene.state, scene.startHeartCycle),
       initHistory(scene.state, event),
       initSouvenirs(scene, memories),
     );
