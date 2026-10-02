@@ -55,11 +55,11 @@ export function createGoogleCalendarUrl(response) {
 }
 
 export function createIcsFile(response) {
-  const uid = `${response.token.toLowerCase()}@noces-de-saphir`;
+  const uid = `${response.token.toLowerCase()}@noces-de-vermeil`;
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Noces de saphir//Invitation 45 ans//FR',
+    'PRODID:-//Noces de vermeil//Invitation 45 ans//FR',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VTIMEZONE',
@@ -92,7 +92,7 @@ export function downloadIcsFile(response) {
   const url = URL.createObjectURL(createIcsFile(response));
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `noces-de-saphir-${response.token.toLowerCase()}.ics`;
+  anchor.download = `noces-de-vermeil-${response.token.toLowerCase()}.ics`;
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

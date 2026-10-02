@@ -34,7 +34,7 @@ function createTicketFilename(familyName) {
     .toLocaleLowerCase('fr')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-  return `Noces-de-saphir-${familySlug || 'invitation'}.png`;
+  return `Noces-de-vermeil-${familySlug || 'invitation'}.png`;
 }
 
 function readStoredResponse(token) {
@@ -177,7 +177,7 @@ export function initRsvp({ event, sceneReady }) {
         <h2 id="confirm-title">Merci, ${escapeHtml(response.name)}</h2>
         <p class="lede">Votre présence est confirmée. Voici votre carte d’entrée.</p>
         <a class="ticket-download" href="${ticketImageUrl}" download="${escapeHtml(createTicketFilename(response.name))}">
-          <img class="ticket-image" src="${ticketImageUrl}" alt="Carte d’entrée Noces de saphir pour ${escapeHtml(response.name)}, code ${escapeHtml(response.token)}">
+          <img class="ticket-image" src="${ticketImageUrl}" alt="Carte d’entrée Noces de vermeil pour ${escapeHtml(response.name)}, code ${escapeHtml(response.token)}">
         </a>
         <p class="token">${escapeHtml(response.token)}</p>
         <ul class="summary">

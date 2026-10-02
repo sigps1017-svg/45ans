@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HUES = [222, 200, 262, 18, 340, 170];
+const HUES = [28, 12, 345, 40, 18, 330];
 
 function seeded(seed) {
   return () => {
@@ -57,8 +57,8 @@ function drawPhoto(context, size, memory, faceIndex) {
   }
 
   const captionBand = context.createLinearGradient(0, size * 0.62, 0, size - border);
-  captionBand.addColorStop(0, 'rgba(5,9,26,0)');
-  captionBand.addColorStop(1, 'rgba(5,9,26,.7)');
+  captionBand.addColorStop(0, 'rgba(9,8,14,0)');
+  captionBand.addColorStop(1, 'rgba(9,8,14,.7)');
   context.fillStyle = captionBand;
   context.fillRect(
     border,
@@ -74,7 +74,7 @@ function drawPhoto(context, size, memory, faceIndex) {
   const centerX = size / 2;
   const centerY = size * 0.4;
   const diamond = size * 0.06;
-  context.strokeStyle = 'rgba(220,232,255,.7)';
+  context.strokeStyle = 'rgba(250,228,205,.7)';
   context.lineWidth = size * 0.004;
   context.beginPath();
   context.moveTo(centerX, centerY - diamond);
@@ -85,15 +85,15 @@ function drawPhoto(context, size, memory, faceIndex) {
   context.stroke();
 
   context.textAlign = 'center';
-  context.fillStyle = 'rgba(220,232,255,.75)';
+  context.fillStyle = 'rgba(250,228,205,.75)';
   context.font = `italic ${size * 0.05}px Georgia, serif`;
   context.fillText('Photo à venir', centerX, centerY + diamond * 2.4);
   context.textAlign = 'left';
-  context.fillStyle = '#f0d9a6';
+  context.fillStyle = '#f7dcb0';
   context.font = `300 ${size * 0.12}px Georgia, serif`;
   context.fillText(String(memory.year), border * 1.8, size - border * 2.4);
   context.textAlign = 'right';
-  context.fillStyle = 'rgba(238,241,251,.8)';
+  context.fillStyle = 'rgba(246,240,234,.8)';
   context.font = `italic ${size * 0.052}px Georgia, serif`;
   context.fillText(`${faceIndex + 1} / 6`, size - border * 1.8, size - border * 2.6);
 }
@@ -286,7 +286,7 @@ export function initSouvenirs(sceneApi, memories) {
     });
     const mesh = new THREE.Mesh(boxGeometry, materials);
     const edgeMaterial = new THREE.LineBasicMaterial({
-      color: 0xd8b87a,
+      color: 0xb0832f,
       transparent: true,
       opacity: 0,
       toneMapped: false,

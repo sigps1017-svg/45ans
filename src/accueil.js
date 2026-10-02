@@ -18,7 +18,7 @@ const AUTO_RETURN_DELAY = 6_000;
 root.innerHTML = `
   <header class="staff-header">
     <div class="staff-brand">
-      <span class="staff-kicker">Noces de saphir · 45 ans</span>
+      <span class="staff-kicker">Noces de vermeil · 45 ans</span>
       <h1>Accueil des invités</h1>
     </div>
     <button class="arrival-counter" id="arrival-counter" type="button" hidden aria-label="Ouvrir les listes d’accueil">

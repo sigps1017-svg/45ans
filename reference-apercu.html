@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>45 ans d'amour – Noces de saphir</title>
+<title>45 ans d'amour – Noces de vermeil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#070d24; --ink-2:#0d1838; --sapphire:#2451e0; --ice:#bcd3ff;
-  --gold:#d8b87a; --text:#eef1fb; --muted:#93a0c4;
-  --glass:rgba(16,30,72,.46); --line:rgba(188,211,255,.18);
+  --ink:#2a2018; --ink-2:#1f1812; --sapphire:#c9a24e; --ice:#d9dde3;
+  --gold:#e3c27a; --text:#f6efe4; --muted:#cbbda8;
+  --glass:rgba(22,17,12,.52); --line:rgba(232,214,180,.24);
   --serif:"Cormorant Garamond", "Iowan Old Style", Georgia, serif;
   --sans:"Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   box-sizing:border-box;
@@ -20,9 +20,9 @@
 }
 /* Le site est volontairement nocturne : mêmes jetons en clair et en sombre */
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){ --ink:#070d24; --text:#eef1fb; --muted:#93a0c4; }
+  :root:not([data-theme="light"]){ --ink:#2a2018; --text:#f6efe4; --muted:#cbbda8; }
 }
-:root[data-theme="dark"]{ --ink:#070d24; --text:#eef1fb; --muted:#93a0c4; }
+:root[data-theme="dark"]{ --ink:#2a2018; --text:#f6efe4; --muted:#cbbda8; }
 html{ scroll-padding-top:env(safe-area-inset-top,0px); }
 *,*::before,*::after{ box-sizing:border-box; }
 body{
@@ -38,7 +38,7 @@ button,input{ font:inherit; color:inherit; }
 
 .skip{
   position:fixed; z-index:5; right:16px; top:calc(14px + env(safe-area-inset-top,0px));
-  background:rgba(7,13,36,.55); border:1px solid var(--line); border-radius:999px;
+  background:rgba(22,17,12,.5); border:1px solid var(--line); border-radius:999px;
   padding:8px 16px; font-size:14px; letter-spacing:.02em; cursor:pointer;
   backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
 }
@@ -57,7 +57,9 @@ button,input{ font:inherit; color:inherit; }
   font-family:var(--serif); font-style:italic; font-weight:300; margin:4px 0 18px;
   font-size:clamp(34px, 8vw, 64px); color:var(--gold); perspective:600px;
 }
-.names{ font-size:15px; letter-spacing:.14em; color:var(--muted); margin:0; opacity:0; }
+.names{ font-size:19px; letter-spacing:.1em; color:var(--text); margin:0; opacity:0; }
+.names strong{ font-weight:600; color:#fff6e0; }
+.names .et{ font-family:var(--serif); font-style:italic; font-weight:300; color:var(--gold); letter-spacing:0; padding:0 .2em; }
 .word{ display:inline-block; white-space:nowrap; }
 .char{ display:inline-block; will-change:transform; }
 .hint{ margin-top:34px; font-size:13px; color:var(--muted); opacity:0; }
@@ -72,7 +74,7 @@ button,input{ font:inherit; color:inherit; }
 .year{
   font-family:var(--serif); font-weight:300; font-size:clamp(88px, 26vw, 220px);
   line-height:1; letter-spacing:-.03em; font-variant-numeric:lining-nums tabular-nums;
-  background:linear-gradient(180deg,#fff 20%, var(--ice) 60%, var(--sapphire));
+  background:linear-gradient(180deg,#fff6e0 15%, #e3c27a 55%, #c0c4cc);
   -webkit-background-clip:text; background-clip:text; color:transparent;
 }
 .lines{ position:relative; height:3.4em; width:min(560px,100%); font-family:var(--serif); font-size:clamp(22px,5.4vw,32px); font-style:italic; }
@@ -82,9 +84,15 @@ button,input{ font:inherit; color:inherit; }
 .souv-title p{ color:var(--muted); margin:10px 0 0; font-size:15px; }
 
 /* Invitation & réponse */
+body{ background:#2a2018; }
+.bg{ position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 18%, rgba(240,205,130,.28), rgba(240,205,130,0) 70%),
+    radial-gradient(ellipse 80% 40% at 80% 85%, rgba(200,206,216,.18), rgba(200,206,216,0) 70%),
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%); }
 .panel{
   width:min(560px,100%); margin:0 auto; background:var(--glass);
-  border:1px solid var(--line); border-radius:28px; padding:36px 28px;
+  border:1px solid var(--line); border-radius:28px; padding:36px 28px; box-shadow:0 20px 60px rgba(0,0,0,.25);
   backdrop-filter:blur(18px) saturate(1.2); -webkit-backdrop-filter:blur(18px) saturate(1.2);
 }
 #invitation, #rsvp{ padding:14svh 18px; }
@@ -100,35 +108,46 @@ button,input{ font:inherit; color:inherit; }
 .field{ display:block; margin:0 0 22px; }
 .field > span{ display:block; font-size:14px; color:var(--muted); margin-bottom:8px; }
 .field input{
-  width:100%; background:rgba(7,13,36,.5); border:1px solid var(--line); border-radius:14px;
+  width:100%; background:rgba(15,11,8,.45); border:1px solid var(--line); border-radius:14px;
   padding:14px 16px; font-size:16px; outline:none; transition:border-color .2s;
 }
-.field input:focus{ border-color:var(--ice); }
+.field input:focus{ border-color:var(--gold); }
 .presence{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
 .pres{
   background:transparent; border:1px solid var(--line); border-radius:16px; padding:16px 12px;
   cursor:pointer; text-align:left; font-size:15px; line-height:1.3; transition:all .25s;
 }
 .pres strong{ display:block; font-family:var(--serif); font-weight:500; font-size:21px; margin-bottom:2px; }
-.pres[aria-pressed="true"]{ border-color:var(--gold); background:rgba(216,184,122,.1); }
+.pres[aria-pressed="true"]{ border-color:var(--gold); background:rgba(227,194,122,.12); }
 .stepper{ display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px; }
 .stepper button{ width:46px; height:46px; background:none; border:0; font-size:22px; cursor:pointer; }
 .stepper output{ min-width:36px; text-align:center; font-family:var(--serif); font-size:26px; }
+.note-drinks{ display:flex; gap:14px; align-items:flex-start; margin:0 0 8px; padding:16px 18px; border-radius:18px;
+  background:rgba(227,194,122,.15); border:1px solid rgba(227,194,122,.6); border-left:5px solid var(--gold);
+  animation:notePulse 2.2s ease-in-out 3; }
+.note-drinks .ic{ flex:none; width:28px; height:28px; border-radius:50%; background:var(--gold); color:#1f1a10;
+  display:grid; place-items:center; font-weight:600; font-size:17px; line-height:1; margin-top:1px; }
+.note-drinks p{ margin:0; font-size:16px; line-height:1.45; color:var(--text); }
+.note-drinks b{ display:block; font-weight:600; font-size:17px; color:#fff6e0; margin-bottom:3px; }
+@keyframes notePulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(227,194,122,0); } 50%{ box-shadow:0 0 0 7px rgba(227,194,122,.22); } }
+.drink-label{ font-size:14px; color:var(--text); margin:2px 0 8px; font-weight:500; }
+.drink-label span{ color:var(--gold); font-weight:400; font-size:13px; margin-left:6px; }
+.guest.missing{ border-radius:14px; outline:2px solid #ffb4a8; outline-offset:6px; }
 .guest{ border-top:1px solid var(--line); padding:18px 0 6px; }
 .guest input{ width:100%; background:none; border:0; border-bottom:1px solid var(--line); padding:6px 0 8px; margin-bottom:12px; font-family:var(--serif); font-size:21px; outline:none; }
-.guest input:focus{ border-bottom-color:var(--ice); }
+.guest input:focus{ border-bottom-color:var(--gold); }
 .chips{ display:flex; flex-wrap:wrap; gap:8px; }
 .chip{
-  border:1px solid var(--line); background:rgba(7,13,36,.35); border-radius:999px;
+  border:1px solid var(--line); background:rgba(15,11,8,.35); border-radius:999px;
   padding:8px 14px; font-size:14px; cursor:pointer; transition:all .2s;
 }
-.chip[aria-pressed="true"]{ background:var(--sapphire); border-color:var(--ice); box-shadow:0 0 18px rgba(36,81,224,.6); }
+.chip[aria-pressed="true"]{ background:linear-gradient(135deg,#f1d999,#c9a24e); color:#1f1a10; border-color:#f1d999; box-shadow:0 0 18px rgba(227,194,122,.45); }
 .cta{
   width:100%; margin-top:18px; border:0; border-radius:999px; padding:17px 20px; cursor:pointer;
-  background:linear-gradient(135deg,#f0d9a6,var(--gold) 55%,#b8924e); color:#1a1430;
+  background:linear-gradient(135deg,#f1d999,#c9a24e 50%,#9c7224); color:#1f1a10;
   font-weight:500; font-size:17px; letter-spacing:.02em;
 }
-.err{ color:#ffb4b4; font-size:14px; min-height:1.3em; margin:10px 0 0; text-align:center; }
+.err{ color:#ffb4a8; font-size:14px; min-height:1.3em; margin:10px 0 0; text-align:center; }
 .again{ text-align:center; margin:0 0 22px; font-size:15px; color:var(--muted); }
 .again button{ background:none; border:0; color:var(--gold); text-decoration:underline; cursor:pointer; padding:0; }
 footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-style:italic; font-size:18px; padding:4svh 20px 10svh; }
@@ -136,16 +155,16 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
 /* Confirmation */
 #confirm{
   position:fixed; inset:0; z-index:10; overflow-y:auto; display:none;
-  background:radial-gradient(ellipse at 50% 30%, rgba(7,13,36,.1), rgba(7,13,36,.75) 70%);
+  background:radial-gradient(ellipse at 50% 30%, rgba(30,23,16,.1), rgba(30,23,16,.7) 70%);
   padding:calc(24px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px));
 }
 #confirm.open{ display:block; }
 .confirm-card{ position:relative; z-index:1; width:min(440px,100%); margin:6svh auto; text-align:center; opacity:0; }
-.veil{ position:fixed; inset:0; background:rgba(7,13,36,.88); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; pointer-events:none; }
+.veil{ position:fixed; inset:0; background:rgba(28,21,15,.9); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:0; pointer-events:none; }
 .confirm-card h2{ font-family:var(--serif); font-weight:300; font-size:clamp(34px,8vw,46px); margin:0; line-height:1.05; }
 .confirm-card .lede{ margin:8px 0 22px; }
 .ticket{ display:block; width:min(340px,100%); height:auto; margin:4px auto 16px; border-radius:22px;
-  box-shadow:0 0 70px rgba(36,81,224,.5), 0 20px 50px rgba(0,0,0,.45); -webkit-touch-callout:default; }
+  box-shadow:0 0 60px rgba(227,194,122,.35), 0 20px 50px rgba(0,0,0,.45); -webkit-touch-callout:default; }
 .token{ font-family:var(--serif); font-style:italic; color:var(--ice); font-size:18px; margin:0 0 18px; }
 .summary{ text-align:left; list-style:none; padding:0; margin:0 0 18px; }
 .summary li{ display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); font-size:15px; }
@@ -160,22 +179,23 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
 #lightbox{ position:fixed; inset:0; z-index:12; display:flex; align-items:center; justify-content:center;
   padding:calc(64px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px)); }
 #lightbox[hidden]{ display:none; }
-.lb-veil{ position:absolute; inset:0; background:rgba(5,9,26,.9); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+.lb-veil{ position:absolute; inset:0; background:rgba(24,18,13,.93); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
 .lb-fig{ position:relative; margin:0; width:min(560px,100%); }
 .lb-fig img{ display:block; width:100%; max-height:62svh; object-fit:contain; border-radius:18px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px var(--line); user-select:none; -webkit-user-drag:none; }
+  box-shadow:0 30px 70px rgba(0,0,0,.55), 0 0 0 1px var(--line); user-select:none; -webkit-user-drag:none; }
 .lb-fig figcaption{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:16px; }
 .lb-fig strong{ font-family:var(--serif); font-weight:300; font-size:36px; line-height:1; color:var(--gold); }
 .lb-fig span{ font-family:var(--serif); font-style:italic; font-size:22px; }
 .lb-fig small{ margin-left:auto; color:var(--muted); font-size:14px; }
 .lb-nav{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
-.lb-nav button, .lb-close{ border:1px solid var(--line); background:rgba(16,30,72,.6); border-radius:999px;
+.lb-nav button, .lb-close{ border:1px solid var(--line); background:rgba(30,24,18,.7); border-radius:999px;
   padding:13px; font-size:15px; cursor:pointer; }
 .lb-close{ position:fixed; top:calc(14px + env(safe-area-inset-top,0px)); right:16px; padding:10px 18px; z-index:1; }
-@media (prefers-reduced-motion: reduce){ .hint span{ animation:none; } }
+@media (prefers-reduced-motion: reduce){ .hint span, .note-drinks{ animation:none; } }
 </style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"></div>
 <canvas id="webgl" aria-hidden="true"></canvas>
 <button class="skip" id="skip" type="button">Passer à l'invitation</button>
 
@@ -184,7 +204,7 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
     <p class="dates">1981 – 2026</p>
     <h1 class="title split" id="t1">45 ans</h1>
     <p class="title-sub split" id="t2">d'amour</p>
-    <p class="names">Prénom et Prénom</p>
+    <p class="names"><strong>Alexandre</strong> <span class="et">et</span> <strong>Elisabeth</strong></p>
     <div class="hint">Faites défiler<span></span></div>
   </section>
 
@@ -208,12 +228,12 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
 
   <section id="invitation">
     <div class="panel">
-      <h2>Célébrons leurs noces de saphir</h2>
+      <h2>Célébrons leurs noces de vermeil</h2>
       <p class="lede">Vous êtes invités à une soirée en leur honneur.</p>
       <dl class="details">
-        <div><dt>Quand</dt><dd>Samedi 14 novembre 2026<small>Cocktail à 17 h, souper à 18 h 30</small></dd></div>
-        <div><dt>Où</dt><dd>Nom de la salle<small>Adresse, Dieppe (N.-B.)</small></dd></div>
-        <div><dt>Tenue</dt><dd>Chic, avec une touche de bleu saphir</dd></div>
+        <div><dt>Quand</dt><dd>Samedi 26 décembre 2026<small>Cocktail à 17 h, dîner à 18 h 30</small></dd></div>
+        <div><dt>Où</dt><dd>Riviera, Attoban<small>Abidjan, Côte d'Ivoire</small></dd></div>
+        <div><dt>Tenue</dt><dd>Chic, avec une touche dorée</dd></div>
       </dl>
     </div>
   </section>
@@ -239,6 +259,11 @@ footer{ text-align:center; color:var(--muted); font-family:var(--serif); font-st
               <output id="count">2</output>
               <button type="button" id="plus" aria-label="Ajouter une personne">+</button>
             </div>
+          </div>
+          <div class="note-drinks" role="note">
+            <span class="ic" aria-hidden="true">!</span>
+            <p><b>Important : choisissez une boisson pour chaque personne.</b>
+            Ce choix est obligatoire pour confirmer votre présence. Il nous permet de préparer le service.</p>
           </div>
           <div id="guests"></div>
           <label class="field" style="margin-top:18px"><span>Allergies alimentaires (facultatif)</span>
@@ -283,30 +308,30 @@ const isSmall = Math.min(innerWidth, innerHeight) < 700;
 
 /* ---------- Événement (à personnaliser) ---------- */
 const EVENT = {
-  title: "Noces de saphir – 45 ans de mariage",
-  couple: "Prénom et Prénom",
-  dateLong: "Samedi 14 novembre 2026",
+  title: "Noces de vermeil – 45 ans de mariage",
+  couple: "Alexandre et Elisabeth",
+  dateLong: "Samedi 26 décembre 2026",
   heure: "Accueil dès 17 h",
-  lieu: "Nom de la salle",
-  ville: "Dieppe (N.-B.)",
-  location: "Nom de la salle, Dieppe (N.-B.)",
-  gcalDates: "20261114T210000Z/20261115T030000Z",
+  lieu: "Riviera, Attoban",
+  ville: "Abidjan",
+  location: "Riviera, Attoban, Abidjan",
+  gcalDates: "20261226T170000Z/20261226T230000Z",
   details: "Soirée en l'honneur de leurs 45 ans de mariage. Apportez votre code QR."
 };
 const DRINKS = ["Vin rouge","Vin blanc","Mousseux","Bière","Cocktail sans alcool","Jus ou eau"];
 
 /* ---------- Three.js ---------- */
 const canvas = document.getElementById('webgl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, premultipliedAlpha:false });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
-renderer.setClearColor(0x070d24, 1);
+renderer.setClearColor(0x3a2c1e, 0);
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMappingExposure = 1.1;
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x070d24, 9, 34);
+scene.fog = new THREE.Fog(0x3a2c1e, 9, 34);
 const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
 let baseZ = 7;
 function fitCamera(){
@@ -318,39 +343,69 @@ fitCamera();
 camera.position.set(0,0,baseZ);
 
 // Lumières
-scene.add(new THREE.AmbientLight(0x6f86c9, 0.55));
+scene.add(new THREE.AmbientLight(0xc9a08a, 0.55));
 const key = new THREE.DirectionalLight(0xffffff, 1.1); key.position.set(3,5,4); scene.add(key);
 const pl = [
-  new THREE.PointLight(0x7fb2ff, 2.2, 12),
+  new THREE.PointLight(0xffe2a8, 2.2, 12),
   new THREE.PointLight(0xffffff, 1.6, 12),
-  new THREE.PointLight(0xb07cff, 1.8, 12)
+  new THREE.PointLight(0xff9f7a, 1.8, 12)
 ];
 pl.forEach(l => scene.add(l));
 
-// Étoiles
+// Ciel étoilé scintillant (or, argent, blanc)
+const skyUni = { uTime:{value:0}, uPR:{value:renderer.getPixelRatio()} };
 {
-  const n = isSmall ? 900 : 1600, pos = new Float32Array(n*3);
+  const n = isSmall ? 1100 : 1900, pos = new Float32Array(n*3), rr = new Float32Array(n);
   for(let i=0;i<n;i++){
-    const r = 14 + Math.random()*18, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
+    const r = 12 + Math.random()*18, th = Math.random()*Math.PI*2, ph = Math.acos(2*Math.random()-1);
     pos[i*3]=r*Math.sin(ph)*Math.cos(th); pos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pos[i*3+2]=r*Math.cos(ph)-6;
+    rr[i] = Math.random();
   }
-  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3));
-  var stars = new THREE.Points(g, new THREE.PointsMaterial({ color:0xbcd3ff, size:0.06, transparent:true, opacity:.8, fog:false }));
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  g.setAttribute('aRand', new THREE.BufferAttribute(rr,1));
+  var stars = new THREE.Points(g, new THREE.ShaderMaterial({
+    uniforms:skyUni, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+    vertexShader:`
+      uniform float uTime, uPR; attribute float aRand;
+      varying float vTw; varying float vR;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position,1.0);
+        gl_Position = projectionMatrix * mv;
+        vTw = 0.35 + 0.65*pow(0.5 + 0.5*sin(uTime*(0.8 + aRand*2.6) + aRand*80.0), 2.0);
+        vR = aRand;
+        float big = step(0.94, aRand);
+        gl_PointSize = (2.2 + aRand*2.6 + big*9.0) * uPR * (0.7 + vTw*0.5);
+      }`,
+    fragmentShader:`
+      varying float vTw; varying float vR;
+      void main(){
+        vec2 c = gl_PointCoord - 0.5; float d = length(c);
+        float core = smoothstep(0.5, 0.0, d);
+        float cross = step(0.94, vR) * max(smoothstep(0.06,0.0,abs(c.x)) * smoothstep(0.5,0.0,abs(c.y)),
+                                           smoothstep(0.06,0.0,abs(c.y)) * smoothstep(0.5,0.0,abs(c.x)));
+        float a = max(core*core, cross);
+        if(a < 0.01) discard;
+        vec3 col = vR < 0.4 ? vec3(1.0,0.86,0.55) : (vR < 0.75 ? vec3(0.86,0.89,0.95) : vec3(1.0,0.97,0.9));
+        gl_FragColor = vec4(col, a * vTw);
+      }`
+  }));
+  stars.frustumCulled = false;
   scene.add(stars);
 }
 
 // Environnement de studio (reflets du bijou), généré sans fichier externe
 function makeEnvironment(){
   const env = new THREE.Scene();
-  env.add(new THREE.Mesh(new THREE.BoxGeometry(24,24,24), new THREE.MeshBasicMaterial({ color:0x0b1438, side:THREE.BackSide })));
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(24,24,24), new THREE.MeshBasicMaterial({ color:0x1e1914, side:THREE.BackSide })));
   const panel = (w,h,col,k,x,y,z) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({ color:new THREE.Color(col).multiplyScalar(k), side:THREE.DoubleSide }));
     m.position.set(x,y,z); m.lookAt(0,0,0); env.add(m);
   };
   panel(9,3,0xffffff,7, 0,10,0);
   panel(3,7,0xffffff,5, -10,1,3);
-  panel(3,7,0xe4ecff,4, 10,2,-3);
-  panel(7,2,0x7aa2ff,4, 0,-3,10);
+  panel(3,7,0xfff0e0,4, 10,2,-3);
+  panel(7,2,0xffb88a,4, 0,-3,10);
   panel(2,2,0xffffff,10, 5,6,9);
   panel(1.4,1.4,0xffffff,10, -6,4,8);
   panel(5,1.6,0xffe2b0,3, -6,-5,-8);
@@ -360,7 +415,7 @@ function makeEnvironment(){
 }
 scene.environment = makeEnvironment();
 
-// Saphir taille ovale brillant : 8 facettes de table, couronne, rondiste, pavillon
+// Bijou taille ovale brillant : 8 facettes de table, couronne, rondiste, pavillon
 function buildGemGeometry(){
   const SX = 1.16, SZ = 0.88, T = Math.PI*2;
   const rings = [
@@ -402,16 +457,16 @@ function buildGemGeometry(){
 const gemGroup = new THREE.Group(); scene.add(gemGroup);
 const { geo:gemGeo, crown } = buildGemGeometry();
 const gemMat = new THREE.MeshPhysicalMaterial({
-  color:0xffffff, transmission:1, thickness:1.5, ior:1.77, roughness:0.02, metalness:0,
-  attenuationColor:new THREE.Color(0x0f34c4), attenuationDistance:0.5,
+  color:0xffffff, transmission:1, thickness:1.5, ior:2.1, roughness:0.02, metalness:0,
+  attenuationColor:new THREE.Color(0xe9d3a6), attenuationDistance:2.2,
   specularIntensity:1, clearcoat:1, clearcoatRoughness:0,
   iridescence:0.18, iridescenceIOR:1.4, envMapIntensity:2.4, flatShading:true
 });
 const gem = new THREE.Mesh(gemGeo, gemMat);
 // Cœur interne : ses facettes arrière sont vues à travers la réfraction, comme dans une vraie pierre
 const core = new THREE.Mesh(gemGeo, new THREE.MeshStandardMaterial({
-  color:0x2456f0, metalness:1, roughness:0.06, envMapIntensity:2.6, flatShading:true,
-  side:THREE.BackSide, emissive:0x0a2380, emissiveIntensity:.55
+  color:0xd8a845, metalness:1, roughness:0.06, envMapIntensity:2.6, flatShading:true,
+  side:THREE.BackSide, emissive:0x5a3a08, emissiveIntensity:.55
 }));
 core.scale.setScalar(0.96);
 gem.add(core);
@@ -427,10 +482,16 @@ function radialTex(stops){
   return new THREE.CanvasTexture(c);
 }
 const glow = new THREE.Sprite(new THREE.SpriteMaterial({
-  map:radialTex([[0,'rgba(120,160,255,.9)'],[.35,'rgba(60,100,255,.35)'],[1,'rgba(20,40,160,0)']]),
+  map:radialTex([[0,'rgba(255,228,170,.85)'],[.38,'rgba(220,180,110,.3)'],[1,'rgba(120,90,40,0)']]),
   transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false
 }));
 glow.scale.set(6,6,1); glow.position.z = -1.2; gemGroup.add(glow);
+// Ombre douce sous le bijou, pour l'ancrer sur le fond clair
+const shadow = new THREE.Sprite(new THREE.SpriteMaterial({
+  map:radialTex([[0,'rgba(70,76,88,.45)'],[.5,'rgba(70,76,88,.15)'],[1,'rgba(70,76,88,0)']]),
+  transparent:true, opacity:0, depthWrite:false, toneMapped:false
+}));
+shadow.scale.set(3.4,0.55,1); shadow.position.set(0,-1.28,-0.4); gemGroup.add(shadow);
 
 // Éclats scintillants sur les arêtes de la couronne
 const starTex = (() => {
@@ -447,14 +508,14 @@ const starTex = (() => {
 })();
 const sparkles = [];
 for(let i=0;i<16;i++){
-  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:starTex, color:i%3?0xffffff:0xcfe0ff, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false, toneMapped:false }));
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map:starTex, color:i%3?0xffffff:0xffe6c8, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, depthTest:false, toneMapped:false }));
   s.position.copy(crown[Math.floor(Math.random()*crown.length)]).multiplyScalar(1.02);
   s.userData = { ph:Math.random()*20, sp:.8 + Math.random()*1.6 };
   gem.add(s); sparkles.push(s);
 }
 const REST_OP = 0.2;
 
-// Petites étoiles : orbite autour du saphir, puis forment un cœur, s'effacent et recommencent
+// Petites étoiles : orbite autour du bijou, puis forment un cœur, s'effacent et recommencent
 const HN = isSmall ? 130 : 170;
 const hOrbit = new Float32Array(HN*4), hHeart = new Float32Array(HN*3), hRand = new Float32Array(HN);
 for(let i=0;i<HN;i++){
@@ -504,7 +565,7 @@ const heartStars = new THREE.Points(hGeo, new THREE.ShaderMaterial({
                         smoothstep(0.035,0.0,abs(c.y)) * smoothstep(0.5,0.0,abs(c.x)));
       float a = max(core, cross*0.85);
       if(a < 0.01) discard;
-      vec3 col = mix(vec3(0.85,0.92,1.0), vec3(1.0,0.86,0.55), vGold);
+      vec3 col = mix(vec3(0.88,0.9,0.96), vec3(1.0,0.84,0.5), vGold);
       gl_FragColor = vec4(col * 1.3, min(1.0, a * (0.35 + vTw) * uFade));
     }`
 }));
@@ -523,7 +584,7 @@ heartCycle
 
 const tmpV = new THREE.Vector3();
 
-// Particules : dispersion -> surface du saphir -> code QR
+// Particules : dispersion -> surface du bijou -> code QR
 const N = isSmall ? 2600 : 4200;
 const target = new Float32Array(N*3), start = new Float32Array(N*3), qrPos = new Float32Array(N*3), rnd = new Float32Array(N);
 {
@@ -556,7 +617,7 @@ pGeo.setAttribute('aRand', new THREE.BufferAttribute(rnd,1));
 const pUni = {
   uProgress:{value:0}, uQR:{value:0}, uTime:{value:0}, uSize:{value:22},
   uPR:{value:renderer.getPixelRatio()}, uOpacity:{value:1},
-  uColorA:{value:new THREE.Color(0x9ec2ff)}, uColorB:{value:new THREE.Color(0xf3dca8)}
+  uColorA:{value:new THREE.Color(0xf3dfb0)}, uColorB:{value:new THREE.Color(0xe3c27a)}
 };
 const pMat = new THREE.ShaderMaterial({
   uniforms:pUni, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
@@ -592,7 +653,7 @@ gemGroup.add(points);
 
 // Deux chemins de lumière qui s'entrelacent
 const helix = [];
-[[0xd8b87a,0],[0x7fb2ff,Math.PI]].forEach(([col,phase])=>{
+[[0xe3c27a,0],[0xc8ccd4,Math.PI]].forEach(([col,phase])=>{
   const pts = [];
   for(let i=0;i<=220;i++){
     const t = i/220, ang = t*Math.PI*5 + phase, r = 3.2*(1-t)+0.12;
@@ -602,7 +663,7 @@ const helix = [];
   const geo = new THREE.TubeGeometry(curve, 440, 0.022, 6, false);
   const mat = new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false, toneMapped:false });
   const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,16), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0, blending:THREE.AdditiveBlending }));
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.07,16,16), new THREE.MeshBasicMaterial({ color:col, transparent:true, opacity:0 }));
   scene.add(head);
   helix.push({ curve, geo, mat, head });
 });
@@ -617,7 +678,7 @@ const CUBES = [
   { year:"2015", caption:"Les fêtes de famille" },
   { year:"2026", caption:"Quarante-cinq ans" }
 ].map(c => Object.assign(c, { photos:[null,null,null,null,null,null] })); // mettre ici les chemins des vraies photos
-const HUES = [222, 200, 262, 18, 340, 170];
+const HUES = [28, 12, 345, 40, 18, 330];
 function seeded(n){ return () => { n |= 0; n = n + 0x6D2B79F5 | 0; let t = Math.imul(n ^ n >>> 15, 1 | n); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function drawPhoto(x, S, data, idx){
   const rnd = seeded(parseInt(data.year,10)*10 + idx);
@@ -634,18 +695,18 @@ function drawPhoto(x, S, data, idx){
     x.fillStyle = rg; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.fill();
   }
   const band = x.createLinearGradient(0,S*0.62,0,S-b);
-  band.addColorStop(0,'rgba(5,9,26,0)'); band.addColorStop(1,'rgba(5,9,26,.7)');
+  band.addColorStop(0,'rgba(9,8,14,0)'); band.addColorStop(1,'rgba(9,8,14,.7)');
   x.fillStyle = band; x.fillRect(b,S*0.62,S-2*b,S*0.38-b);
   x.restore();
   x.strokeStyle = 'rgba(216,184,122,.9)'; x.lineWidth = S*0.006; x.strokeRect(b*0.5,b*0.5,S-b,S-b);
   const cx = S/2, cy = S*0.4, d = S*0.06;
-  x.strokeStyle = 'rgba(220,232,255,.7)'; x.lineWidth = S*0.004;
+  x.strokeStyle = 'rgba(250,228,205,.7)'; x.lineWidth = S*0.004;
   x.beginPath(); x.moveTo(cx,cy-d); x.lineTo(cx+d*0.8,cy); x.lineTo(cx,cy+d*1.2); x.lineTo(cx-d*0.8,cy); x.closePath(); x.stroke();
-  x.textAlign = 'center'; x.fillStyle = 'rgba(220,232,255,.75)';
+  x.textAlign = 'center'; x.fillStyle = 'rgba(250,228,205,.75)';
   x.font = `italic ${S*0.05}px "Cormorant Garamond", Georgia, serif`; x.fillText('Photo à venir', cx, cy + d*2.4);
-  x.textAlign = 'left'; x.fillStyle = '#f0d9a6';
+  x.textAlign = 'left'; x.fillStyle = '#f7dcb0';
   x.font = `300 ${S*0.12}px "Cormorant Garamond", Georgia, serif`; x.fillText(data.year, b*1.8, S - b*2.4);
-  x.textAlign = 'right'; x.fillStyle = 'rgba(238,241,251,.8)';
+  x.textAlign = 'right'; x.fillStyle = 'rgba(246,240,234,.8)';
   x.font = `italic ${S*0.052}px "Cormorant Garamond", Georgia, serif`; x.fillText(`${idx+1} / 6`, S - b*1.8, S - b*2.6);
 }
 function faceTexture(data, idx){
@@ -663,7 +724,7 @@ function buildCubes(){
   CUBES.forEach((data,i)=>{
     const mats = Array.from({length:6}, (_,k) => new THREE.MeshBasicMaterial({ map:faceTexture(data,k), transparent:true, opacity:0, toneMapped:false }));
     const mesh = new THREE.Mesh(geo, mats);
-    const edge = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color:0xd8b87a, transparent:true, opacity:0, toneMapped:false }));
+    const edge = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color:0xb0832f, transparent:true, opacity:0, toneMapped:false }));
     edge.scale.setScalar(1.004); mesh.add(edge);
     const side = i%2 ? 1 : -1;
     mesh.position.set(side*(narrow?0.55:1.5), (i%3-1)*0.3, -6 - i*5);
@@ -807,6 +868,7 @@ function tick(){
   const vis = intro.gem * (1-uq);
   gem.scale.setScalar(Math.max(0.0001, vis));
   gem.visible = vis > 0.001;
+  shadow.material.opacity = 0;
   glow.material.opacity = .55 * vis * (0.6 + 0.4*st.gemOp) * (0.9 + Math.sin(t*1.4)*.1);
   hUni.uTime.value = t;
   hUni.uPR.value = renderer.getPixelRatio();
@@ -845,7 +907,7 @@ function tick(){
   pl[0].position.set(Math.cos(t*.7)*3, 1.5, Math.sin(t*.7)*3);
   pl[1].position.set(Math.cos(t*.5+2)*3, -1, Math.sin(t*.5+2)*3);
   pl[2].position.set(Math.cos(t*.9+4)*3, .5, Math.sin(t*.9+4)*3);
-  stars.rotation.y = t*.01;
+  stars.rotation.y = t*.01; skyUni.uTime.value = t;
 
   cx = lerp(cx, mx*.5, .04); cy = lerp(cy, -my*.35, .04);
   camera.position.set(cx, cy, baseZ);
@@ -902,19 +964,20 @@ function renderGuests(){
     inp.placeholder = 'Prénom de la personne ' + (i+1); inp.value = g.name;
     inp.setAttribute('aria-label', 'Prénom de la personne ' + (i+1));
     inp.addEventListener('input', e => g.name = e.target.value);
+    const lab = document.createElement('div'); lab.className='drink-label'; lab.innerHTML = 'Boisson <span>obligatoire</span>';
     const chips = document.createElement('div'); chips.className='chips'; chips.setAttribute('role','group');
     chips.setAttribute('aria-label','Boisson de la personne ' + (i+1));
     DRINKS.forEach(d => {
       const b = document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=d;
       b.setAttribute('aria-pressed', String(g.drink===d));
       b.addEventListener('click', () => {
-        g.drink = d;
+        g.drink = d; div.classList.remove('missing');
         chips.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x===b)));
         if(!reduce) gsap.fromTo(b, { scale:.9 }, { scale:1, duration:.4, ease:'back.out(3)' });
       });
       chips.appendChild(b);
     });
-    div.append(inp, chips); guestsEl.appendChild(div);
+    div.append(inp, lab, chips); guestsEl.appendChild(div);
   });
   document.getElementById('count').textContent = count;
 }
@@ -934,7 +997,7 @@ document.getElementById('submit').addEventListener('click', () => {
   if(!name){ err.textContent = 'Indiquez le nom de votre foyer pour continuer.'; document.getElementById('fName').focus(); return; }
   if(presence==='oui'){
     const missing = guests.findIndex(g => !g.drink);
-    if(missing>-1){ err.textContent = 'Choisissez une boisson pour la personne ' + (missing+1) + '.'; return; }
+    if(missing>-1){ err.textContent = 'Choisissez une boisson pour la personne ' + (missing+1) + '.'; const gEl = guestsEl.children[missing]; gEl.classList.add('missing'); gEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block:'center' }); return; }
   }
   err.textContent = '';
   const data = {
@@ -972,10 +1035,10 @@ function esc(s){ const d=document.createElement('div'); d.textContent=s; return 
 function drawGem(x, cx, cy, w){
   const h = w*0.82, top = cy - h*0.38, gird = cy - h*0.12, bot = cy + h*0.62, tw = w*0.28;
   const g = x.createLinearGradient(cx-w/2, top, cx+w/2, bot);
-  g.addColorStop(0,'#8fb4ff'); g.addColorStop(.45,'#2451e0'); g.addColorStop(1,'#0a1f6a');
+  g.addColorStop(0,'#ffffff'); g.addColorStop(.45,'#c4cad3'); g.addColorStop(1,'#7f8692');
   x.fillStyle = g; x.beginPath();
   x.moveTo(cx-tw, top); x.lineTo(cx+tw, top); x.lineTo(cx+w/2, gird); x.lineTo(cx, bot); x.lineTo(cx-w/2, gird); x.closePath(); x.fill();
-  x.strokeStyle = 'rgba(220,232,255,.75)'; x.lineWidth = Math.max(1, w*0.018); x.lineJoin = 'round';
+  x.strokeStyle = '#b0832f'; x.lineWidth = Math.max(1, w*0.02); x.lineJoin = 'round';
   x.beginPath();
   x.moveTo(cx-w/2, gird); x.lineTo(cx+w/2, gird);
   x.moveTo(cx-tw, top); x.lineTo(cx-tw*0.45, gird); x.lineTo(cx, top); x.lineTo(cx+tw*0.45, gird); x.lineTo(cx+tw, top);
@@ -988,41 +1051,41 @@ function roundRect(x, X, Y, W, H, r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+
 function drawTicket(d){
   const W = 1080, H = 1680, c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d'), serif = '"Cormorant Garamond", Georgia, serif', sans = '"Jost", "Segoe UI", sans-serif';
-  const bg = x.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#13224f'); bg.addColorStop(.5,'#0b1535'); bg.addColorStop(1,'#060b1f');
+  const bg = x.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#fbfcfd'); bg.addColorStop(.55,'#e8ebef'); bg.addColorStop(1,'#d3d8df');
   x.fillStyle = bg; roundRect(x,0,0,W,H,56); x.fill();
-  const glow = x.createRadialGradient(W/2,190,0,W/2,190,420); glow.addColorStop(0,'rgba(80,120,255,.35)'); glow.addColorStop(1,'rgba(80,120,255,0)');
+  const glow = x.createRadialGradient(W/2,190,0,W/2,190,420); glow.addColorStop(0,'rgba(255,240,200,.6)'); glow.addColorStop(1,'rgba(255,240,200,0)');
   x.fillStyle = glow; x.fillRect(0,0,W,700);
-  const gold = x.createLinearGradient(0,0,W,H); gold.addColorStop(0,'#f0d9a6'); gold.addColorStop(.5,'#b8924e'); gold.addColorStop(1,'#f0d9a6');
+  const gold = x.createLinearGradient(0,0,W,H); gold.addColorStop(0,'#e7c879'); gold.addColorStop(.5,'#9c7224'); gold.addColorStop(1,'#e7c879');
   x.strokeStyle = gold; x.lineWidth = 4; roundRect(x,34,34,W-68,H-68,40); x.stroke();
   x.lineWidth = 1.5; x.globalAlpha = .6; roundRect(x,50,50,W-100,H-100,30); x.stroke(); x.globalAlpha = 1;
 
   drawGem(x, W/2, 175, 120);
   x.textAlign = 'center'; x.textBaseline = 'alphabetic';
-  x.fillStyle = '#d8b87a'; x.font = `italic 400 54px ${serif}`; x.fillText('Noces de saphir', W/2, 320);
-  x.fillStyle = '#ffffff'; x.font = `300 104px ${serif}`; x.fillText('45 ans d\u2019amour', W/2, 425);
-  x.fillStyle = '#bcd3ff'; x.font = `400 34px ${sans}`; x.fillText(EVENT.couple, W/2, 485);
+  x.fillStyle = '#a87a26'; x.font = `italic 400 54px ${serif}`; x.fillText('Noces de vermeil', W/2, 320);
+  x.fillStyle = '#23262d'; x.font = `300 104px ${serif}`; x.fillText('45 ans d\u2019amour', W/2, 425);
+  x.fillStyle = '#3a3226'; x.font = `600 40px ${sans}`; x.fillText(EVENT.couple, W/2, 487);
 
   const qy = 540, qs = 640, qx = (W-qs)/2;
-  x.fillStyle = '#ffffff'; roundRect(x, qx, qy, qs, qs, 36); x.fill();
+  x.fillStyle = '#ffffff'; roundRect(x, qx, qy, qs, qs, 36); x.fill(); x.strokeStyle = 'rgba(110,118,132,.35)'; x.lineWidth = 2; x.stroke();
   const holder = document.createElement('div');
   const q = new QRCode(holder, { text:d.token, width:64, height:64, correctLevel:QRCode.CorrectLevel.H })._oQRCode;
   const n = q.getModuleCount(), pad = 44, cell = (qs - pad*2) / n;
-  x.fillStyle = '#0d1838';
+  x.fillStyle = '#1f2228';
   for(let r=0;r<n;r++) for(let cc=0;cc<n;cc++) if(q.isDark(r,cc)) x.fillRect(Math.floor(qx+pad+cc*cell), Math.floor(qy+pad+r*cell), Math.ceil(cell), Math.ceil(cell));
   const ls = qs*0.2, lx = W/2 - ls/2, ly = qy + qs/2 - ls/2;
   x.fillStyle = '#ffffff'; roundRect(x, lx, ly, ls, ls, 22); x.fill();
-  x.strokeStyle = '#d8b87a'; x.lineWidth = 4; roundRect(x, lx+8, ly+8, ls-16, ls-16, 16); x.stroke();
+  x.strokeStyle = '#b0832f'; x.lineWidth = 4; roundRect(x, lx+8, ly+8, ls-16, ls-16, 16); x.stroke();
   drawGem(x, W/2, qy + qs/2 - 6, ls*0.58);
 
-  x.fillStyle = '#bcd3ff'; x.font = `italic 400 34px ${serif}`; x.fillText(d.token, W/2, qy + qs + 56);
-  x.fillStyle = '#ffffff'; x.font = `400 64px ${serif}`; x.fillText(d.name, W/2, qy + qs + 150, W - 160);
+  x.fillStyle = '#8a6420'; x.font = `italic 400 34px ${serif}`; x.fillText(d.token, W/2, qy + qs + 56);
+  x.fillStyle = '#23262d'; x.font = `400 64px ${serif}`; x.fillText(d.name, W/2, qy + qs + 150, W - 160);
   const nb = d.guests.length;
-  x.fillStyle = '#93a0c4'; x.font = `400 32px ${sans}`; x.fillText(`${nb} ${nb>1?'personnes':'personne'}`, W/2, qy + qs + 200);
-  x.strokeStyle = 'rgba(216,184,122,.55)'; x.lineWidth = 2;
+  x.fillStyle = '#666c77'; x.font = `400 32px ${sans}`; x.fillText(`${nb} ${nb>1?'personnes':'personne'}`, W/2, qy + qs + 200);
+  x.strokeStyle = 'rgba(176,131,47,.6)'; x.lineWidth = 2;
   x.beginPath(); x.moveTo(W/2-200, qy+qs+245); x.lineTo(W/2+200, qy+qs+245); x.stroke();
-  x.fillStyle = '#eef1fb'; x.font = `400 38px ${sans}`; x.fillText(`${EVENT.dateLong}`, W/2, qy + qs + 305);
-  x.fillStyle = '#93a0c4'; x.font = `400 32px ${sans}`; x.fillText(`${EVENT.heure}, ${EVENT.lieu}, ${EVENT.ville}`, W/2, qy + qs + 355, W - 160);
-  x.fillStyle = '#d8b87a'; x.font = `italic 400 40px ${serif}`; x.fillText('Carte d\u2019entrée à présenter à l\u2019accueil', W/2, H - 90);
+  x.fillStyle = '#23262d'; x.font = `400 38px ${sans}`; x.fillText(`${EVENT.dateLong}`, W/2, qy + qs + 305);
+  x.fillStyle = '#666c77'; x.font = `400 32px ${sans}`; x.fillText(`${EVENT.heure}, ${EVENT.lieu}, ${EVENT.ville}`, W/2, qy + qs + 355, W - 160);
+  x.fillStyle = '#a87a26'; x.font = `italic 400 40px ${serif}`; x.fillText('Carte d\u2019entrée à présenter à l\u2019accueil', W/2, H - 90);
   return c.toDataURL('image/png');
 }
 
@@ -1034,7 +1097,7 @@ function openConfirm(d){
     card.innerHTML = `
       <h2 id="cTitle">Merci, ${esc(d.name)}</h2>
       <p class="lede">Votre présence est confirmée. Voici votre carte d'entrée.</p>
-      <img class="ticket" src="${drawTicket(d)}" alt="Carte d'entrée Noces de saphir pour ${esc(d.name)}, code ${d.token}">
+      <img class="ticket" src="${drawTicket(d)}" alt="Carte d'entrée Noces de vermeil pour ${esc(d.name)}, code ${d.token}">
       <ul class="summary">
         ${d.guests.map(g=>`<li><span>${esc(g.name)}</span><span>${esc(g.drink)}</span></li>`).join('')}
         <li><span>Table</span><span>Attribuée par les hôtes</span></li>

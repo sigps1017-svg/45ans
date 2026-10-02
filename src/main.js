@@ -13,6 +13,7 @@ if (!app) {
 }
 
 app.innerHTML = `
+  <div class="bg" aria-hidden="true"></div>
   <canvas id="webgl" aria-hidden="true"></canvas>
   <a class="skip" href="#histoire">Passer l’introduction</a>
   <main>
@@ -34,9 +35,9 @@ const sceneReady = new Promise((resolve) => {
 const rsvp = initRsvp({ event, sceneReady });
 const cleanups = [rsvp.cleanup];
 
-const scenePromise = import('./scenes/sapphire-scene.js')
-  .then(({ createSapphireScene }) => {
-    const scene = createSapphireScene(document.querySelector('#webgl'));
+const scenePromise = import('./scenes/gem-scene.js')
+  .then(({ createGemScene }) => {
+    const scene = createGemScene(document.querySelector('#webgl'));
     rsvp.setScene(scene);
     resolveSceneReady(scene);
     cleanups.push(

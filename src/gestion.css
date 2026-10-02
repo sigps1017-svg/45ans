@@ -1,12 +1,14 @@
 :root {
   color-scheme: dark;
-  --admin-ink: #070d24;
-  --admin-panel: #101e48;
-  --admin-line: rgba(188, 211, 255, 0.2);
-  --admin-text: #eef1fb;
-  --admin-muted: #b3bfdc;
-  --admin-ice: #bcd3ff;
-  --admin-gold: #d8b87a;
+  /* Ambiance brun, or et argent du prototype */
+  --admin-ink: #2a2018;
+  --admin-panel: #33271c;
+  --admin-line: rgba(232, 214, 180, 0.26);
+  --admin-text: #f6efe4;
+  --admin-muted: #d6c9b4;
+  --admin-accent: #e3c27a;
+  --admin-gold: #e3c27a;
+  --admin-gold-fill: linear-gradient(135deg, #f1d999, #c9a24e 50%, #9c7224);
   font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   color: var(--admin-text);
   background: var(--admin-ink);
@@ -28,7 +30,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(ellipse at top, rgba(36, 81, 224, 0.2), transparent 44rem),
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(240, 205, 130, 0.24), rgba(240, 205, 130, 0) 70%),
+    radial-gradient(ellipse 80% 40% at 80% 100%, rgba(200, 206, 216, 0.14), rgba(200, 206, 216, 0) 70%),
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%) fixed,
     var(--admin-ink);
 }
 
@@ -48,7 +52,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--admin-ice);
+  outline: 3px solid var(--admin-accent);
   outline-offset: 3px;
 }
 
@@ -74,7 +78,7 @@ footer {
 }
 
 .back-link {
-  color: var(--admin-ice);
+  color: var(--admin-accent);
   text-decoration: none;
 }
 
@@ -84,7 +88,7 @@ footer {
 
 .eyebrow {
   margin: 0;
-  color: var(--admin-ice);
+  color: var(--admin-accent);
   font-size: 0.75rem;
   font-weight: 750;
   letter-spacing: 0.12em;
@@ -113,7 +117,7 @@ footer {
   border: 1px solid var(--admin-line);
   border-radius: 11px;
   color: var(--admin-text);
-  background: #101e48;
+  background: var(--admin-panel);
   font-weight: 650;
   cursor: pointer;
 }
@@ -132,8 +136,8 @@ main {
 .team-card {
   border: 1px solid var(--admin-line);
   border-radius: 18px;
-  background: rgba(16, 30, 72, 0.86);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+  background: rgba(31, 24, 18, 0.88);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
 }
 
 .admin-login {
@@ -180,7 +184,7 @@ input {
   border: 1px solid var(--admin-line);
   border-radius: 10px;
   color: var(--admin-text);
-  background: rgba(7, 13, 36, 0.75);
+  background: rgba(15, 11, 8, 0.55);
   font-size: 1rem;
 }
 
@@ -192,20 +196,20 @@ select {
   border: 1px solid var(--admin-line);
   border-radius: 10px;
   color: var(--admin-text);
-  background: #101e48;
+  background: var(--admin-panel);
   font-size: 1rem;
 }
 
 .primary-button,
 .save-button {
-  border-color: #456ce7;
-  color: white;
-  background: #2451e0;
+  border-color: #f1d999;
+  color: #1f1a10;
+  background: var(--admin-gold-fill);
 }
 
 .primary-button:hover,
 .save-button:hover {
-  background: #315feb;
+  filter: brightness(1.06);
 }
 
 .create-panel,
@@ -248,7 +252,7 @@ select {
 }
 
 .admin-tab[aria-selected="true"] {
-  border-bottom-color: var(--admin-ice);
+  border-bottom-color: var(--admin-accent);
   color: var(--admin-text);
 }
 
@@ -295,7 +299,7 @@ select {
   padding: clamp(14px, 3vw, 22px);
   border: 1px solid var(--admin-line);
   border-radius: 14px;
-  background: rgba(7, 13, 36, 0.48);
+  background: rgba(15, 11, 8, 0.45);
 }
 
 .team-card-heading {
@@ -321,8 +325,8 @@ select {
   flex: none;
   padding: 6px 10px;
   border-radius: 999px;
-  color: var(--admin-ink);
-  background: var(--admin-ice);
+  color: #1f1a10;
+  background: var(--admin-gold-fill);
   font-size: 0.82rem;
   font-weight: 750;
 }
@@ -358,7 +362,7 @@ select {
 }
 
 .team-status.error {
-  color: #ffaaaa;
+  color: #ffb4a8;
 }
 
 .notice,
@@ -371,7 +375,7 @@ select {
 
 .notice.error,
 .card-notice.error {
-  color: #ffaaaa;
+  color: #ffb4a8;
 }
 
 .notice.success,
@@ -403,8 +407,8 @@ select {
   place-items: center;
   padding: 3px 8px;
   border-radius: 999px;
-  color: var(--admin-ink);
-  background: var(--admin-ice);
+  color: #1f1a10;
+  background: var(--admin-gold);
   font: 700 0.92rem/1 "Avenir Next", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -438,7 +442,7 @@ select {
   padding: clamp(14px, 3vw, 22px);
   border: 1px solid var(--admin-line);
   border-radius: 14px;
-  background: rgba(7, 13, 36, 0.48);
+  background: rgba(15, 11, 8, 0.45);
 }
 
 .invite-card-heading {
@@ -481,8 +485,8 @@ select {
   overflow-wrap: anywhere;
   border: 1px solid var(--admin-line);
   border-radius: 9px;
-  color: var(--admin-ice);
-  background: rgba(7, 13, 36, 0.7);
+  color: var(--admin-text);
+  background: rgba(15, 11, 8, 0.6);
   font-size: 0.9rem;
 }
 

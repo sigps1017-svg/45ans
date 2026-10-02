@@ -112,7 +112,7 @@ function makeEnvironment(renderer) {
   const environmentObjects = [];
   const enclosure = new THREE.Mesh(
     new THREE.BoxGeometry(24, 24, 24),
-    new THREE.MeshBasicMaterial({ color: 0x0b1438, side: THREE.BackSide }),
+    new THREE.MeshBasicMaterial({ color: 0x1e1914, side: THREE.BackSide }),
   );
   environmentScene.add(enclosure);
   environmentObjects.push(enclosure);
@@ -133,8 +133,8 @@ function makeEnvironment(renderer) {
 
   addPanel(9, 3, 0xffffff, 7, 0, 10, 0);
   addPanel(3, 7, 0xffffff, 5, -10, 1, 3);
-  addPanel(3, 7, 0xe4ecff, 4, 10, 2, -3);
-  addPanel(7, 2, 0x7aa2ff, 4, 0, -3, 10);
+  addPanel(3, 7, 0xfff0e0, 4, 10, 2, -3);
+  addPanel(7, 2, 0xffb88a, 4, 0, -3, 10);
   addPanel(2, 2, 0xffffff, 10, 5, 6, 9);
   addPanel(1.4, 1.4, 0xffffff, 10, -6, 4, 8);
   addPanel(5, 1.6, 0xffe2b0, 3, -6, -5, -8);
@@ -161,20 +161,21 @@ function randomSpherePoint(minRadius, radiusRange) {
   ];
 }
 
-export function createSapphireScene(canvas) {
+export function createGemScene(canvas) {
   if (!(canvas instanceof HTMLCanvasElement)) {
     throw new Error('Impossible de démarrer la scène : canvas #webgl introuvable.');
   }
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  // Canvas transparent : le dégradé brun, or et argent (.bg) reste visible derrière la scène.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x070d24, 1);
+  renderer.setClearColor(0x3a2c1e, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.1;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x070d24, 9, 34);
+  scene.fog = new THREE.Fog(0x3a2c1e, 9, 34);
   const environmentTexture = makeEnvironment(renderer);
   scene.environment = environmentTexture;
   const camera = new THREE.PerspectiveCamera(
@@ -198,43 +199,89 @@ export function createSapphireScene(canvas) {
     qr: 0,
   };
 
-  scene.add(new THREE.AmbientLight(0x6f86c9, 0.55));
+  scene.add(new THREE.AmbientLight(0xc9a08a, 0.55));
   const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
   keyLight.position.set(3, 5, 4);
   scene.add(keyLight);
 
   const pointLights = [
-    new THREE.PointLight(0x7fb2ff, 2.2, 12),
+    new THREE.PointLight(0xffe2a8, 2.2, 12),
     new THREE.PointLight(0xffffff, 1.6, 12),
-    new THREE.PointLight(0xb07cff, 1.8, 12),
+    new THREE.PointLight(0xff9f7a, 1.8, 12),
   ];
   pointLights.forEach((light) => scene.add(light));
 
   const isSmall = Math.min(window.innerWidth, window.innerHeight) < 700;
-  const starCount = isSmall ? 900 : 1600;
+  // Ciel étoilé scintillant (or, argent, blanc), avec quelques grandes étoiles en croix
+  const starCount = isSmall ? 1100 : 1900;
   const starPositions = new Float32Array(starCount * 3);
+  const starRandom = new Float32Array(starCount);
   for (let index = 0; index < starCount; index += 1) {
-    const position = randomSpherePoint(14, 18);
+    const position = randomSpherePoint(12, 18);
     starPositions.set(
       [position[0], position[1], position[2] - 6],
       index * 3,
     );
+    starRandom[index] = Math.random();
   }
   const starGeometry = new THREE.BufferGeometry();
   starGeometry.setAttribute(
     'position',
     new THREE.BufferAttribute(starPositions, 3),
   );
-  const stars = new THREE.Points(
-    starGeometry,
-    new THREE.PointsMaterial({
-      color: 0xbcd3ff,
-      size: 0.06,
-      transparent: true,
-      opacity: 0.8,
-      fog: false,
-    }),
-  );
+  starGeometry.setAttribute('aRandom', new THREE.BufferAttribute(starRandom, 1));
+  const skyUniforms = {
+    uTime: { value: 0 },
+    uPixelRatio: { value: renderer.getPixelRatio() },
+  };
+  const starMaterial = new THREE.ShaderMaterial({
+    uniforms: skyUniforms,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      uniform float uTime, uPixelRatio;
+      attribute float aRandom;
+      varying float vTwinkle;
+      varying float vRandom;
+
+      void main() {
+        vec4 modelPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelPosition;
+        vTwinkle = 0.35 + 0.65 * pow(
+          0.5 + 0.5 * sin(uTime * (0.8 + aRandom * 2.6) + aRandom * 80.0),
+          2.0
+        );
+        vRandom = aRandom;
+        float big = step(0.94, aRandom);
+        gl_PointSize = (2.2 + aRandom * 2.6 + big * 9.0) * uPixelRatio * (0.7 + vTwinkle * 0.5);
+      }
+    `,
+    fragmentShader: `
+      varying float vTwinkle;
+      varying float vRandom;
+
+      void main() {
+        vec2 point = gl_PointCoord - 0.5;
+        float distanceFromCenter = length(point);
+        float core = 1.0 - smoothstep(0.0, 0.5, distanceFromCenter);
+        float cross = step(0.94, vRandom) * max(
+          (1.0 - smoothstep(0.0, 0.06, abs(point.x))) *
+            (1.0 - smoothstep(0.0, 0.5, abs(point.y))),
+          (1.0 - smoothstep(0.0, 0.06, abs(point.y))) *
+            (1.0 - smoothstep(0.0, 0.5, abs(point.x)))
+        );
+        float alpha = max(core * core, cross);
+        if (alpha < 0.01) discard;
+        vec3 color = vRandom < 0.4
+          ? vec3(1.0, 0.86, 0.55)
+          : (vRandom < 0.75 ? vec3(0.86, 0.89, 0.95) : vec3(1.0, 0.97, 0.9));
+        gl_FragColor = vec4(color, alpha * vTwinkle);
+      }
+    `,
+  });
+  const stars = new THREE.Points(starGeometry, starMaterial);
+  stars.frustumCulled = false;
   scene.add(stars);
 
   const gemGroup = new THREE.Group();
@@ -371,8 +418,8 @@ export function createSapphireScene(canvas) {
         if (alpha < 0.01) discard;
 
         vec3 color = mix(
-          vec3(0.85, 0.92, 1.0),
-          vec3(1.0, 0.86, 0.55),
+          vec3(0.88, 0.9, 0.96),
+          vec3(1.0, 0.84, 0.5),
           vGold
         );
         float visibility = uFade * (1.0 - uQR);
@@ -413,11 +460,11 @@ export function createSapphireScene(canvas) {
     color: 0xffffff,
     transmission: 1,
     thickness: 1.5,
-    ior: 1.77,
+    ior: 2.1,
     roughness: 0.02,
     metalness: 0,
-    attenuationColor: new THREE.Color(0x0f34c4),
-    attenuationDistance: 0.5,
+    attenuationColor: new THREE.Color(0xe9d3a6),
+    attenuationDistance: 2.2,
     specularIntensity: 1,
     clearcoat: 1,
     clearcoatRoughness: 0,
@@ -429,13 +476,13 @@ export function createSapphireScene(canvas) {
   });
   const gem = new THREE.Mesh(gemGeometry, gemMaterial);
   const coreMaterial = new THREE.MeshStandardMaterial({
-    color: 0x2456f0,
+    color: 0xd8a845,
     metalness: 1,
     roughness: 0.06,
     envMapIntensity: 2.6,
     flatShading: true,
     side: THREE.BackSide,
-    emissive: 0x0a2380,
+    emissive: 0x5a3a08,
     emissiveIntensity: 0.55,
   });
   const core = new THREE.Mesh(gemGeometry, coreMaterial);
@@ -444,7 +491,7 @@ export function createSapphireScene(canvas) {
   gem.rotation.order = 'XYZ';
 
   const edgeMaterial = new THREE.LineBasicMaterial({
-    color: 0xbcd3ff,
+    color: 0xe3c27a,
     transparent: true,
     opacity: 0,
     toneMapped: false,
@@ -457,12 +504,12 @@ export function createSapphireScene(canvas) {
   glowCanvas.width = glowCanvas.height = 128;
   const glowContext = glowCanvas.getContext('2d');
   if (!glowContext) {
-    throw new Error('Impossible de créer le halo du saphir.');
+    throw new Error('Impossible de créer le halo du bijou.');
   }
   const glowGradient = glowContext.createRadialGradient(64, 64, 0, 64, 64, 64);
-  glowGradient.addColorStop(0, 'rgba(120,160,255,.9)');
-  glowGradient.addColorStop(0.35, 'rgba(60,100,255,.35)');
-  glowGradient.addColorStop(1, 'rgba(20,40,160,0)');
+  glowGradient.addColorStop(0, 'rgba(255,228,170,.85)');
+  glowGradient.addColorStop(0.38, 'rgba(220,180,110,.3)');
+  glowGradient.addColorStop(1, 'rgba(120,90,40,0)');
   glowContext.fillStyle = glowGradient;
   glowContext.fillRect(0, 0, 128, 128);
   const glowTexture = new THREE.CanvasTexture(glowCanvas);
@@ -483,7 +530,7 @@ export function createSapphireScene(canvas) {
   sparkleCanvas.width = sparkleCanvas.height = 128;
   const sparkleContext = sparkleCanvas.getContext('2d');
   if (!sparkleContext) {
-    throw new Error('Impossible de créer les scintillements du saphir.');
+    throw new Error('Impossible de créer les scintillements du bijou.');
   }
   const sparkleGradient = sparkleContext.createRadialGradient(64, 64, 0, 64, 64, 22);
   sparkleGradient.addColorStop(0, 'rgba(255,255,255,1)');
@@ -507,7 +554,7 @@ export function createSapphireScene(canvas) {
   for (let index = 0; index < sparkleCount; index += 1) {
     const material = new THREE.SpriteMaterial({
       map: sparkleTexture,
-      color: index % 3 ? 0xffffff : 0xcfe0ff,
+      color: index % 3 ? 0xffffff : 0xffe6c8,
       transparent: true,
       opacity: 0,
       blending: THREE.AdditiveBlending,
@@ -617,8 +664,8 @@ export function createSapphireScene(canvas) {
     uSize: { value: 22 },
     uPixelRatio: { value: renderer.getPixelRatio() },
     uOpacity: { value: 1 },
-    uColorA: { value: new THREE.Color(0x9ec2ff) },
-    uColorB: { value: new THREE.Color(0xf3dca8) },
+    uColorA: { value: new THREE.Color(0xf3dfb0) },
+    uColorB: { value: new THREE.Color(0xe3c27a) },
   };
   const particleMaterial = new THREE.ShaderMaterial({
     uniforms: particleUniforms,
@@ -666,8 +713,8 @@ export function createSapphireScene(canvas) {
 
   const helix = [];
   [
-    [0xd8b87a, 0],
-    [0x7fb2ff, Math.PI],
+    [0xe3c27a, 0],
+    [0xc8ccd4, Math.PI],
   ].forEach(([color, phase]) => {
     const points = [];
     for (let index = 0; index <= 220; index += 1) {
@@ -691,6 +738,7 @@ export function createSapphireScene(canvas) {
       opacity: 0,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
+      toneMapped: false,
     });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
@@ -727,6 +775,7 @@ export function createSapphireScene(canvas) {
     renderer.setSize(window.innerWidth, window.innerHeight);
     particleUniforms.uPixelRatio.value = renderer.getPixelRatio();
     heartUniforms.uPixelRatio.value = renderer.getPixelRatio();
+    skyUniforms.uPixelRatio.value = renderer.getPixelRatio();
     resizeHandlers.forEach((handler) => handler());
   }
 
@@ -826,6 +875,7 @@ export function createSapphireScene(canvas) {
       Math.sin(time * 0.9 + 4) * 3,
     );
     stars.rotation.y = time * 0.01;
+    skyUniforms.uTime.value = time;
 
     cameraX += (pointerX * 0.5 - cameraX) * 0.04;
     cameraY += (-pointerY * 0.35 - cameraY) * 0.04;
@@ -906,7 +956,7 @@ export function createSapphireScene(canvas) {
       heartGeometry.dispose();
       heartMaterial.dispose();
       starGeometry.dispose();
-      stars.material.dispose();
+      starMaterial.dispose();
       gemGeometry.dispose();
       gemMaterial.dispose();
       coreMaterial.dispose();

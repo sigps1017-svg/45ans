@@ -25,7 +25,7 @@ root.innerHTML = `
   <header class="admin-header">
     <a class="back-link" href="/accueil.html">← Accueil équipe</a>
     <div class="admin-heading">
-      <p class="eyebrow">Noces de saphir · Administration</p>
+      <p class="eyebrow">Noces de vermeil · Administration</p>
       <h1>Gestion des invitations</h1>
     </div>
     <button class="signout-button" type="button" id="sign-out" hidden>Déconnexion</button>
@@ -415,7 +415,7 @@ async function shareInvite(invite, notice) {
 
   try {
     await navigator.share({
-      title: 'Votre invitation – Noces de saphir',
+      title: 'Votre invitation – Noces de vermeil',
       text: `Bonjour ${invite.nom_foyer}, voici votre invitation :`,
       url,
     });
@@ -450,7 +450,7 @@ function exportCsv() {
   );
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = 'invitations-noces-de-saphir.csv';
+  anchor.download = 'invitations-noces-de-vermeil.csv';
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

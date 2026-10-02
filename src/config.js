@@ -1,5 +1,5 @@
 export const event = Object.freeze({
-  title: 'Noces de saphir – 45 ans de mariage',
+  title: 'Noces de vermeil – 45 ans de mariage',
   anniversaryYears: 45,
   date: '2026-12-26',
   dateLabel: 'Samedi 26 décembre 2026',
@@ -13,7 +13,7 @@ export const event = Object.freeze({
   location: 'Rivieira, Attoban près du 30ème',
   hosts: ['Alexandre', 'Elisabeth'],
   rsvpDeadline: '15 octobre 2026',
-  dressCode: 'Chic, avec une touche de bleu saphir',
+  dressCode: 'Chic, avec une touche dorée',
   calendarDetails:
     'Soirée en l’honneur de leurs 45 ans de mariage. Apportez votre code QR.',
 });

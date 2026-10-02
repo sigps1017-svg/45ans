@@ -1,13 +1,13 @@
 :root {
-  --ink: #070d24;
-  --ink-2: #0d1838;
-  --sapphire: #2451e0;
-  --ice: #bcd3ff;
-  --gold: #d8b87a;
-  --text: #eef1fb;
-  --muted: #93a0c4;
-  --glass: rgba(16, 30, 72, 0.46);
-  --line: rgba(188, 211, 255, 0.18);
+  --ink: #2a2018;
+  --ink-2: #1f1812;
+  --accent: #c9a24e;
+  --ice: #d9dde3;
+  --gold: #e3c27a;
+  --text: #f6efe4;
+  --muted: #cbbda8;
+  --glass: rgba(22, 17, 12, 0.52);
+  --line: rgba(232, 214, 180, 0.24);
   --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   box-sizing: border-box;
@@ -37,7 +37,7 @@ body {
   margin: 0;
   min-width: 320px;
   overflow-x: hidden;
-  background: var(--ink);
+  background: #2a2018;
   color: var(--text);
   font-family: var(--sans);
   font-weight: 300;
@@ -60,6 +60,18 @@ a {
   outline: 2px solid var(--gold);
   outline-offset: 3px;
   border-radius: 6px;
+}
+
+/* Dégradé fixe brun, or et argent, derrière le canvas transparent */
+.bg {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 18%, rgba(240, 205, 130, 0.28), rgba(240, 205, 130, 0) 70%),
+    radial-gradient(ellipse 80% 40% at 80% 85%, rgba(200, 206, 216, 0.18), rgba(200, 206, 216, 0) 70%),
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%);
+  pointer-events: none;
 }
 
 #webgl {
@@ -92,7 +104,7 @@ main {
   padding: 8px 16px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(7, 13, 36, 0.72);
+  background: rgba(22, 17, 12, 0.5);
   color: var(--text);
   font-size: 14px;
   letter-spacing: 0.02em;
@@ -217,7 +229,7 @@ main {
 }
 
 .year {
-  background: linear-gradient(180deg, #fff 20%, var(--ice) 60%, var(--sapphire));
+  background: linear-gradient(180deg, #fff6e0 15%, #e3c27a 55%, #c0c4cc);
   background-clip: text;
   color: transparent;
   font-family: var(--serif);
@@ -294,6 +306,7 @@ footer {
   border: 1px solid var(--line);
   border-radius: 28px;
   background: var(--glass);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
 }
@@ -376,12 +389,12 @@ footer {
   border: 1px solid var(--line);
   border-radius: 14px;
   outline: none;
-  background: rgba(7, 13, 36, 0.5);
+  background: rgba(15, 11, 8, 0.45);
   font-size: 16px;
 }
 
 .field input:focus {
-  border-color: var(--ice);
+  border-color: var(--gold);
 }
 
 .presence {
@@ -421,7 +434,7 @@ footer {
 
 .pres[aria-pressed="true"] {
   border-color: var(--gold);
-  background: rgba(216, 184, 122, 0.1);
+  background: rgba(227, 194, 122, 0.12);
 }
 
 .stepper {
@@ -470,7 +483,7 @@ footer {
 }
 
 .guest-name input:focus {
-  border-bottom-color: var(--ice);
+  border-bottom-color: var(--gold);
 }
 
 .chips {
@@ -483,16 +496,17 @@ footer {
   padding: 8px 14px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(7, 13, 36, 0.35);
+  background: rgba(15, 11, 8, 0.35);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
 }
 
 .chip[aria-pressed="true"] {
-  border-color: var(--ice);
-  background: var(--sapphire);
-  box-shadow: 0 0 18px rgba(36, 81, 224, 0.6);
+  border-color: #f1d999;
+  background: linear-gradient(135deg, #f1d999, #c9a24e);
+  color: #1f1a10;
+  box-shadow: 0 0 18px rgba(227, 194, 122, 0.45);
 }
 
 .notes-field {
@@ -515,8 +529,8 @@ footer {
 .cta {
   margin-top: 18px;
   border: 0;
-  background: linear-gradient(135deg, #f0d9a6, var(--gold) 55%, #b8924e);
-  color: #1a1430;
+  background: linear-gradient(135deg, #f1d999, #c9a24e 50%, #9c7224);
+  color: #1f1a10;
   font-size: 17px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -532,7 +546,7 @@ footer {
 .invite-status {
   min-height: 1.3em;
   margin: 10px 0 0;
-  color: #ffb4b4;
+  color: #ffb4a8;
   font-size: 14px;
   text-align: center;
 }
@@ -574,14 +588,14 @@ footer {
   border: 0;
   background: radial-gradient(
     ellipse at 50% 30%,
-    rgba(7, 13, 36, 0.1),
-    rgba(7, 13, 36, 0.96) 70%
+    rgba(30, 23, 16, 0.1),
+    rgba(30, 23, 16, 0.96) 70%
   );
   color: var(--text);
 }
 
 .confirm-dialog::backdrop {
-  background: rgba(7, 13, 36, 0.88);
+  background: rgba(28, 21, 15, 0.9);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -613,7 +627,7 @@ footer {
     calc(24px + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
   border: 0;
-  background: rgba(5, 9, 26, 0.94);
+  background: rgba(24, 18, 13, 0.93);
   color: var(--text);
 }
 
@@ -622,7 +636,7 @@ footer {
 }
 
 .photo-viewer::backdrop {
-  background: rgba(5, 9, 26, 0.9);
+  background: rgba(24, 18, 13, 0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -641,7 +655,7 @@ footer {
   max-height: 62svh;
   object-fit: contain;
   border-radius: 18px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--line);
   user-select: none;
   -webkit-user-drag: none;
   touch-action: pan-y;
@@ -686,7 +700,7 @@ footer {
 .viewer-close {
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(16, 30, 72, 0.75);
+  background: rgba(30, 24, 18, 0.7);
   color: var(--text);
   cursor: pointer;
   font-size: 15px;
@@ -723,7 +737,7 @@ footer {
   width: min(340px, 100%);
   margin: 0 auto 10px;
   border-radius: 22px;
-  box-shadow: 0 0 70px rgba(36, 81, 224, 0.5), 0 20px 50px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 60px rgba(227, 194, 122, 0.35), 0 20px 50px rgba(0, 0, 0, 0.45);
   -webkit-touch-callout: default;
 }
 
