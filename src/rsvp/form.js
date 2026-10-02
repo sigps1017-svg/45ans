@@ -1,5 +1,7 @@
 import { drinks } from '../config.js';
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (character) => {
     const entities = {
@@ -58,6 +60,11 @@ export function createRsvpMarkup(event) {
                 <output id="count" aria-live="polite">2</output>
                 <button type="button" id="plus" aria-label="Ajouter une personne">+</button>
               </div>
+            </div>
+            <div class="note-drinks" role="note">
+              <span class="ic" aria-hidden="true">!</span>
+              <p><b>Important : choisissez une boisson pour chaque personne.</b>
+              Ce choix est obligatoire pour confirmer votre présence. Il nous permet de préparer le service.</p>
             </div>
             <div id="guests"></div>
             <label class="field notes-field" for="food-notes">
@@ -130,6 +137,10 @@ export function initRsvpForm({ onSubmit }) {
         guest.name = nameField.value;
       });
 
+      const drinkLabel = document.createElement('div');
+      drinkLabel.className = 'drink-label';
+      drinkLabel.innerHTML = 'Boisson <span>obligatoire</span>';
+
       const chips = document.createElement('div');
       chips.className = 'chips';
       chips.setAttribute('role', 'group');
@@ -144,6 +155,7 @@ export function initRsvpForm({ onSubmit }) {
         button.setAttribute('aria-pressed', String(guest.drink === drink));
         listenToGuest(button, 'click', () => {
           guest.drink = drink;
+          section.classList.remove('missing');
           chips.querySelectorAll('[data-drink]').forEach((chip) => {
             chip.setAttribute('aria-pressed', String(chip === button));
           });
@@ -152,7 +164,7 @@ export function initRsvpForm({ onSubmit }) {
         chips.append(button);
       });
 
-      section.append(nameLabel, chips);
+      section.append(nameLabel, drinkLabel, chips);
       guestsContainer.append(section);
     });
 
@@ -205,6 +217,12 @@ export function initRsvpForm({ onSubmit }) {
       const missingDrink = guests.findIndex((guest) => !guest.drink);
       if (missingDrink !== -1) {
         errorElement.textContent = `Choisissez une boisson pour la personne ${missingDrink + 1}.`;
+        const missingGuest = guestsContainer.children[missingDrink];
+        missingGuest.classList.add('missing');
+        missingGuest.scrollIntoView({
+          behavior: reducedMotion.matches ? 'auto' : 'smooth',
+          block: 'center',
+        });
         return;
       }
     }

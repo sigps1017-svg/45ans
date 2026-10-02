@@ -3,16 +3,29 @@ import { event, memories } from '../config.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]);
+}
+
 export function createIntroMarkup() {
   const firstYear = memories[0].year;
   const eventYear = Number(event.date.slice(0, 4));
+  const names = event.hosts
+    .map((host) => `<strong>${escapeHtml(host)}</strong>`)
+    .join(' <span class="et">et</span> ');
 
   return `
     <section id="hero" aria-labelledby="t1">
       <p class="dates">${firstYear} – ${eventYear}</p>
       <h1 class="title split" id="t1">${event.anniversaryYears} ans</h1>
       <p class="title-sub split" id="t2">d’amour</p>
-      <p class="names">${event.hosts.join(' &amp; ')}</p>
+      <p class="names">${names}</p>
       <div class="hint">Faites défiler<span aria-hidden="true"></span></div>
     </section>
   `;

@@ -126,8 +126,8 @@ export async function createTicketPng(token, response, event) {
   context.font = `300 104px ${serif}`;
   context.fillText('45 ans d’amour', width / 2, 425);
   context.fillStyle = '#3a3226';
-  context.font = `600 34px ${sans}`;
-  context.fillText(event.hosts.join(' & '), width / 2, 485);
+  context.font = `600 40px ${sans}`;
+  context.fillText(event.hosts.join(' et '), width / 2, 487);
 
   const qrY = 540;
   const qrSize = 640;
