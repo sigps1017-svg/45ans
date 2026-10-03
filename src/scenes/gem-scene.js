@@ -169,13 +169,13 @@ export function createGemScene(canvas) {
   // Canvas transparent : le dégradé brun, or et argent (.bg) reste visible derrière la scène.
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x3a2c1e, 0);
+  renderer.setClearColor(0x5a4428, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x3a2c1e, 9, 34);
+  scene.fog = new THREE.Fog(0x5a4428, 9, 34);
   const environmentTexture = makeEnvironment(renderer);
   scene.environment = environmentTexture;
   const camera = new THREE.PerspectiveCamera(
@@ -507,9 +507,10 @@ export function createGemScene(canvas) {
     throw new Error('Impossible de créer le halo du bijou.');
   }
   const glowGradient = glowContext.createRadialGradient(64, 64, 0, 64, 64, 64);
-  glowGradient.addColorStop(0, 'rgba(255,228,170,.85)');
-  glowGradient.addColorStop(0.38, 'rgba(220,180,110,.3)');
-  glowGradient.addColorStop(1, 'rgba(120,90,40,0)');
+  // Halo plus clair et plus large pour détacher le bijou du fond doré.
+  glowGradient.addColorStop(0, 'rgba(255,246,222,1)');
+  glowGradient.addColorStop(0.35, 'rgba(255,226,170,.5)');
+  glowGradient.addColorStop(1, 'rgba(240,200,130,0)');
   glowContext.fillStyle = glowGradient;
   glowContext.fillRect(0, 0, 128, 128);
   const glowTexture = new THREE.CanvasTexture(glowCanvas);
@@ -522,7 +523,7 @@ export function createGemScene(canvas) {
     toneMapped: false,
   });
   const glow = new THREE.Sprite(glowMaterial);
-  glow.scale.set(6, 6, 1);
+  glow.scale.set(6.6, 6.6, 1);
   glow.position.z = -1.2;
   gemGroup.add(glow);
 
@@ -820,7 +821,7 @@ export function createGemScene(canvas) {
     gem.visible = gemVisibility > 0.001;
     edgeMaterial.opacity = gemVisibility * 0.5;
     glowMaterial.opacity =
-      0.55 *
+      0.85 *
       gemVisibility *
       (0.9 + Math.sin(time * 1.4) * 0.1);
     sparkles.forEach((sparkle) => {

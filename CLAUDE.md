@@ -6,9 +6,9 @@ Site d'invitation familial pour célébrer 45 ans de mariage (noces de vermeil)
 en Côte d'Ivoire. L'événement a lieu à Rivieira, Attoban près du 30ème, le
 26 décembre 2026. Les données de date, horaires et lieu sont centralisées dans
 `src/config.js` et les heures qui y figurent sont les heures locales d'Abidjan
-(`Africa/Abidjan`, UTC+0, sans heure d'été). Le programme prévoit un cocktail
-à 17 h et un dîner à 18 h 30.
-Le fichier `reference-apercu.html` est le prototype fonctionnel et la référence
+(`Africa/Abidjan`, UTC+0, sans heure d'été). Le programme prévoit l'église à
+11 h à l'église Saint-Bernard, puis la réception à 13 h.
+Le fichier `reference-classique.html` est le prototype fonctionnel et la référence
 visuelle et comportementale pour le portage.
 
 ## Stack et environnement
@@ -27,7 +27,7 @@ Les dépendances Three.js, GSAP, `qrcode`, `html5-qrcode` et
 
 ## Portage du prototype
 
-Porter progressivement le contenu de `reference-apercu.html` dans la structure
+Porter progressivement le contenu de `reference-classique.html` dans la structure
 modulaire suivante :
 
 - `src/config.js` : données de l'événement, prénoms, boissons et souvenirs
