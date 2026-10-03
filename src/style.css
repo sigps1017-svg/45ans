@@ -6,7 +6,7 @@
   --gold: #e3c27a;
   --text: #f6efe4;
   --muted: #cbbda8;
-  --glass: rgba(36, 26, 15, 0.5);
+  --glass: rgba(22, 17, 12, 0.52);
   --line: rgba(232, 214, 180, 0.24);
   --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
@@ -69,9 +69,9 @@ a {
   z-index: 0;
   inset: 0;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 18%, rgba(245, 214, 140, 0.4), rgba(245, 214, 140, 0) 70%),
+    radial-gradient(ellipse 90% 45% at 50% 18%, rgba(240, 205, 130, 0.28), rgba(240, 205, 130, 0) 70%),
     radial-gradient(ellipse 80% 40% at 80% 85%, rgba(200, 206, 216, 0.18), rgba(200, 206, 216, 0) 70%),
-    linear-gradient(170deg, #3b2a17 0%, #5f4526 24%, #8a6a3a 44%, #7a6f5c 63%, #5b5d62 82%, #383a40 100%);
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%);
   pointer-events: none;
 }
 

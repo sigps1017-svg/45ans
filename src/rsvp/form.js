@@ -20,12 +20,11 @@ export function createRsvpMarkup(event) {
     <section id="invitation" aria-labelledby="invitation-title">
       <div class="panel">
         <h2 id="invitation-title">Célébrons leurs noces de vermeil</h2>
-        <p class="lede">${escapeHtml(event.tagline)}</p>
+        <p class="lede">Vous êtes invités à une soirée en leur honneur.</p>
         <dl class="details">
-          <div><dt>Quand</dt><dd>${escapeHtml(event.dateLabel)}<small>Église à ${escapeHtml(event.ceremonyTime)}, réception à ${escapeHtml(event.receptionTime)}</small></dd></div>
-          <div><dt>Église</dt><dd>${escapeHtml(event.ceremonyVenue)}</dd></div>
-          <div><dt>Réception</dt><dd>${escapeHtml(event.venue)}<small>${escapeHtml(event.address)}</small></dd></div>
-          <div><dt>Dress code</dt><dd>${escapeHtml(event.dressCode)}</dd></div>
+          <div><dt>Quand</dt><dd>${escapeHtml(event.dateLabel)}<small>Cocktail à ${escapeHtml(event.cocktailTime)}, dîner à ${escapeHtml(event.dinnerTime)}</small></dd></div>
+          <div><dt>Où</dt><dd>${escapeHtml(event.venue)}<small>${escapeHtml(event.address)}</small></dd></div>
+          <div><dt>Tenue</dt><dd>${escapeHtml(event.dressCode)}</dd></div>
         </dl>
       </div>
     </section>

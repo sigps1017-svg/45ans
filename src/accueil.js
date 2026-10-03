@@ -105,7 +105,7 @@ root.innerHTML = `
       </div>
     </div>
   </section>
-  <footer>Une journée de famille, accueillie avec amour</footer>
+  <footer>Une soirée de famille, accueillie avec amour</footer>
 `;
 
 const loginPanel = document.querySelector('#login-panel');

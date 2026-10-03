@@ -41,17 +41,13 @@ function foldIcsLine(line) {
   return chunks.join('\r\n');
 }
 
-// Programme et lieux de la journée : église puis réception.
-const programme = `${event.ceremonyVenue} à ${event.ceremonyTime}, réception à ${event.receptionTime} (${event.location}).`;
-const calendarLocation = `${event.ceremonyVenue}, puis ${event.location}`;
-
 export function createGoogleCalendarUrl(response) {
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: event.title,
     dates: `${formatLocalDateTime(event.startTime)}/${formatLocalDateTime(event.endTime)}`,
-    details: `${event.calendarDetails} ${programme} Code : ${response.token}`,
-    location: calendarLocation,
+    details: `${event.calendarDetails} Code : ${response.token}`,
+    location: event.location,
     ctz: event.timeZone,
   });
 
@@ -81,8 +77,8 @@ export function createIcsFile(response) {
     `DTSTART;TZID=${event.timeZone}:${formatLocalDateTime(event.startTime)}`,
     `DTEND;TZID=${event.timeZone}:${formatLocalDateTime(event.endTime)}`,
     `SUMMARY:${escapeIcsText(event.title)}`,
-    `DESCRIPTION:${escapeIcsText(`${event.calendarDetails} ${programme} Code : ${response.token}`)}`,
-    `LOCATION:${escapeIcsText(calendarLocation)}`,
+    `DESCRIPTION:${escapeIcsText(`${event.calendarDetails} Code : ${response.token}`)}`,
+    `LOCATION:${escapeIcsText(event.location)}`,
     'END:VEVENT',
     'END:VCALENDAR',
   ];

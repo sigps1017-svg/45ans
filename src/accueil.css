@@ -28,9 +28,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(245, 214, 140, 0.36), rgba(245, 214, 140, 0) 70%),
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(240, 205, 130, 0.24), rgba(240, 205, 130, 0) 70%),
     radial-gradient(ellipse 80% 40% at 80% 100%, rgba(200, 206, 216, 0.14), rgba(200, 206, 216, 0) 70%),
-    linear-gradient(170deg, #3b2a17 0%, #5f4526 24%, #8a6a3a 44%, #7a6f5c 63%, #5b5d62 82%, #383a40 100%) fixed,
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%) fixed,
     var(--staff-ink);
 }
 
