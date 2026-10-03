@@ -30,9 +30,9 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(240, 205, 130, 0.24), rgba(240, 205, 130, 0) 70%),
+    radial-gradient(ellipse 110% 55% at 50% 0%, rgba(255, 226, 160, 0.5), rgba(255, 226, 160, 0) 72%),
     radial-gradient(ellipse 80% 40% at 80% 100%, rgba(200, 206, 216, 0.14), rgba(200, 206, 216, 0) 70%),
-    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%) fixed,
+    linear-gradient(170deg, #4a3520 0%, #73552e 24%, #a07c3e 44%, #8e8068 63%, #6c6e73 82%, #45474d 100%) fixed,
     var(--admin-ink);
 }
 

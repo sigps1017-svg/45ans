@@ -6,8 +6,8 @@ Site d'invitation familial pour célébrer 45 ans de mariage (noces de vermeil)
 en Côte d'Ivoire. L'événement a lieu à Rivieira, Attoban près du 30ème, le
 26 décembre 2026. Les données de date, horaires et lieu sont centralisées dans
 `src/config.js` et les heures qui y figurent sont les heures locales d'Abidjan
-(`Africa/Abidjan`, UTC+0, sans heure d'été). Le programme prévoit un cocktail
-à 17 h et un dîner à 18 h 30.
+(`Africa/Abidjan`, UTC+0, sans heure d'été). Le programme prévoit l'église à
+11 h à l'église Saint-Bernard, puis la réception à 13 h.
 Le fichier `reference-apercu.html` est le prototype fonctionnel et la référence
 visuelle et comportementale pour le portage.
 

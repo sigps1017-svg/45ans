@@ -69,9 +69,9 @@ a {
   z-index: 0;
   inset: 0;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 18%, rgba(240, 205, 130, 0.28), rgba(240, 205, 130, 0) 70%),
+    radial-gradient(ellipse 110% 55% at 50% 14%, rgba(255, 226, 160, 0.55), rgba(255, 226, 160, 0) 72%),
     radial-gradient(ellipse 80% 40% at 80% 85%, rgba(200, 206, 216, 0.18), rgba(200, 206, 216, 0) 70%),
-    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%);
+    linear-gradient(170deg, #4a3520 0%, #73552e 24%, #a07c3e 44%, #8e8068 63%, #6c6e73 82%, #45474d 100%);
   pointer-events: none;
 }
 
@@ -112,6 +112,12 @@ main {
   text-decoration: none;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+/* Ombre douce sous le texte posé directement sur le fond ensoleillé */
+#hero,
+.sticky {
+  text-shadow: 0 1px 14px rgba(40, 24, 8, 0.5), 0 1px 2px rgba(40, 24, 8, 0.35);
 }
 
 #hero {
@@ -247,6 +253,9 @@ main {
 }
 
 .year {
+  /* Texte rempli par dégradé : l'ombre passe par un filtre, pas par text-shadow. */
+  filter: drop-shadow(0 2px 10px rgba(40, 24, 8, 0.45));
+  text-shadow: none;
   background: linear-gradient(180deg, #fff6e0 15%, #e3c27a 55%, #c0c4cc);
   background-clip: text;
   color: transparent;

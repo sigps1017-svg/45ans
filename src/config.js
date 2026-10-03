@@ -5,19 +5,23 @@ export const event = Object.freeze({
   weddingYear: 1981,
   date: '2026-12-26',
   dateLabel: 'Samedi 26 décembre 2026',
-  startTime: '17:00',
-  cocktailTime: '17 h',
-  dinnerTime: '18 h 30',
+  startTime: '11:00',
+  ceremonyTime: '11 h',
+  ceremonyVenue: 'Église Saint-Bernard',
+  receptionTime: '13 h',
   endTime: '23:00',
   timeZone: 'Africa/Abidjan',
   venue: 'Rivieira',
   address: 'Attoban près du 30ème',
+  // Lieu de la réception ; l'église est indiquée par ceremonyVenue.
   location: 'Rivieira, Attoban près du 30ème',
+  tagline:
+    'Une journée placée sous le signe de la famille, de la gratitude et de la transmission.',
   hosts: ['Alexandre', 'Elisabeth'],
   rsvpDeadline: '15 octobre 2026',
-  dressCode: 'Chic, avec une touche dorée',
+  dressCode: 'Blanc et/ou doré',
   calendarDetails:
-    'Soirée en l’honneur de leurs 45 ans de mariage. Apportez votre code QR.',
+    'Journée en l’honneur de leurs 45 ans de mariage. Apportez votre code QR.',
 });
 
 export const drinks = Object.freeze([

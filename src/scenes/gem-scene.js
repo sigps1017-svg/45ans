@@ -169,13 +169,13 @@ export function createGemScene(canvas) {
   // Canvas transparent : le dégradé brun, or et argent (.bg) reste visible derrière la scène.
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x3a2c1e, 0);
+  renderer.setClearColor(0x6e5434, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x3a2c1e, 9, 34);
+  scene.fog = new THREE.Fog(0x6e5434, 9, 34);
   const environmentTexture = makeEnvironment(renderer);
   scene.environment = environmentTexture;
   const camera = new THREE.PerspectiveCamera(
