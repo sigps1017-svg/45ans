@@ -34,7 +34,7 @@ export function initHistory(sceneState) {
   const context = gsap.context(() => {
     gsap.fromTo(
       sceneState,
-      { gemY: 0.75, gemScale: 1, helixOpacity: 0 },
+      { gemY: 0, gemScale: 1, helixOpacity: 0 },
       {
         gemY: 1.55,
         gemScale: 0.55,

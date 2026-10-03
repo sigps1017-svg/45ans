@@ -77,6 +77,12 @@ footer {
   border-bottom: 1px solid var(--admin-line);
 }
 
+.header-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
 .back-link {
   color: var(--admin-accent);
   text-decoration: none;
@@ -561,7 +567,7 @@ footer {
     text-align: left;
   }
 
-  .back-link {
+  .header-links {
     grid-row: 2;
     grid-column: 1;
   }

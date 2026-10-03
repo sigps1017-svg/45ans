@@ -23,7 +23,10 @@ import { getSupabaseClient, supabaseConfigError } from './lib/supabase.js';
 const root = document.querySelector('#admin-app');
 root.innerHTML = `
   <header class="admin-header">
-    <a class="back-link" href="/accueil.html">← Accueil équipe</a>
+    <nav class="header-links" aria-label="Pages de l’équipe">
+      <a class="back-link" href="/accueil.html">← Accueil équipe</a>
+      <a class="back-link" href="/livre-or.html">Livre d’or</a>
+    </nav>
     <div class="admin-heading">
       <p class="eyebrow">Noces de vermeil · Administration</p>
       <h1>Gestion des invitations</h1>

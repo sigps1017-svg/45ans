@@ -38,6 +38,7 @@ modulaire suivante :
   Supabase.
 - `accueil.html` : scanner et suivi des arrivées de l'équipe.
 - `gestion.html` : administration des invitations réservée au rôle `admin`.
+- `livre-or.html` : lecture, modération et impression du livre d'or par l'équipe.
 
 Importer les bibliothèques depuis npm. Avec la version récente de Three.js,
 utiliser `renderer.outputColorSpace` au lieu de l'ancienne API
@@ -93,6 +94,13 @@ dans `staff` lorsqu'un rôle leur est attribué. Pour servir les pages et
 fonctions API en local, utiliser `npm run dev`; le serveur Vite branche la
 même fonction sur `/api/team`. En production, Vercel détecte directement
 `api/team.js`.
+
+Le livre d'or est décrit par `supabase/migrations/20261002_livre_or.sql`, à
+exécuter manuellement. Chaque invitation peut y déposer un message signé, modifiable
+avec son lien `?i=` (section `#livre-or` de la page invités, `src/rsvp/livre-or.js`).
+La table `livre_or` n'est accessible que par RPC : lecture pour tout le personnel
+(`staff_list_guestbook`), suppression réservée au rôle `admin`. La page
+`livre-or.html` affiche l'aperçu du livre et l'imprime en A4 avec une couverture.
 
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec le fuseau fixe

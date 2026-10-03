@@ -26,6 +26,7 @@ root.innerHTML = `
       <span>personnes arrivées</span>
       <span class="counter-hint">Voir les listes</span>
     </button>
+    <a class="text-button admin-link" id="guestbook-link" href="/livre-or.html" hidden>Livre d’or</a>
     <a class="text-button admin-link" id="admin-link" href="/gestion.html" hidden>Gestion des invitations</a>
     <button class="text-button" type="button" id="sign-out" hidden>Déconnexion</button>
   </header>
@@ -114,6 +115,7 @@ const loginSubmit = document.querySelector('#login-submit');
 const staffPanel = document.querySelector('#staff-panel');
 const signOutButton = document.querySelector('#sign-out');
 const adminLink = document.querySelector('#admin-link');
+const guestbookLink = document.querySelector('#guestbook-link');
 const arrivalCounter = document.querySelector('#arrival-counter');
 const arrivalCount = document.querySelector('#arrival-count');
 const rosterOverlay = document.querySelector('#roster-overlay');
@@ -613,6 +615,7 @@ async function authorizeSession(session) {
     staffPanel.hidden = true;
     signOutButton.hidden = true;
     adminLink.hidden = true;
+    guestbookLink.hidden = true;
     arrivalCounter.hidden = true;
     return;
   }
@@ -637,6 +640,7 @@ async function authorizeSession(session) {
     staffPanel.hidden = false;
     signOutButton.hidden = false;
     adminLink.hidden = role !== 'admin';
+    guestbookLink.hidden = false;
     await refreshDashboard();
     await startScanner();
     window.clearInterval(refreshTimer);
@@ -691,6 +695,7 @@ signOutButton.addEventListener('click', async () => {
     arrivalCounter.hidden = true;
     signOutButton.hidden = true;
     adminLink.hidden = true;
+    guestbookLink.hidden = true;
     loginPanel.hidden = false;
   } catch (error) {
     console.error('Impossible de fermer la session de l’équipe.', error);
@@ -808,6 +813,7 @@ if (!supabaseConfigError) {
       arrivalCounter.hidden = true;
       loginPanel.hidden = false;
       adminLink.hidden = true;
+      guestbookLink.hidden = true;
     }
   });
   authSubscription = subscription;

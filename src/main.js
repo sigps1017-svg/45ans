@@ -5,6 +5,7 @@ import { createHistoryMarkup, initHistory } from './scenes/histoire.js';
 import { createSouvenirsMarkup, initSouvenirs } from './scenes/souvenirs.js';
 import { createRsvpMarkup } from './rsvp/form.js';
 import { initRsvp } from './rsvp/index.js';
+import { createGuestbookMarkup, initGuestbook } from './rsvp/livre-or.js';
 
 const app = document.querySelector('#app');
 
@@ -21,6 +22,7 @@ app.innerHTML = `
     ${createHistoryMarkup(event)}
     ${createSouvenirsMarkup(memories)}
     ${createRsvpMarkup(event)}
+    ${createGuestbookMarkup(event)}
     <footer>Avec tout notre amour</footer>
   </main>
   <dialog id="confirm" class="confirm-dialog" aria-labelledby="confirm-title">
@@ -33,7 +35,7 @@ const sceneReady = new Promise((resolve) => {
   resolveSceneReady = resolve;
 });
 const rsvp = initRsvp({ event, sceneReady });
-const cleanups = [rsvp.cleanup];
+const cleanups = [rsvp.cleanup, initGuestbook()];
 
 const scenePromise = import('./scenes/gem-scene.js')
   .then(({ createGemScene }) => {

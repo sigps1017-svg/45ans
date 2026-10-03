@@ -1,0 +1,515 @@
+:root {
+  color-scheme: dark;
+  --ink: #2a2018;
+  --panel: rgba(31, 24, 18, 0.9);
+  --line: rgba(232, 214, 180, 0.28);
+  --text: #f6efe4;
+  --muted: #d6c9b4;
+  --gold: #e3c27a;
+  --gold-fill: linear-gradient(135deg, #f1d999, #c9a24e 50%, #9c7224);
+  --paper: #fbf7ef;
+  --paper-ink: #2b2620;
+  --paper-muted: #6f655a;
+  --paper-gold: #a87a26;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(240, 205, 130, 0.24), rgba(240, 205, 130, 0) 70%),
+    linear-gradient(170deg, #24180f 0%, #46321d 26%, #6a5230 44%, #575247 62%, #3e4149 80%, #1e1f24 100%) fixed,
+    var(--ink);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.guestbook-header,
+main {
+  width: min(100% - 32px, 920px);
+  margin-inline: auto;
+}
+
+.guestbook-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding-block: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.guestbook-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.guestbook-links a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.guestbook-heading {
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.guestbook-heading h1 {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 500;
+}
+
+#sign-out {
+  justify-self: end;
+}
+
+.gold-button,
+.ghost-button,
+.delete-button {
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.gold-button {
+  border: 1px solid #f1d999;
+  color: #1f1a10;
+  background: var(--gold-fill);
+}
+
+.ghost-button {
+  border: 1px solid var(--line);
+  color: var(--text);
+  background: rgba(15, 11, 8, 0.55);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+main {
+  padding-block: 28px 48px;
+}
+
+.login-panel {
+  width: min(100%, 460px);
+  margin: 8vh auto;
+  padding: clamp(22px, 5vw, 36px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.login-panel h2 {
+  margin-top: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+}
+
+.login-panel > p {
+  color: var(--muted);
+}
+
+.login-panel form {
+  display: grid;
+  gap: 10px;
+}
+
+.login-panel label {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.login-panel input {
+  width: 100%;
+  min-height: 46px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: rgba(15, 11, 8, 0.55);
+}
+
+.notice {
+  min-height: 1.4em;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.notice.error {
+  color: #ffb4a8;
+}
+
+.notice.success {
+  color: #c6ecd2;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+.toolbar-count {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.2rem;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toolbar .notice {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* Aperçu du livre : des pages crème posées sur le fond brun */
+.book {
+  display: grid;
+  gap: 28px;
+  color: var(--paper-ink);
+}
+
+.book-cover,
+.book-pages {
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.book-cover {
+  display: grid;
+  aspect-ratio: 210 / 297;
+  width: min(100%, 620px);
+  margin-inline: auto;
+  padding: clamp(18px, 4vw, 34px);
+  background:
+    radial-gradient(ellipse 80% 45% at 50% 30%, rgba(255, 240, 200, 0.75), rgba(255, 240, 200, 0) 70%),
+    var(--paper);
+}
+
+.cover-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border: 3px solid #c9a24e;
+  outline: 1px solid rgba(176, 131, 47, 0.6);
+  outline-offset: -12px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cover-gem {
+  width: clamp(64px, 14vw, 96px);
+  height: auto;
+  margin-bottom: 28px;
+}
+
+.cover-kicker {
+  margin: 0;
+  color: var(--paper-gold);
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 3.4vw, 1.6rem);
+  font-style: italic;
+}
+
+.cover-title {
+  margin: 4px 0 6px;
+  font-family: var(--serif);
+  font-size: clamp(3rem, 12vw, 5.6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.cover-sub {
+  margin: 0;
+  color: var(--paper-muted);
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 3.4vw, 1.5rem);
+}
+
+.cover-couple {
+  margin: 28px 0 0;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.cover-rule {
+  width: 40%;
+  height: 2px;
+  margin: 26px auto;
+  background: linear-gradient(90deg, rgba(176, 131, 47, 0), #b0832f, rgba(176, 131, 47, 0));
+}
+
+.cover-date,
+.cover-place {
+  margin: 0;
+  color: var(--paper-muted);
+  font-size: clamp(0.9rem, 2.6vw, 1.05rem);
+}
+
+.cover-date {
+  margin-bottom: 4px;
+  color: var(--paper-ink);
+}
+
+.book-pages {
+  padding: clamp(24px, 6vw, 64px);
+}
+
+.pages-kicker {
+  margin: 0 0 28px;
+  color: var(--paper-gold);
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.book-entries {
+  display: grid;
+  gap: 34px;
+}
+
+.book-entry {
+  position: relative;
+  margin: 0;
+  padding: 0 0 30px;
+  border-bottom: 1px solid rgba(176, 131, 47, 0.35);
+  break-inside: avoid;
+}
+
+.book-entry:last-child {
+  border-bottom: 0;
+}
+
+.book-entry blockquote {
+  position: relative;
+  margin: 0;
+  padding-left: 34px;
+  font-family: var(--serif);
+  font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+  font-style: italic;
+  line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.book-entry blockquote::before {
+  position: absolute;
+  top: -0.35em;
+  left: 0;
+  color: #c9a24e;
+  content: "“";
+  font-size: 2.6em;
+  font-style: normal;
+  line-height: 1;
+}
+
+.book-entry figcaption {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  margin-top: 12px;
+  text-align: right;
+}
+
+.entry-signature {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.entry-signature::before {
+  content: "— ";
+  color: var(--paper-gold);
+}
+
+.book-entry small {
+  color: var(--paper-muted);
+  font-size: 0.85rem;
+}
+
+.book-empty {
+  margin: 0;
+  color: var(--paper-muted);
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.delete-button {
+  min-height: 38px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid rgba(163, 32, 26, 0.45);
+  color: #a3201a;
+  background: #fff4f3;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .guestbook-header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .guestbook-heading {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .toolbar-actions,
+  .toolbar-actions button {
+    width: 100%;
+  }
+}
+
+/* Impression : couverture pleine page, puis les messages sur papier crème */
+@page {
+  size: A4;
+  margin: 18mm 16mm;
+
+  @bottom-center {
+    content: counter(page);
+    color: #8a7d6d;
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 10pt;
+  }
+}
+
+@page :first {
+  margin: 0;
+
+  @bottom-center {
+    content: none;
+  }
+}
+
+@media print {
+  :root,
+  body {
+    color: var(--paper-ink);
+    background: var(--paper);
+  }
+
+  .no-print,
+  .guestbook-header {
+    display: none !important;
+  }
+
+  main,
+  .book {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .book-cover,
+  .book-pages {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .book-cover {
+    width: 210mm;
+    height: 297mm;
+    aspect-ratio: auto;
+    padding: 16mm;
+    break-after: page;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .cover-gem {
+    width: 30mm;
+  }
+
+  .cover-title {
+    font-size: 54pt;
+  }
+
+  .cover-kicker,
+  .cover-sub {
+    font-size: 18pt;
+  }
+
+  .cover-couple {
+    font-size: 14pt;
+  }
+
+  .cover-date,
+  .cover-place {
+    font-size: 12pt;
+  }
+
+  .book-pages {
+    padding: 0;
+    background: none;
+  }
+
+  .book-entry blockquote {
+    font-size: 13pt;
+  }
+
+  .entry-signature {
+    font-size: 12.5pt;
+  }
+}

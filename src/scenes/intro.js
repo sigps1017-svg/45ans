@@ -1,5 +1,8 @@
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { event, memories } from '../config.js';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -22,9 +25,9 @@ export function createIntroMarkup() {
 
   return `
     <section id="hero" aria-labelledby="t1">
-      <p class="dates">${firstYear} – ${eventYear}</p>
       <h1 class="title split" id="t1">${event.anniversaryYears} ans</h1>
       <p class="title-sub split" id="t2">d’amour</p>
+      <p class="dates">${firstYear} – ${eventYear}</p>
       <p class="names">${names}</p>
       <div class="hint">Faites défiler<span aria-hidden="true"></span></div>
     </section>
@@ -62,6 +65,25 @@ export function initIntro(sceneState, startHeartCycle) {
   const secondCharacters = splitText(secondTitle);
   const reduce = reducedMotion.matches;
   const duration = reduce ? 0.6 : 1;
+
+  // Pendant que le texte d'accueil monte et sort de l'écran, le bijou et ses
+  // étoiles descendent au centre ; la marge sous #hero les y laisse un moment seuls.
+  const centerGem = gsap.fromTo(
+    sceneState,
+    { gemY: 0.75 },
+    {
+      gemY: 0,
+      ease: 'none',
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: () => `+=${window.innerHeight * 0.7}`,
+        scrub: 0.9,
+        invalidateOnRefresh: true,
+      },
+    },
+  );
 
   const timeline = gsap.timeline();
   timeline
@@ -107,5 +129,9 @@ export function initIntro(sceneState, startHeartCycle) {
     .to('.hint', { opacity: 1, duration: reduce ? 0.2 : 1 }, reduce ? 0 : 3.3)
     .add(startHeartCycle);
 
-  return () => timeline.kill();
+  return () => {
+    timeline.kill();
+    centerGem.scrollTrigger?.kill();
+    centerGem.kill();
+  };
 }
