@@ -1,6 +1,8 @@
 export const event = Object.freeze({
   title: 'Noces de vermeil – 45 ans de mariage',
   anniversaryYears: 45,
+  // Année du mariage : point de départ des dates d'accueil et du compteur d'années.
+  weddingYear: 1981,
   date: '2026-12-26',
   dateLabel: 'Samedi 26 décembre 2026',
   startTime: '17:00',

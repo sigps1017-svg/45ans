@@ -6,6 +6,8 @@ import { createSouvenirsMarkup, initSouvenirs } from './scenes/souvenirs.js';
 import { createRsvpMarkup } from './rsvp/form.js';
 import { initRsvp } from './rsvp/index.js';
 import { createGuestbookMarkup, initGuestbook } from './rsvp/livre-or.js';
+import { loadMemories } from './lib/souvenirs.js';
+import { supabaseConfigError } from './lib/supabase.js';
 
 const app = document.querySelector('#app');
 
@@ -30,6 +32,20 @@ app.innerHTML = `
   </dialog>
 `;
 
+// Souvenirs modifiés par les admins (Supabase), sinon ceux de src/config.js.
+const MEMORIES_TIMEOUT = 2500;
+const memoriesPromise = supabaseConfigError
+  ? Promise.resolve(memories)
+  : Promise.race([
+      loadMemories(memories),
+      new Promise((_, reject) => {
+        window.setTimeout(() => reject(new Error('Délai dépassé.')), MEMORIES_TIMEOUT);
+      }),
+    ]).catch((error) => {
+      console.warn('Souvenirs Supabase indisponibles : photos par défaut utilisées.', error);
+      return memories;
+    });
+
 let resolveSceneReady;
 const sceneReady = new Promise((resolve) => {
   resolveSceneReady = resolve;
@@ -37,15 +53,15 @@ const sceneReady = new Promise((resolve) => {
 const rsvp = initRsvp({ event, sceneReady });
 const cleanups = [rsvp.cleanup, initGuestbook()];
 
-const scenePromise = import('./scenes/gem-scene.js')
-  .then(({ createGemScene }) => {
+const scenePromise = Promise.all([import('./scenes/gem-scene.js'), memoriesPromise])
+  .then(([{ createGemScene }, loadedMemories]) => {
     const scene = createGemScene(document.querySelector('#webgl'));
     rsvp.setScene(scene);
     resolveSceneReady(scene);
     cleanups.push(
       initIntro(scene.state, scene.startHeartCycle),
       initHistory(scene.state, event),
-      initSouvenirs(scene, memories),
+      initSouvenirs(scene, loadedMemories),
     );
     return scene;
   })

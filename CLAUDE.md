@@ -102,6 +102,18 @@ La table `livre_or` n'est accessible que par RPC : lecture pour tout le personne
 (`staff_list_guestbook`), suppression réservée au rôle `admin`. La page
 `livre-or.html` affiche l'aperçu du livre et l'imprime en A4 avec une couverture.
 
+Les souvenirs (année, légende et photo de chaque face des six cubes) sont
+modifiables par les admins dans l'onglet « Photos » de `gestion.html`
+(`src/souvenirs-admin.js`, accès dans `src/lib/souvenirs.js`). Exécuter
+`supabase/migrations/20261003_souvenirs_admin.sql` manuellement : il crée les
+tables `souvenirs` et `souvenir_photos` (lecture publique, écriture par RPC
+admin) et le bucket Storage public `souvenirs` (écriture réservée aux admins).
+Les valeurs de `src/config.js` restent les valeurs par défaut : une face sans
+ligne en base garde sa photo du projet, une ligne au chemin vide affiche
+l'illustration « Photo à venir ». La page invités charge ces données au démarrage
+et revient à `src/config.js` si Supabase ne répond pas. L'année du mariage
+(`event.weddingYear`) est indépendante des souvenirs.
+
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec le fuseau fixe
 `Africa/Abidjan`. Le fichier `.ics` déclare un seul bloc `STANDARD` à UTC+0;

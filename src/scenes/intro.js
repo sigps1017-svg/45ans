@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { event, memories } from '../config.js';
+import { event } from '../config.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,7 +17,7 @@ function escapeHtml(value) {
 }
 
 export function createIntroMarkup() {
-  const firstYear = memories[0].year;
+  const firstYear = event.weddingYear;
   const eventYear = Number(event.date.slice(0, 4));
   const names = event.hosts
     .map((host) => `<strong>${escapeHtml(host)}</strong>`)

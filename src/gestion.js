@@ -19,6 +19,7 @@ import {
   resetTeamPassword,
 } from './lib/team-admin.js';
 import { getSupabaseClient, supabaseConfigError } from './lib/supabase.js';
+import { initSouvenirsAdmin } from './souvenirs-admin.js';
 
 const root = document.querySelector('#admin-app');
 root.innerHTML = `
@@ -50,6 +51,7 @@ root.innerHTML = `
       <nav class="admin-tabs" role="tablist" aria-label="Administration">
         <button class="admin-tab" id="tab-invitations" type="button" role="tab" aria-selected="true" aria-controls="invitations-panel" data-admin-tab="invitations">Invitations</button>
         <button class="admin-tab" id="tab-team" type="button" role="tab" aria-selected="false" aria-controls="team-panel" data-admin-tab="team" tabindex="-1">Équipe</button>
+        <button class="admin-tab" id="tab-photos" type="button" role="tab" aria-selected="false" aria-controls="photos-panel" data-admin-tab="photos" tabindex="-1">Photos</button>
       </nav>
       <div class="admin-tab-panel" id="invitations-panel" role="tabpanel" aria-labelledby="tab-invitations">
         <section class="create-panel">
@@ -118,6 +120,7 @@ root.innerHTML = `
           <ul class="team-list" id="team-list"></ul>
         </section>
       </section>
+      <section class="admin-tab-panel" id="photos-panel" role="tabpanel" aria-labelledby="tab-photos" hidden></section>
     </section>
   </main>
   <footer>Les liens d’invitation contiennent un code privé : partagez-les uniquement aux destinataires concernés. Les mots de passe temporaires doivent être transmis par un canal sûr.</footer>
@@ -140,6 +143,8 @@ const exportButton = document.querySelector('#export-csv');
 const adminTabs = Array.from(document.querySelectorAll('[data-admin-tab]'));
 const invitationsPanel = document.querySelector('#invitations-panel');
 const teamPanel = document.querySelector('#team-panel');
+const photosPanel = document.querySelector('#photos-panel');
+const souvenirsAdmin = initSouvenirsAdmin(photosPanel);
 const teamCreateForm = document.querySelector('#team-create-form');
 const teamCreateSubmit = document.querySelector('#team-create-submit');
 const teamCreateNotice = document.querySelector('#team-create-notice');
@@ -384,14 +389,16 @@ async function refreshTeam() {
 
 function selectAdminTab(tabName) {
   const isTeamTab = tabName === 'team';
-  invitationsPanel.hidden = isTeamTab;
+  invitationsPanel.hidden = tabName !== 'invitations';
   teamPanel.hidden = !isTeamTab;
+  photosPanel.hidden = tabName !== 'photos';
   adminTabs.forEach((tab) => {
     const selected = tab.dataset.adminTab === tabName;
     tab.setAttribute('aria-selected', String(selected));
     tab.tabIndex = selected ? 0 : -1;
   });
   if (isTeamTab && isAdmin) refreshTeam();
+  if (tabName === 'photos' && isAdmin) souvenirsAdmin.refresh();
 }
 
 async function copyLink(invite, notice) {

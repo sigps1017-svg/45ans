@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { event, memories } from '../config.js';
+import { event } from '../config.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,7 +14,7 @@ export function createHistoryMarkup() {
   return `
     <section id="histoire" class="stage" aria-labelledby="year">
       <div class="sticky">
-        <div class="year" id="year">${memories[0].year}</div>
+        <div class="year" id="year">${event.weddingYear}</div>
         <div class="lines" id="lines">
           ${storyLines.map((line) => `<p>${line}</p>`).join('')}
         </div>
@@ -26,7 +26,7 @@ export function createHistoryMarkup() {
 export function initHistory(sceneState) {
   const yearElement = document.querySelector('#year');
   const lineElements = Array.from(document.querySelectorAll('#lines p'));
-  const firstYear = memories[0].year;
+  const firstYear = event.weddingYear;
   const lastYear = Number(event.date.slice(0, 4));
 
   gsap.set(lineElements[0], { opacity: 1 });

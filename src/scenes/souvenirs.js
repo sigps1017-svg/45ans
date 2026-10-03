@@ -159,23 +159,37 @@ function createViewerPhoto(memory, faceIndex) {
   return canvas.toDataURL('image/jpeg', 0.9);
 }
 
-export function createSouvenirsMarkup(memories) {
-  const accessiblePhotos = memories
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]);
+}
+
+function createAccessiblePhotoList(memories) {
+  return memories
     .flatMap(({ year, caption }) =>
       Array.from(
         { length: 6 },
         (_, index) =>
-          `<li>${year} — ${caption}, photo ${index + 1} sur 6</li>`,
+          `<li>${escapeHtml(year)} — ${escapeHtml(caption)}, photo ${index + 1} sur 6</li>`,
       ),
     )
     .join('');
+}
+
+export function createSouvenirsMarkup(memories) {
+  const accessiblePhotos = createAccessiblePhotoList(memories);
 
   return `
     <section id="souvenirs" class="stage" aria-labelledby="souvenirs-title">
       <div class="sticky souv-title">
         <h2 id="souvenirs-title">Quarante-cinq ans<br>de souvenirs</h2>
         <p>Touchez une face pour l’agrandir.<br>Faites glisser un cube pour le tourner.</p>
-        <ul class="visually-hidden" aria-label="Liste des photos souvenirs">
+        <ul class="visually-hidden" id="souvenirs-list" aria-label="Liste des photos souvenirs">
           ${accessiblePhotos}
         </ul>
       </div>
@@ -210,6 +224,8 @@ export function initSouvenirs(sceneApi, memories) {
     addResizeHandler,
     addFrameHandler,
   } = sceneApi;
+  // Les années et légendes peuvent venir de Supabase : la liste accessible suit.
+  document.querySelector('#souvenirs-list').innerHTML = createAccessiblePhotoList(memories);
   const textureLoader = new THREE.TextureLoader();
   const cubeTextureSize = window.innerWidth < 700 ? 512 : 768;
   const fallbackTextures = new Set();
