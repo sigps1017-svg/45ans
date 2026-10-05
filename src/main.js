@@ -8,6 +8,8 @@ import { initRsvp } from './rsvp/index.js';
 import { createGuestbookMarkup, initGuestbook } from './rsvp/livre-or.js';
 import { loadMemories } from './lib/souvenirs.js';
 import { supabaseConfigError } from './lib/supabase.js';
+import { loadActiveMusic } from './lib/musique.js';
+import { initMusicPlayer } from './music.js';
 
 const app = document.querySelector('#app');
 
@@ -52,6 +54,17 @@ const sceneReady = new Promise((resolve) => {
 });
 const rsvp = initRsvp({ event, sceneReady });
 const cleanups = [rsvp.cleanup, initGuestbook()];
+
+// Musique de fond choisie par les admins ; sans morceau actif, pas de bouton.
+if (!supabaseConfigError) {
+  loadActiveMusic()
+    .then((track) => {
+      if (track) cleanups.push(initMusicPlayer(track));
+    })
+    .catch((error) => {
+      console.warn('Musique de fond indisponible.', error);
+    });
+}
 
 const scenePromise = Promise.all([import('./scenes/gem-scene.js'), memoriesPromise])
   .then(([{ createGemScene }, loadedMemories]) => {

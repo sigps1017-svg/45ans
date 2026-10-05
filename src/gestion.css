@@ -679,6 +679,83 @@ footer {
   }
 }
 
+/* Onglet Musique */
+.music-upload-form {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.3fr) minmax(160px, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.music-upload-form label,
+.music-rename-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--admin-muted);
+  font-size: 0.88rem;
+}
+
+.music-upload-form input[type="file"] {
+  padding: 8px;
+}
+
+.music-list {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.music-card {
+  display: grid;
+  gap: 12px;
+  padding: clamp(14px, 3vw, 20px);
+  border: 1px solid var(--admin-line);
+  border-radius: 14px;
+  background: rgba(15, 11, 8, 0.45);
+}
+
+.music-card.is-active {
+  border-color: #e3c27a;
+  box-shadow: 0 0 0 1px rgba(227, 194, 122, 0.35);
+}
+
+.music-rename-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 10px;
+}
+
+.music-card audio {
+  width: 100%;
+}
+
+.music-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.music-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: #1f1a10;
+  background: var(--admin-gold-fill);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .music-upload-form,
+  .music-rename-form {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 800px) {
   .create-form,
   .edit-form,
