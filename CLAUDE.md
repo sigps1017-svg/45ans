@@ -114,14 +114,6 @@ l'illustration « Photo à venir ». La page invités charge ces données au dé
 et revient à `src/config.js` si Supabase ne répond pas. L'année du mariage
 (`event.weddingYear`) est indépendante des souvenirs.
 
-La musique de fond est gérée dans l'onglet « Musique » de `gestion.html`
-(`src/musique-admin.js`, accès dans `src/lib/musique.js`). Exécuter
-`supabase/migrations/20261004_musique.sql` manuellement, après la migration des
-souvenirs dont il réutilise `is_staff_admin` : table `musiques` (un seul morceau
-`active`), bucket public `musique` (MP3/M4A, 20 Mo). La page invités joue le
-morceau actif en boucle (`src/music.js`) à partir du premier geste du visiteur,
-avec un bouton pour couper le son ; sans morceau actif, aucun bouton n'apparaît.
-
 Le parcours comprend les réponses oui/non, le code QR PNG et son animation en
 particules, Google Agenda et le téléchargement `.ics` avec le fuseau fixe
 `Africa/Abidjan`. Le fichier `.ics` déclare un seul bloc `STANDARD` à UTC+0;
