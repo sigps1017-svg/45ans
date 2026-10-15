@@ -329,7 +329,7 @@ export function initSouvenirs(sceneApi, memories) {
     cubes.forEach(({ mesh, index }) => {
       const side = index % 2 ? 1 : -1;
       mesh.position.set(
-        side * (narrow ? 0.55 : 1.5),
+        side * (narrow ? 0.35 : 1.5),
         ((index % 3) - 1) * 0.3,
         -6 - index * 5,
       );
@@ -340,8 +340,10 @@ export function initSouvenirs(sceneApi, memories) {
   const updateCubes = ({ time, delta, baseZ, qrProgress }) => {
     cubes.forEach((cube) => {
       const worldZ = cube.mesh.position.z + state.framesZ;
+      // Un cube qui a dépassé sa place s'efface avant de frôler la caméra :
+      // il ne recouvre pas le suivant en remplissant l'écran.
       const proximity = THREE.MathUtils.clamp(
-        (baseZ - 0.6 - worldZ) / 2.2,
+        (baseZ - 2.6 - worldZ) / 1.6,
         0,
         1,
       );
@@ -615,7 +617,28 @@ export function initSouvenirs(sceneApi, memories) {
         scrollTrigger: {
           trigger: '#souvenirs',
           start: 'top top',
-          end: 'bottom bottom',
+          // Le dernier cube arrive un écran avant la fin de la section et y reste
+          // seul au premier plan, le temps de le manipuler.
+          end: () =>
+            `+=${document.querySelector('#souvenirs').offsetHeight - 2 * window.innerHeight}`,
+          scrub: 0.9,
+          invalidateOnRefresh: true,
+        },
+      },
+    );
+
+    // Les cubes s'effacent quand l'invitation arrive, pour ne pas se mêler au panneau.
+    gsap.fromTo(
+      state,
+      { framesOpacity: 1 },
+      {
+        framesOpacity: 0,
+        ease: 'none',
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: '#invitation',
+          start: 'top bottom',
+          end: 'top 35%',
           scrub: 0.9,
         },
       },
