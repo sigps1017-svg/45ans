@@ -233,7 +233,18 @@ main {
 }
 
 #histoire {
-  height: 260svh;
+  height: 100svh;
+}
+
+/* De l'accueil à la dernière année, la page est tenue : chaque geste avance d'une étape. */
+html.story-lock,
+html.story-lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html.story-lock body {
+  touch-action: none;
 }
 
 #souvenirs {
@@ -282,6 +293,50 @@ main {
   inset: 0;
   margin: 0;
   opacity: 0;
+}
+
+.story-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.story-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 6px;
+  background: rgba(246, 239, 228, 0.28);
+  transition: width 0.45s, background 0.45s;
+}
+
+.story-dots span.done {
+  background: rgba(227, 194, 122, 0.6);
+}
+
+.story-dots span.on {
+  width: 26px;
+  background: var(--gold);
+}
+
+.story-hint {
+  min-height: 1.3em;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.story-skip {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(22, 17, 12, 0.4);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .souv-title {
