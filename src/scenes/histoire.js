@@ -41,7 +41,10 @@ export function createHistoryMarkup() {
           ${milestones.map(() => '<span></span>').join('')}
         </div>
         <p class="story-hint" id="story-hint"></p>
-        <button class="story-skip" id="story-skip" type="button">Passer l’histoire</button>
+        <div class="story-actions">
+          <button class="story-skip" id="story-top" type="button" hidden>Revenir au début</button>
+          <button class="story-skip" id="story-skip" type="button">Passer l’histoire</button>
+        </div>
       </div>
     </section>
   `;
@@ -55,6 +58,7 @@ export function initHistory(sceneState) {
   const dotElements = Array.from(document.querySelectorAll('#story-dots span'));
   const hintElement = document.querySelector('#story-hint');
   const skipStoryButton = document.querySelector('#story-skip');
+  const topButton = document.querySelector('#story-top');
   const skipIntroLink = document.querySelector('.skip');
   const counter = { value: milestones[0] };
 
@@ -96,6 +100,7 @@ export function initHistory(sceneState) {
         overwrite: true,
       });
     });
+    topButton.hidden = index === 0;
     dotElements.forEach((dot, i) => {
       dot.classList.toggle('on', i === index);
       dot.classList.toggle('done', i < index);
@@ -177,6 +182,29 @@ export function initHistory(sceneState) {
     }
   }
 
+  // En remontant depuis les souvenirs, la page se tient de nouveau sur 2026 :
+  // chaque geste vers le haut redescend d'une étape jusqu'à l'accueil.
+  function relockFromBelow() {
+    if (locked || busy || glideTween?.isActive() || position <= lastIndex) return;
+    if (window.scrollY > gateY()) return;
+    position = lastIndex;
+    lastStep = performance.now();
+    window.scrollTo(0, gateY());
+    showStep(lastIndex, true);
+    lock();
+  }
+
+  function returnToTop() {
+    glideTween?.kill();
+    busy = true;
+    position = -1;
+    lastStep = performance.now();
+    lock();
+    glide(0, 1.2, () => {
+      busy = false;
+    });
+  }
+
   function finishStory() {
     glideTween?.kill();
     busy = false;
@@ -188,11 +216,17 @@ export function initHistory(sceneState) {
   // Un mouvement continu (élan du pavé tactile compris) compte pour un seul geste ;
   // une nouvelle impulsion nette pendant l'élan compte comme un nouveau geste.
   function handleWheel(wheelEvent) {
-    if (!locked) return;
+    const now = performance.now();
+    if (!locked) {
+      // Retenu même en défilement libre : l'élan qui ramène sur 2026 ne compte
+      // pas comme un nouveau geste une fois la page tenue.
+      lastWheel = now;
+      lastWheelSize = Math.abs(wheelEvent.deltaY);
+      return;
+    }
     wheelEvent.preventDefault();
     const size = Math.abs(wheelEvent.deltaY);
     if (size < 3) return;
-    const now = performance.now();
     const fresh =
       now - lastWheel > 200 ||
       (size > lastWheelSize * 2.2 && size > 40 && now - lastStep > 900);
@@ -289,7 +323,9 @@ export function initHistory(sceneState) {
   window.addEventListener('touchcancel', handleTouchCancel);
   window.addEventListener('keydown', handleKeydown);
   window.addEventListener('resize', handleResize);
+  window.addEventListener('scroll', relockFromBelow, { passive: true });
   skipStoryButton.addEventListener('click', handleSkipStory);
+  topButton.addEventListener('click', returnToTop);
   skipIntroLink?.addEventListener('click', handleSkipIntro);
 
   return () => {
@@ -300,7 +336,9 @@ export function initHistory(sceneState) {
     window.removeEventListener('touchcancel', handleTouchCancel);
     window.removeEventListener('keydown', handleKeydown);
     window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', relockFromBelow);
     skipStoryButton.removeEventListener('click', handleSkipStory);
+    topButton.removeEventListener('click', returnToTop);
     skipIntroLink?.removeEventListener('click', handleSkipIntro);
     glideTween?.kill();
     entrance.scrollTrigger?.kill();

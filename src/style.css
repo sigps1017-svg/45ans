@@ -328,6 +328,17 @@ html.story-lock body {
   letter-spacing: 0.02em;
 }
 
+.story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.story-skip[hidden] {
+  display: none;
+}
+
 .story-skip {
   margin-top: 10px;
   padding: 8px 16px;

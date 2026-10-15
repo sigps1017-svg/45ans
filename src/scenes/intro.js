@@ -17,7 +17,8 @@ function escapeHtml(value) {
 }
 
 export function createIntroMarkup() {
-  const firstYear = event.weddingYear;
+  // L'accueil part de la rencontre, comme le compteur de l'histoire.
+  const firstYear = event.meetingYear;
   const eventYear = Number(event.date.slice(0, 4));
   const names = event.hosts
     .map((host) => `<strong>${escapeHtml(host)}</strong>`)
