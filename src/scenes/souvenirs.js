@@ -627,18 +627,34 @@ export function initSouvenirs(sceneApi, memories) {
       },
     );
 
-    // Les cubes s'effacent quand l'invitation arrive, pour ne pas se mêler au panneau.
+    // Derrière l'invitation, le dernier cube reste en transparence ;
+    // il disparaît ensuite à l'arrivée de la réponse.
     gsap.fromTo(
       state,
       { framesOpacity: 1 },
       {
-        framesOpacity: 0,
+        framesOpacity: 0.28,
         ease: 'none',
         immediateRender: false,
         scrollTrigger: {
           trigger: '#invitation',
           start: 'top bottom',
           end: 'top 35%',
+          scrub: 0.9,
+        },
+      },
+    );
+    gsap.fromTo(
+      state,
+      { framesOpacity: 0.28 },
+      {
+        framesOpacity: 0,
+        ease: 'none',
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: '#rsvp',
+          start: 'top bottom',
+          end: 'top 50%',
           scrub: 0.9,
         },
       },

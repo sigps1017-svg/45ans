@@ -420,8 +420,9 @@ footer {
 
 .lede {
   margin: 0 0 28px;
-  color: var(--muted);
+  color: #e6d9c4;
   font-size: 16px;
+  font-weight: 400;
   text-align: center;
 }
 
@@ -453,8 +454,10 @@ footer {
 
 .details dd small {
   display: block;
-  color: var(--muted);
-  font-size: 14px;
+  margin-top: 2px;
+  color: #efe3cf;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .field {

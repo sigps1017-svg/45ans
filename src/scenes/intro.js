@@ -70,7 +70,7 @@ export function initIntro(sceneState, startHeartCycle) {
   // étoiles descendent au centre ; la marge sous #hero les y laisse un moment seuls.
   const centerGem = gsap.fromTo(
     sceneState,
-    { gemY: 0.75 },
+    { gemY: 1.3 },
     {
       gemY: 0,
       ease: 'none',

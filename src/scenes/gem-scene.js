@@ -189,7 +189,7 @@ export function createGemScene(canvas) {
   const state = {
     introProgress: 0,
     gemReveal: 0,
-    gemY: 0.75,
+    gemY: 1.3,
     gemScale: 1,
     spin: 0,
     helixProgress: 0,
