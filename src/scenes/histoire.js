@@ -17,16 +17,22 @@ const lastIndex = milestones.length - 1;
 const STEP_COOLDOWN = 700;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+// Une phrase par étape, dans l'ordre des années : 1977, 1981, 1991, 2001,
+// 2011, 2021, 2026. La dernière phrase reste toujours celle de la fête.
 const storyLines = [
   'Deux chemins se sont croisés.',
+  'Ils se sont dit oui, pour la vie.',
   'Ils ont bâti, grandi, aimé.',
+  'La famille s’est agrandie.',
+  'Une nouvelle génération est née : les petits-enfants.',
+  'Quarante ans d’amour, et toujours la même complicité.',
   'Quarante-cinq ans plus tard, l’histoire continue.',
 ];
 
-// Une phrase par période : la rencontre, les années de mariage, la fête.
+// Étape n → phrase n ; si les dates changent, la dernière étape garde la phrase de la fête.
 function lineForStep(index) {
-  if (index === 0) return 0;
-  return index === lastIndex ? 2 : 1;
+  if (index === lastIndex) return storyLines.length - 1;
+  return Math.min(index, storyLines.length - 2);
 }
 
 export function createHistoryMarkup() {
