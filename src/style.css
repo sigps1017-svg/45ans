@@ -898,18 +898,12 @@ footer {
   margin-top: 16px;
 }
 
-.viewer-caption strong {
+.viewer-caption span {
   color: var(--gold);
   font-family: var(--serif);
-  font-size: 36px;
-  font-weight: 300;
-  line-height: 1;
-}
-
-.viewer-caption span {
-  font-family: var(--serif);
-  font-size: 22px;
+  font-size: 26px;
   font-style: italic;
+  line-height: 1.2;
 }
 
 .viewer-caption small {

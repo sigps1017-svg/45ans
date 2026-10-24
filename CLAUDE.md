@@ -31,7 +31,8 @@ Porter progressivement le contenu de `reference-apercu.html` dans la structure
 modulaire suivante :
 
 - `src/config.js` : données de l'événement, prénoms, boissons et souvenirs
-  (année, légende et six photos facultatives par souvenir).
+  (légende et six photos facultatives par souvenir ; les cubes n'affichent
+  plus d'année).
 - `src/scenes/` : intro, histoire et souvenirs.
 - `src/rsvp/` : formulaire, confirmation/code QR et ajout au calendrier.
 - `src/lib/` : intégrations et utilitaires partagés, dont les clients et accès
@@ -102,7 +103,7 @@ La table `livre_or` n'est accessible que par RPC : lecture pour tout le personne
 (`staff_list_guestbook`), suppression réservée au rôle `admin`. La page
 `livre-or.html` affiche l'aperçu du livre et l'imprime en A4 avec une couverture.
 
-Les souvenirs (année, légende et photo de chaque face des six cubes) sont
+Les souvenirs (légende et photo de chaque face des six cubes) sont
 modifiables par les admins dans l'onglet « Photos » de `gestion.html`
 (`src/souvenirs-admin.js`, accès dans `src/lib/souvenirs.js`). Exécuter
 `supabase/migrations/20261003_souvenirs_admin.sql` manuellement : il crée les
@@ -111,8 +112,10 @@ admin) et le bucket Storage public `souvenirs` (écriture réservée aux admins)
 Les valeurs de `src/config.js` restent les valeurs par défaut : une face sans
 ligne en base garde sa photo du projet, une ligne au chemin vide affiche
 l'illustration « Photo à venir ». La page invités charge ces données au démarrage
-et revient à `src/config.js` si Supabase ne répond pas. L'année du mariage
-(`event.weddingYear`) est indépendante des souvenirs.
+et revient à `src/config.js` si Supabase ne répond pas. Les cubes n'affichent
+plus d'année et la gestion ne propose que la légende ; la colonne obligatoire
+`souvenirs.year` est conservée en base sans être affichée (valeur existante, sinon
+2026). L'année du mariage (`event.weddingYear`) est indépendante des souvenirs.
 
 La musique de fond est gérée dans l'onglet « Musique » de `gestion.html`
 (`src/musique-admin.js`, accès dans `src/lib/musique.js`). Exécuter

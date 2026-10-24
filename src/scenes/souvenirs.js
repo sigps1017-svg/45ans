@@ -14,10 +14,12 @@ function seeded(seed) {
   };
 }
 
+// Les couleurs de l'illustration « Photo à venir » dépendent du numéro du cube.
 function drawPhoto(context, size, memory, faceIndex) {
-  const random = seeded(memory.year * 10 + faceIndex);
+  const cubeNumber = memory.cubeNumber ?? 1;
+  const random = seeded(cubeNumber * 100 + faceIndex);
   const border = size * 0.05;
-  const hue = HUES[(faceIndex + memory.year) % HUES.length];
+  const hue = HUES[(faceIndex + cubeNumber) % HUES.length];
 
   context.fillStyle = '#f6f1e6';
   context.fillRect(0, 0, size, size);
@@ -88,10 +90,6 @@ function drawPhoto(context, size, memory, faceIndex) {
   context.fillStyle = 'rgba(250,228,205,.75)';
   context.font = `italic ${size * 0.05}px Georgia, serif`;
   context.fillText('Photo à venir', centerX, centerY + diamond * 2.4);
-  context.textAlign = 'left';
-  context.fillStyle = '#f7dcb0';
-  context.font = `300 ${size * 0.12}px Georgia, serif`;
-  context.fillText(String(memory.year), border * 1.8, size - border * 2.4);
   context.textAlign = 'right';
   context.fillStyle = 'rgba(246,240,234,.8)';
   context.font = `italic ${size * 0.052}px Georgia, serif`;
@@ -171,11 +169,10 @@ function escapeHtml(value) {
 
 function createAccessiblePhotoList(memories) {
   return memories
-    .flatMap(({ year, caption }) =>
+    .flatMap(({ caption }) =>
       Array.from(
         { length: 6 },
-        (_, index) =>
-          `<li>${escapeHtml(year)} — ${escapeHtml(caption)}, photo ${index + 1} sur 6</li>`,
+        (_, index) => `<li>${escapeHtml(caption)}, photo ${index + 1} sur 6</li>`,
       ),
     )
     .join('');
@@ -194,14 +191,13 @@ export function createSouvenirsMarkup(memories) {
         </ul>
       </div>
     </section>
-    <dialog id="souvenirs-viewer" class="photo-viewer" aria-labelledby="viewer-year">
+    <dialog id="souvenirs-viewer" class="photo-viewer" aria-labelledby="viewer-caption">
       <button class="viewer-close" type="button" data-viewer-close aria-label="Fermer la visionneuse">Fermer</button>
       <div class="viewer-content">
         <figure class="viewer-figure">
           <img class="viewer-image" data-viewer-image alt="">
           <figcaption class="viewer-caption">
-            <strong id="viewer-year" data-viewer-year></strong>
-            <span data-viewer-caption></span>
+            <span id="viewer-caption" data-viewer-caption></span>
             <small data-viewer-count aria-live="polite"></small>
           </figcaption>
         </figure>
@@ -224,7 +220,7 @@ export function initSouvenirs(sceneApi, memories) {
     addResizeHandler,
     addFrameHandler,
   } = sceneApi;
-  // Les années et légendes peuvent venir de Supabase : la liste accessible suit.
+  // Les légendes peuvent venir de Supabase : la liste accessible suit.
   document.querySelector('#souvenirs-list').innerHTML = createAccessiblePhotoList(memories);
   const textureLoader = new THREE.TextureLoader();
   const cubeTextureSize = window.innerWidth < 700 ? 512 : 768;
@@ -235,7 +231,6 @@ export function initSouvenirs(sceneApi, memories) {
   const viewer = document.querySelector('#souvenirs-viewer');
   const viewerFigure = viewer.querySelector('.viewer-figure');
   const viewerImage = viewer.querySelector('[data-viewer-image]');
-  const viewerYear = viewer.querySelector('[data-viewer-year]');
   const viewerCaption = viewer.querySelector('[data-viewer-caption]');
   const viewerCount = viewer.querySelector('[data-viewer-count]');
   const closeButton = viewer.querySelector('[data-viewer-close]');
@@ -250,10 +245,11 @@ export function initSouvenirs(sceneApi, memories) {
   let swipeStartX = null;
   let disposed = false;
 
-  memories.forEach((memory, index) => {
-    if (!Array.isArray(memory.photos) || memory.photos.length !== 6) {
-      throw new Error(`Le souvenir ${memory.year} doit configurer exactement six photos.`);
+  memories.forEach((sourceMemory, index) => {
+    if (!Array.isArray(sourceMemory.photos) || sourceMemory.photos.length !== 6) {
+      throw new Error(`Le cube souvenir ${index + 1} doit configurer exactement six photos.`);
     }
+    const memory = { ...sourceMemory, cubeNumber: index + 1 };
 
     const materials = memory.photos.map((photo, faceIndex) => {
       const fallback = createFallbackTexture(THREE, memory, faceIndex);
@@ -440,8 +436,7 @@ export function initSouvenirs(sceneApi, memories) {
   function renderViewer() {
     const memory = activeCube.memory;
     viewerImage.src = createViewerPhoto(memory, activeFace);
-    viewerImage.alt = `${memory.caption}, ${memory.year}, photo ${activeFace + 1} sur 6`;
-    viewerYear.textContent = String(memory.year);
+    viewerImage.alt = `${memory.caption}, photo ${activeFace + 1} sur 6`;
     viewerCaption.textContent = memory.caption;
     viewerCount.textContent = `Photo ${activeFace + 1} sur 6`;
   }

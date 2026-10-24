@@ -558,7 +558,7 @@ footer {
 
 .souvenir-text-form {
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 10px;
 }

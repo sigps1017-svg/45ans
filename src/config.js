@@ -37,7 +37,6 @@ export const drinks = Object.freeze([
 
 export const memories = Object.freeze([
   {
-    year: 1981,
     caption: 'Le jour du oui',
     photos: Object.freeze([
       '/photos/photo_1_2026-10-03_03-38-16.jpg',
@@ -49,7 +48,6 @@ export const memories = Object.freeze([
     ]),
   },
   {
-    year: 1986,
     caption: 'Le premier chez-soi',
     photos: Object.freeze([
       '/photos/photo_6_2026-10-03_03-38-16.jpg',
@@ -61,7 +59,6 @@ export const memories = Object.freeze([
     ]),
   },
   {
-    year: 1993,
     caption: 'La famille grandit',
     photos: Object.freeze([
       '/photos/photo_11_2026-10-03_03-38-16.jpg',
@@ -73,7 +70,6 @@ export const memories = Object.freeze([
     ]),
   },
   {
-    year: 2004,
     caption: 'Les voyages',
     photos: Object.freeze([
       '/photos/photo_16_2026-10-03_03-38-16.jpg',
@@ -85,7 +81,6 @@ export const memories = Object.freeze([
     ]),
   },
   {
-    year: 2015,
     caption: 'Les fêtes de famille',
     photos: Object.freeze([
       '/photos/photo_21_2026-10-03_03-38-16.jpg',
@@ -97,7 +92,6 @@ export const memories = Object.freeze([
     ]),
   },
   {
-    year: 2026,
     caption: 'Quarante-cinq ans',
     photos: Object.freeze([
       '/photos/photo_26_2026-10-03_03-38-16.jpg',

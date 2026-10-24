@@ -24,7 +24,7 @@ const SOURCE_LABELS = {
   empty: 'Photo à venir',
 };
 
-// Onglet « Photos » de gestion.html : années, légendes et six faces par cube.
+// Onglet « Photos » de gestion.html : légende et six faces par cube.
 export function initSouvenirsAdmin(panel) {
   let cubes = [];
   let pendingClear = null;
@@ -35,7 +35,7 @@ export function initSouvenirsAdmin(panel) {
       <div class="list-heading">
         <div>
           <p class="eyebrow">Cubes souvenirs</p>
-          <h2>Photos, années et légendes</h2>
+          <h2>Photos et légendes</h2>
         </div>
         <button class="secondary-button" type="button" data-refresh-souvenirs>Actualiser</button>
       </div>
@@ -96,7 +96,6 @@ export function initSouvenirsAdmin(panel) {
           <article class="souvenir-cube">
             <form class="souvenir-text-form" data-text-form="${cubeIndex}">
               <p class="eyebrow">Cube ${cubeIndex + 1}</p>
-              <label>Année<input name="year" type="number" min="1900" max="2100" required value="${escapeHtml(cube.year)}"></label>
               <label>Légende<input name="caption" maxlength="${CAPTION_MAX}" required value="${escapeHtml(cube.caption)}"></label>
               <button class="primary-button" type="submit">Enregistrer</button>
             </form>
@@ -200,19 +199,18 @@ export function initSouvenirsAdmin(panel) {
     if (!form) return;
     submitEvent.preventDefault();
     const cubeIndex = Number(form.dataset.textForm);
-    const year = Number(form.elements.year.value);
     const caption = form.elements.caption.value.trim();
-    if (!Number.isInteger(year) || year < 1900 || year > 2100 || !caption) {
-      setStatus('Indiquez une année entre 1900 et 2100 et une légende.', 'error');
+    if (!caption) {
+      setStatus('Indiquez une légende.', 'error');
       return;
     }
 
     const button = form.querySelector('button');
     button.disabled = true;
     try {
-      await saveSouvenirText(cubeIndex, year, caption);
-      cubes[cubeIndex] = { ...cubes[cubeIndex], year, caption };
-      setStatus(`Cube ${cubeIndex + 1} enregistré : ${year} · ${caption}.`, 'success');
+      await saveSouvenirText(cubeIndex, caption, cubes[cubeIndex].storedYear);
+      cubes[cubeIndex] = { ...cubes[cubeIndex], caption };
+      setStatus(`Cube ${cubeIndex + 1} enregistré : ${caption}.`, 'success');
     } catch (error) {
       console.error('Impossible d’enregistrer le souvenir.', error);
       setStatus('L’enregistrement a échoué. Réessayez.', 'error');

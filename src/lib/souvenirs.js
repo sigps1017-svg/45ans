@@ -25,7 +25,8 @@ export async function loadSouvenirFaces(defaults) {
   );
 
   return defaults.map((memory, cubeIndex) => ({
-    year: texts.get(cubeIndex)?.year ?? memory.year,
+    // Année gardée en base pour compatibilité ; elle n'est plus affichée ni modifiable.
+    storedYear: texts.get(cubeIndex)?.year ?? null,
     caption: texts.get(cubeIndex)?.caption ?? memory.caption,
     faces: memory.photos.map((defaultPhoto, faceIndex) => {
       const row = photos.get(`${cubeIndex}:${faceIndex}`);
@@ -38,20 +39,23 @@ export async function loadSouvenirFaces(defaults) {
   }));
 }
 
-// Forme attendue par les scènes : { year, caption, photos: [6 URL ou null] }.
+// Forme attendue par les scènes : { caption, photos: [6 URL ou null] }.
 export async function loadMemories(defaults) {
   const cubes = await loadSouvenirFaces(defaults);
-  return cubes.map(({ year, caption, faces }) => ({
-    year,
+  return cubes.map(({ caption, faces }) => ({
     caption,
     photos: faces.map((face) => face.url),
   }));
 }
 
-export async function saveSouvenirText(cubeIndex, year, caption) {
+// La colonne « year » de la table souvenirs est obligatoire : on y conserve
+// la valeur déjà enregistrée, sinon une valeur neutre. Elle n'est plus affichée.
+const NEUTRAL_YEAR = 2026;
+
+export async function saveSouvenirText(cubeIndex, caption, storedYear = null) {
   const { error } = await getSupabaseClient().rpc('admin_save_souvenir', {
     p_cube_index: cubeIndex,
-    p_year: year,
+    p_year: storedYear ?? NEUTRAL_YEAR,
     p_caption: caption,
   });
   if (error) throw error;
